@@ -589,7 +589,10 @@ body.navopen .side{transform:none;box-shadow:8px 0 30px rgba(0,0,0,.18)}
 .scrim{position:fixed;inset:0;z-index:45;background:rgba(10,20,26,.42)}
 .sbrand{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;font-weight:900;font-size:16px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);margin-bottom:6px;padding-top:calc(16px + env(safe-area-inset-top,0px))}
 .sbrand img{width:30px;height:30px}
-.sgrp{font-size:11.5px;font-weight:800;letter-spacing:.08em;color:var(--ink-2);padding:12px 18px 4px}
+.sgrp{display:flex;align-items:center;justify-content:space-between;width:calc(100% - 20px);margin:10px 10px 2px;padding:8px 10px;border:0;border-radius:10px;background:transparent;font:inherit;font-size:14.5px;font-weight:900;letter-spacing:.04em;color:var(--ink);cursor:pointer;text-align:left}
+.sgrp:hover{background:var(--surface-2)}.sgrp i{font-style:normal;font-size:12px;color:var(--ink-2);transition:transform .15s}.sgrp[aria-expanded="false"] i{transform:rotate(-90deg)}
+.sgrp[aria-expanded="false"]{color:var(--ink-2)}.sgi[hidden]{display:none}
+.crumbs{display:flex!important;flex-wrap:wrap;align-items:center;gap:2px 6px}.crumbs a{color:var(--ink-2);text-decoration:none;font-weight:700;border-bottom:1px dashed color-mix(in oklab,var(--ink-2) 50%,transparent)}.crumbs a:hover{color:var(--ink)}.crumbs b{font-weight:700;color:var(--ink-2)}.crumbs .sep{opacity:.5}
 .sitem{display:flex;align-items:center;gap:10px;margin:2px 10px;padding:9px 10px;border-radius:12px;color:var(--ink);text-decoration:none;font-size:15px;font-weight:700;position:relative}
 .sitem img{width:26px;height:26px;flex:none}
 .sitem:hover{background:var(--surface-2)}
@@ -1148,7 +1151,7 @@ body.lcfull .lfig svg{max-height:46vh}
 @media (min-width:1100px){
   .wrap,.appbar .in{max-width:1120px}
   .wrap{zoom:1.08}.appbar .in{zoom:1.06}
-  .sitem{font-size:17px;padding:10px 10px}.sitem img{width:28px;height:28px}.sgrp{font-size:13px}.sbrand{font-size:17.5px}
+  .sitem{font-size:17px;padding:10px 10px}.sitem img{width:28px;height:28px}.sgrp{font-size:16px}.sbrand{font-size:17.5px}
   .homtop{grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);align-items:start}
   .homr{position:sticky;top:84px}
   .extras.hubx{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -1156,7 +1159,7 @@ body.lcfull .lfig svg{max-height:46vh}
 }
 @media (min-width:1400px){ .wrap{zoom:1.14}.appbar .in{zoom:1.1}
   .side{width:284px}body{padding-left:284px}.tabs,.dock{left:284px}.backmenu{left:304px}
-  .sitem{font-size:18px;padding:11px 12px;gap:12px}.sitem img{width:30px;height:30px}.sgrp{font-size:13.5px;padding:14px 20px 5px}.sbrand{font-size:18.5px}.sbrand img{width:34px;height:34px} }
+  .sitem{font-size:18px;padding:11px 12px;gap:12px}.sitem img{width:30px;height:30px}.sgrp{font-size:17px;padding:9px 12px}.sbrand{font-size:18.5px}.sbrand img{width:34px;height:34px} }
 @media (min-width:1800px){ .side{width:300px}body{padding-left:300px}.tabs,.dock{left:300px}.backmenu{left:320px}.sitem{font-size:19px}
   .wrap,.appbar .in{max-width:1180px}.wrap{zoom:1.22}.appbar .in{zoom:1.16} }
 body.lcfull .wrap{zoom:1}
@@ -1273,12 +1276,57 @@ body.lcfull .wrap{zoom:1}
 .eflame{background:var(--surface)}
 .clock{background:conic-gradient(var(--zz) calc(var(--p) * 360deg),var(--zt2) 0)}
 .clock span{background:var(--surface);color:var(--zi)}
+
+/* ---------- 我的寵物 ---------- */
+.petsvg,.petimg{width:100%;height:auto;display:block}
+.petcard{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:14px;align-items:center;text-decoration:none;color:var(--ink);background:linear-gradient(135deg,color-mix(in oklab,var(--pc,#3B5BA9) 12%,var(--surface)),var(--surface));border:1.5px solid color-mix(in oklab,var(--pc,#3B5BA9) 30%,var(--line));border-radius:22px;padding:12px 16px}
+.petcard .pcart{width:96px}.petcard b{font-size:17px}.petcard .go{font-weight:800;color:var(--pc,#3B5BA9);white-space:nowrap}
+.petcard.adopt span{display:block;color:var(--ink-2);font-size:13.5px;margin-top:2px}
+.pch{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}.pclv{font-size:12.5px;font-weight:800;color:#fff;background:var(--pc,#3B5BA9);border-radius:999px;padding:2px 10px}
+.pcbar{height:8px;border-radius:99px;background:color-mix(in oklab,var(--pc,#3B5BA9) 16%,var(--surface-2));overflow:hidden;margin:8px 0 4px}.pcbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--pc,#3B5BA9),color-mix(in oklab,var(--pc,#3B5BA9) 55%,#fff))}.pcbar.big{height:12px}
+.pcm small{color:var(--ink-2);font-size:12.5px}.pcsay{display:block;font-size:13.5px;margin-top:4px}
+@media (max-width:520px){.petcard{grid-template-columns:76px minmax(0,1fr)}.petcard .pcart{width:76px}.petcard .go{grid-column:1 / -1;justify-self:end}}
+.petgain{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;text-decoration:none;color:var(--ink);background:color-mix(in oklab,#E8A317 12%,var(--surface));border:1.5px dashed #E8A317;border-radius:16px;padding:8px 14px;margin-top:10px;text-align:left}.petgain .pgi{width:64px}.petgain small{display:block;color:var(--ink-2)}
+.pethero{display:grid;gap:18px;background:linear-gradient(160deg,color-mix(in oklab,var(--pc) 14%,var(--surface)),var(--surface));border:1.5px solid color-mix(in oklab,var(--pc) 28%,var(--line));border-radius:24px;padding:18px;margin-bottom:16px}
+@media (min-width:860px){.pethero{grid-template-columns:minmax(260px,380px) minmax(0,1fr);align-items:center}}
+.petstage{position:relative;cursor:pointer;max-width:380px;justify-self:center;width:100%;-webkit-tap-highlight-color:transparent}
+.petstage>svg,.petstage>img{filter:drop-shadow(0 12px 18px rgba(0,0,0,.12))}
+.bounce{animation:pbounce .6s ease}@keyframes pbounce{0%,100%{transform:translateY(0)}30%{transform:translateY(-16px) scale(1.03)}60%{transform:translateY(0) scale(.98)}}
+@media (prefers-reduced-motion:no-preference){.petstage>svg,.petstage>img{animation:pbreath 3.6s ease-in-out infinite}}@keyframes pbreath{50%{transform:scale(1.015,.99)}}
+.petbub{position:absolute;top:2%;left:50%;transform:translateX(-50%);background:var(--surface);border:2px solid var(--pc);border-radius:16px;padding:8px 14px;font-weight:800;font-size:15px;white-space:nowrap;box-shadow:0 10px 20px -12px rgba(0,0,0,.4)}
+.petbub.pop{animation:popin .2s ease}
+.pheart{position:absolute;bottom:40%;font-style:normal;color:#E5484D;font-size:22px;animation:pheart 1.4s ease-out forwards;pointer-events:none}@keyframes pheart{to{transform:translateY(-120px);opacity:0}}
+.pih{display:flex;align-items:center;gap:10px}.pih h2{margin:0;font-size:26px}
+.pitag{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:6px 0}.pitag b{font-size:17px}.pitag small{color:var(--ink-2)}
+.paff{display:flex;align-items:center;gap:4px;margin:8px 0}.paff i{font-style:normal;font-size:20px;color:var(--line)}.paff i.on{color:#E5484D}.paff small{margin-left:8px;color:var(--ink-2);font-size:12px}
+.pfeed{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}
+.pfb{display:grid;justify-items:center;gap:2px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:16px;padding:10px 6px;cursor:pointer;font:inherit}.pfb i{font-style:normal;font-size:28px}.pfb b{font-size:15px}.pfb small{font-size:11px;color:var(--ink-2);text-align:center}
+.pfb:not(:disabled):hover{border-color:var(--pc);transform:translateY(-1px)}.pfb:disabled{opacity:.45;cursor:default}
+.pgate{display:grid;gap:4px;margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--surface-2);font-size:14px}.pgate span{color:var(--ink-2)}.pgate span.y{color:#1B7D63;font-weight:700}.pgate.ok{background:color-mix(in oklab,#E8A317 14%,var(--surface))}.pgate .btn{margin-top:6px;justify-self:start}
+.pevo{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}@media (max-width:640px){.pevo{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pev{display:grid;gap:4px;justify-items:center;text-align:center;border:1.5px solid var(--line);border-radius:16px;padding:10px;background:var(--surface)}.pev.now{border-color:var(--pc);box-shadow:0 0 0 3px color-mix(in oklab,var(--pc) 22%,transparent)}
+.pev .lvb{font-size:12px;font-weight:800;color:#fff;background:var(--pc);border-radius:999px;padding:2px 10px}.pev:not(.on) .lvb{background:var(--ink-2)}.pev small{font-size:12.5px}.pev em{font-style:normal;font-size:11px;color:var(--ink-2)}
+.plock{filter:brightness(0) opacity(.18)}
+.pdex{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.pdc{display:grid;gap:3px;justify-items:center;text-align:center;border-radius:16px;padding:10px;background:color-mix(in oklab,var(--pc) 9%,var(--surface));border:1.5px solid color-mix(in oklab,var(--pc) 25%,var(--line))}.pdc.lock{background:var(--surface-2);border-color:var(--line)}
+.pdc .pda{width:110px}.pdc small{color:var(--ink-2);font-size:12px}.pdc p{margin:4px 0 0;font-size:12.5px;line-height:1.5;text-align:left}
+.phow{margin:0;padding-left:4px;list-style:none;display:grid;gap:6px}
+.padopt{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin:14px 0}
+.pac{display:grid;gap:4px;justify-items:center;text-align:center;font:inherit;color:var(--ink);background:var(--surface);border:2px solid color-mix(in oklab,var(--pc) 30%,var(--line));border-radius:20px;padding:12px;cursor:pointer}
+.pac .pacart{width:130px}.pac b{font-size:17px}.pac span{font-size:13px;font-weight:700;color:var(--pc)}.pac small{font-size:12px;color:var(--ink-2)}
+.pac.on{border-color:var(--pc);box-shadow:0 0 0 4px color-mix(in oklab,var(--pc) 25%,transparent);background:color-mix(in oklab,var(--pc) 8%,var(--surface))}
+.pevov{position:fixed;inset:0;z-index:90;background:rgba(10,16,22,.7);display:grid;place-items:center;padding:16px}
+.pevbox{background:var(--surface);border-radius:24px;padding:22px;max-width:420px;width:100%;display:grid;gap:8px;justify-items:center;text-align:center}
+.pevart{position:relative;width:240px;height:252px}.pevart>div{position:absolute;inset:0}
+.pevfrom{animation:pevout 1.6s ease forwards}.pevto{opacity:0;animation:pevin 1.6s ease .9s forwards}
+@keyframes pevout{0%{opacity:1;filter:brightness(1)}60%{opacity:1;filter:brightness(3) blur(1px)}100%{opacity:0;transform:scale(.8)}}
+@keyframes pevin{0%{opacity:0;transform:scale(.6);filter:brightness(3)}100%{opacity:1;transform:scale(1);filter:brightness(1)}}
 </style>
 
 </head>
 <body>
 <header class="appbar" id="bar"><div class="in">
-  <button class="nbtn" id="backBtn" hidden aria-haspopup="menu" aria-expanded="false">‹ 回程</button>
+  <button class="nbtn" id="backBtn" hidden>‹ 上一頁</button>
   <div class="strip" aria-hidden="true"><i class="lvbg1"></i><i class="lvbg2"></i><i class="lvbg3"></i><i class="lvbg4"></i><i class="lvbg5"></i></div>
   <h1 id="barTitle">嘉基急診學習站<small>急診各區訓練</small></h1>
   <button class="nbtn" id="homeBtn" hidden>⌂ 首頁</button>
@@ -1491,9 +1539,20 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("backMenu").hidden) { backMenu(false); $("backBtn").focus(); } });
 addEventListener("hashchange", () => backMenu(false));
+/* 麵包屑：首頁 › 留觀區 › 闖關地圖 ›（目前頁），每一段都可以點 */
+function crumbs(title){
+  const hub = navKey(route), name = (NAV.flatMap(g => g[1]).find(x => x[0] === hub) || [])[1], q = HUB_Q[hub], L = [];
+  if (route === "home") return "";
+  L.push(["#home", "首頁"]);
+  if (name && hub !== "home" && route !== hub && !["quest", "news"].includes(hub)) L.push(["#" + hub, name]);
+  if (q && route !== q && route !== hub && /^(cqs|oqs|pqs|rqs|tqs|lqs|sqs|otier|wt|jt)\b/.test(route)) L.push(["#" + q, "闖關地圖"]);
+  if (L.length < 2) return "";   // 第一層頁面：保留原本的說明文字
+  return L.map(([h, t]) => `<a href="${h}">${esc(t)}</a>`).join(`<span class="sep">›</span>`);
+}
 function setBar(title, sub, back, zone){
-  $("barTitle").innerHTML = `${esc(title)}<small>${esc(sub)}</small>`;
-  $("backBtn").hidden = !back; BACK = back || "home"; $("backBtn").onclick = e => { e.stopPropagation(); backMenu(); };
+  const cr = back ? crumbs(title) : "";
+  $("barTitle").innerHTML = `${esc(title)}${cr ? `<small class="crumbs">${cr}</small>` : `<small>${esc(sub)}</small>`}`;
+  $("backBtn").hidden = !back; BACK = back || "home"; $("backBtn").onclick = e => { e.stopPropagation(); HIST.length > 1 ? history.back() : go(BACK); };
   $("homeBtn").hidden = route === "home"; $("homeBtn").onclick = () => go("home");
   document.documentElement.style.setProperty("--zc", `var(${zone || "--z-triage"})`);
 }
@@ -1521,7 +1580,7 @@ function render(){
   v.onclick = v.oninput = v.onchange = null;
   const m = route.match(/^(lc|lw|lq|ta|tqs|lqs|rqs|rt|cqs|oqs|pqs|sqs|wt|ws|tm|jt|drill|bk|bkm|bks|bkp)-(.+)$/);
   if (m) ({ lc, lw: x => lw(+x), lq: x => lq(+x), ta: x => ta(+x), tqs: x => qstage("t", +x), lqs: x => qstage("l", +x), rqs: x => qstage("r", +x), rt: rtopic, cqs: x => qstage("c", +x), oqs: x => qstage("o", +x), pqs: x => qstage("p", +x), sqs: x => qstage("s", +x), wt: wtopic, ws: sortPage, tm: tmPage, jt: jtopic, drill: drillRoute, bk: bkMine, bkm: bkMentor, bks: bkSignPage, bkp: bkPrint })[m[1]](m[2]);
-  else ({ room, team, codes, special: () => wardHub("s"), squest: () => qmap("s"), vsign, treat: () => wardHub("c"), obs: () => wardHub("o"), peds: () => wardHub("p"), cquest: () => qmap("c"), oquest: () => qmap("o"), pquest: () => qmap("p"), otier, home, triage, lookup, practice: pHome, ref, handout, news, pgy, works, games, rush, flash, leader, lmap, lcourse, lbook, ldrill, tassess: () => assessHub("t"), lassess: () => assessHub("l"), tbook, taudit, texam: () => quiz("t"), lsjt: () => quiz("l"), tnote: () => noteView("t"), lnote: () => noteView("l"), llog, quest, tquest: () => qmap("t"), lquest: () => qmap("l"), rquest: () => qmap("r"), resus: resusHub, rbook, rdrug, acct, bmanage, badges, drill: () => drillRoute(""), bkm: () => bkMentor("") }[route] || home)();
+  else ({ room, team, codes, special: () => wardHub("s"), squest: () => qmap("s"), vsign, treat: () => wardHub("c"), obs: () => wardHub("o"), peds: () => wardHub("p"), cquest: () => qmap("c"), oquest: () => qmap("o"), pquest: () => qmap("p"), otier, home, triage, lookup, practice: pHome, ref, handout, news, pgy, works, games, rush, flash, leader, lmap, lcourse, lbook, ldrill, tassess: () => assessHub("t"), lassess: () => assessHub("l"), tbook, taudit, texam: () => quiz("t"), lsjt: () => quiz("l"), tnote: () => noteView("t"), lnote: () => noteView("l"), llog, quest, tquest: () => qmap("t"), lquest: () => qmap("l"), rquest: () => qmap("r"), resus: resusHub, rbook, rdrug, acct, bmanage, badges, pet: petPage, drill: () => drillRoute(""), bkm: () => bkMentor("") }[route] || home)();
   const y = RESTORING ? (SCROLL[route] || 0) : 0; window.scrollTo(0, y); if (y) requestAnimationFrame(() => window.scrollTo(0, y));
 }
 
@@ -1566,7 +1625,7 @@ function paintAcct(){
   if (!ACC) return paintAcct();
   paintAcct();
   try { ME = await ACC.optional("hub.announce"); } catch (e) {}
-  paintAcct();
+  paintAcct(); syncPull();
   if (["home", "news", "acct", "bmanage"].includes(route)) render();
 })();
 const today = () => { const n = new Date(), p = x => String(x).padStart(2, "0"); return `${n.getFullYear()}-${p(n.getMonth()+1)}-${p(n.getDate())}`; };
@@ -1614,6 +1673,7 @@ function home(){
   $("view").innerHTML = `<div class="homtop"><div class="homl">
     <section class="hello"><div><span class="hi-eyebrow"><i class="pulse" aria-hidden="true"></i>${greet()}<time>${hiDate()}</time></span><h2>${ME ? esc(given(ME.name)) + "，" : ""}今天想練哪一區？</h2><p>依你輪到的工作區域學習，一站一站往上。${cheer()}</p></div>${img("hospital")}</section>
     ${todayCard()}
+    ${petCard()}
     <a class="qbanner" href="#quest"><div class="ill" style="width:52px;height:52px;background:rgba(255,255,255,.92)">${img("map")}</div><div><b>急診成長地圖</b><span>新進 → 兒科 → 急救區 → 檢傷 → Leader，一站一站往上</span></div><span class="go">看我的地圖</span></a></div>
     <aside class="homr"><div class="sec-h"><h2>公告</h2><span class="row" style="gap:14px">${canAnnounce() ? `<a href="#bmanage">＋ 發公告</a>` : ""}<a href="#news">全部公告 ›</a></span></div>
     ${newsHTML(sortedNews().slice(0, 3))}
@@ -1638,6 +1698,220 @@ function news(){
   $("view").innerHTML = (canAnnounce() ? `<div class="row" style="margin-bottom:12px"><a class="btn" style="text-decoration:none" href="#bmanage">發公告／管理公告</a></div>` : "")
     + newsHTML(sortedNews()) + `<p class="foot">底色標示的是今天以後的事項。公告由管理者更新。</p>`;
 }
+
+/* ================= 我的寵物：闖關得飼料、每日目標得水、3 星得點心 → 升級；闖完區域 → 進化 =================
+   角色與四個時期依翁護理長在 GPT 的設計；目前是原創 SVG 占位圖，PET_IMG 填入檔名後會改用正式插圖（pets/資料夾） */
+const PET_IMG = {};   // 例：bear: ["pets/bear-1.webp", "pets/bear-2.webp", "pets/bear-3.webp", "pets/bear-4.webp"]
+const PET_SP = {
+  bear: { n: "台灣黑熊", tag: "勇敢可靠、守護急診", trait: "穩重、溫暖、有責任感", c: "#3B5BA9", st: ["愛睡覺的圓滾滾小熊", "開始探索，充滿好奇", "學習照護技能", "急診守護者・帶領團隊"], lore: "台灣特有亞種。胸前的 V 字白毛每一隻都不一樣，是台灣最大的陸生哺乳動物。" },
+  cat: { n: "台灣石虎", tag: "敏捷靈活、細心觀察", trait: "機警、聰明、觀察力強", c: "#C9822B", st: ["天真好奇的小石虎", "開始探索，動作敏捷", "深化技能，細心協作", "創傷守護者・迅速反應"], lore: "台灣僅存的原生野生貓科動物。耳朵背面有白斑、額頭有兩條白線，住在淺山地區。" },
+  fox: { n: "小狐狸", tag: "智慧引導、整合全局", trait: "聰慧、溫柔、充滿靈性", c: "#E06A2B", st: ["軟萌的小狐狸", "學習探索，逐漸自信", "技能提升，幫助夥伴", "九尾靈狐・智囊 Leader"], lore: "傳說角色：修練越久尾巴越多，九條尾巴代表智慧圓滿，最擅長整合全局。", last: "傳說進化" },
+  dragon: { n: "小龍", tag: "熱情行動、突破挑戰", trait: "積極、勇敢、永不放棄", c: "#1E9C8C", st: ["活潑好動的小龍", "開始學習，充滿活力", "技能進階，勇於挑戰", "急救先鋒・突破困難"], lore: "傳說角色：遇到困難就往前衝，最喜歡第一個衝進急救室。" },
+  pangolin: { n: "穿山甲", tag: "堅韌溫柔、守護安全", trait: "溫和、細心、善於保護", c: "#A8703E", st: ["害羞可愛的小穿山甲", "開始探索，逐漸適應", "精進技能，支援團隊", "安全守護者・守護團隊"], lore: "台灣特有亞種。全身鱗片，遇到危險會捲成球；主食白蟻和螞蟻，是保育類動物。" },
+  calico: { n: "貓咪", tag: "溫柔陪伴、療癒能量", trait: "貼心、親切、善於連結", c: "#9C5BC9", st: ["愛撒嬌的小貓咪", "開始學習，樂於互動", "技能進階，關懷夥伴", "療癒支援者・連結彼此"], lore: "三花貓幾乎都是母貓，因為決定橘色與黑色毛的基因在 X 染色體上。" }
+};
+const PET_ORDER = ["bear", "cat", "fox", "dragon", "pangolin", "calico"];
+const PET_STAGE = ["幼年期", "成長期", "進階期", "Leader 期"];
+/* 進化條件：經驗值＋闖完指定的區 */
+const PET_GATE = [null, { xp: 200, any: ["c", "o"], txt: "闖完治療區或留觀區闖關地圖" }, { xp: 600, all: ["p", "r"], txt: "闖完兒科與急救區闖關地圖" }, { xp: 1200, all: ["t", "l"], txt: "闖完檢傷與 Leader 闖關地圖" }];
+const PET_XP = { food: 20, water: 10, snack: 30 };
+const ZONE_NAME = { c: "治療區", o: "留觀區", p: "兒科", r: "急救區", t: "檢傷", l: "Leader", s: "特殊教學" };
+
+/* ---------- 原創占位圖（SVG） ---------- */
+const POL = "#3a2a20", pS = 'stroke="#3a2a20" stroke-width="3"';
+const pEyes = (y, sleep, dx = 20) => sleep ? `<path d="M${100 - dx - 8} ${y} q8 6 16 0 M${100 + dx - 8} ${y} q8 6 16 0" fill="none" stroke="#111" stroke-width="3.2" stroke-linecap="round"/>`
+  : `<circle cx="${100 - dx}" cy="${y}" r="8" fill="#111"/><circle cx="${100 + dx}" cy="${y}" r="8" fill="#111"/><circle cx="${103 - dx}" cy="${y - 3}" r="2.8" fill="#fff"/><circle cx="${103 + dx}" cy="${y - 3}" r="2.8" fill="#fff"/>`;
+const pBlush = y => `<ellipse cx="66" cy="${y}" rx="8" ry="5" fill="#FF8FA3" opacity=".55"/><ellipse cx="134" cy="${y}" rx="8" ry="5" fill="#FF8FA3" opacity=".55"/>`;
+const pLimbs = (col, belly) => `<ellipse cx="78" cy="182" rx="15" ry="9" fill="${col}" ${pS}/><ellipse cx="122" cy="182" rx="15" ry="9" fill="${col}" ${pS}/>
+  <ellipse cx="100" cy="150" rx="44" ry="37" fill="${col}" ${pS}/>${belly ? `<ellipse cx="100" cy="157" rx="25" ry="23" fill="${belly}"/>` : ""}
+  <ellipse cx="57" cy="150" rx="11" ry="17" transform="rotate(20 57 150)" fill="${col}" ${pS}/><ellipse cx="143" cy="150" rx="11" ry="17" transform="rotate(-20 143 150)" fill="${col}" ${pS}/>`;
+const PET_DRAW = {
+  bear: o => `${pLimbs("#26262c")}<path d="M70 132 Q100 168 130 132 Q118 140 100 150 Q82 140 70 132Z" fill="#F4ECD8"/>
+    <circle cx="60" cy="48" r="17" fill="#26262c" ${pS}/><circle cx="140" cy="48" r="17" fill="#26262c" ${pS}/><circle cx="60" cy="48" r="8" fill="#5b4a48"/><circle cx="140" cy="48" r="8" fill="#5b4a48"/>
+    <circle cx="100" cy="86" r="50" fill="#26262c" ${pS}/><ellipse cx="100" cy="106" rx="23" ry="17" fill="#D9B48A"/>
+    ${o.sleep ? `<path d="M70 84 q8 6 16 0 M114 84 q8 6 16 0" fill="none" stroke="#e8ddd2" stroke-width="3.2" stroke-linecap="round"/>` : `<circle cx="78" cy="83" r="9.5" fill="#fff"/><circle cx="122" cy="83" r="9.5" fill="#fff"/><circle cx="79" cy="84" r="6.5" fill="#111"/><circle cx="121" cy="84" r="6.5" fill="#111"/><circle cx="81" cy="82" r="2.3" fill="#fff"/><circle cx="123" cy="82" r="2.3" fill="#fff"/>`}
+    <ellipse cx="100" cy="99" rx="8" ry="5.5" fill="#1a1a1a"/><path d="M100 104 v6 M92 112 q8 6 16 0" fill="none" stroke="#1a1a1a" stroke-width="2.6" stroke-linecap="round"/>${pBlush(104)}`,
+  cat: o => `<path d="M140 172 Q186 176 178 136" fill="none" stroke="${POL}" stroke-width="14" stroke-linecap="round"/><path d="M140 172 Q186 176 178 136" fill="none" stroke="#D9A55B" stroke-width="9" stroke-linecap="round"/>${[0, 1, 2].map(i => `<circle cx="${160 + i * 7}" cy="${170 - i * 12}" r="3.5" fill="#3a2a20"/>`).join("")}
+    ${pLimbs("#D9A55B", "#F6E7CC")}${[[80, 140], [120, 138], [92, 166], [112, 168], [70, 160], [130, 160]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="#5a3b20"/>`).join("")}
+    <path d="M52 64 L62 18 L92 44Z" fill="#D9A55B" ${pS} stroke-linejoin="round"/><path d="M148 64 L138 18 L108 44Z" fill="#D9A55B" ${pS} stroke-linejoin="round"/><path d="M62 26 l4 -8 4 10z M138 26 l-4 -8 -4 10z" fill="#3a2a20"/>
+    <circle cx="100" cy="86" r="48" fill="#D9A55B" ${pS}/><path d="M92 40 Q90 60 94 74 M108 40 Q110 60 106 74" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none"/>
+    ${[[68, 70], [132, 70], [62, 92], [138, 92]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="#5a3b20"/>`).join("")}<ellipse cx="100" cy="108" rx="24" ry="16" fill="#F6E7CC"/>
+    ${pEyes(86, o.sleep)}<path d="M95 100 h10 l-5 6z" fill="#E58C8C"/><path d="M100 106 v4 M92 112 q4 4 8 0 q4 4 8 0" fill="none" stroke="#3a2a20" stroke-width="2.4" stroke-linecap="round"/>${pBlush(104)}`,
+  fox: o => { const n = o.tails || 1; return `${[...Array(n)].map((_, i) => { const a = n === 1 ? 0 : -60 + i * (120 / (n - 1)); return `<g transform="rotate(${a} 100 160)"><path d="M108 168 Q150 150 152 108 Q172 142 150 172 Q132 186 108 176Z" fill="${n > 3 ? "#FFE3D2" : "#F08A3C"}" ${pS}/><path d="M152 108 Q164 128 160 146 L148 132Z" fill="#fff"/></g>`; }).join("")}
+    ${pLimbs(n > 3 ? "#FFF3EA" : "#F08A3C", "#FFF6EE")}
+    <path d="M50 70 L60 18 L94 46Z" fill="${n > 3 ? "#FFF3EA" : "#F08A3C"}" ${pS} stroke-linejoin="round"/><path d="M150 70 L140 18 L106 46Z" fill="${n > 3 ? "#FFF3EA" : "#F08A3C"}" ${pS} stroke-linejoin="round"/><path d="M60 30 L66 48 L80 46Z M140 30 L134 48 L120 46Z" fill="#FFD3BE"/>
+    <circle cx="100" cy="88" r="48" fill="${n > 3 ? "#FFF3EA" : "#F08A3C"}" ${pS}/><path d="M56 96 Q78 92 100 118 Q122 92 144 96 Q132 132 100 134 Q68 132 56 96Z" fill="#FFF6EE"/>
+    ${n > 3 ? `<path d="M92 52 q8 -10 16 0 q-8 6 -16 0z" fill="#E5484D"/>` : ""}${pEyes(88, o.sleep)}<ellipse cx="100" cy="106" rx="6" ry="4.5" fill="#2a1a12"/><path d="M93 114 q7 5 14 0" fill="none" stroke="#2a1a12" stroke-width="2.4" stroke-linecap="round"/>${pBlush(106)}`; },
+  dragon: o => `<path d="M136 168 Q182 176 186 140 L172 150 Z" fill="#3BB8A8" ${pS} stroke-linejoin="round"/>
+    ${o.wing ? `<path d="M56 128 Q14 96 22 70 Q40 92 58 96Z M144 128 Q186 96 178 70 Q160 92 142 96Z" fill="#7FD6C8" ${pS} stroke-linejoin="round"/>` : `<path d="M60 128 Q36 116 38 100 Q50 110 62 112Z M140 128 Q164 116 162 100 Q150 110 138 112Z" fill="#7FD6C8" ${pS}/>`}
+    ${pLimbs("#3BB8A8", "#F6E9B8")}<path d="M84 140 h32 M82 152 h36 M84 164 h32" stroke="#E4CF86" stroke-width="3"/>
+    <path d="M70 46 L62 16 L84 38Z M130 46 L138 16 L116 38Z" fill="#F2C230" ${pS} stroke-linejoin="round"/>
+    <circle cx="100" cy="86" r="48" fill="#3BB8A8" ${pS}/><path d="M90 40 l10 -12 10 12" fill="#2A9A8C" ${pS} stroke-linejoin="round"/>
+    <ellipse cx="100" cy="108" rx="26" ry="16" fill="#8EE0D3"/>${pEyes(84, o.sleep)}<circle cx="93" cy="104" r="2.6" fill="#1f5f57"/><circle cx="107" cy="104" r="2.6" fill="#1f5f57"/><path d="M90 114 q10 8 20 0" fill="#fff" stroke="${POL}" stroke-width="2.4"/>${pBlush(102)}`,
+  pangolin: o => `<path d="M142 168 Q186 168 176 132 Q172 118 160 122" fill="none" stroke="${POL}" stroke-width="22" stroke-linecap="round"/><path d="M142 168 Q186 168 176 132 Q172 118 160 122" fill="none" stroke="#A8703E" stroke-width="16" stroke-linecap="round"/>
+    <ellipse cx="78" cy="184" rx="14" ry="8" fill="#C9A27C" ${pS}/><ellipse cx="122" cy="184" rx="14" ry="8" fill="#C9A27C" ${pS}/><ellipse cx="100" cy="122" rx="62" ry="64" fill="#A8703E" ${pS}/>
+    ${[[70, 8], [92, 7], [114, 7], [136, 6], [158, 5]].map(([y, n]) => Array.from({ length: n }, (_, i) => { const x = 100 + (i - (n - 1) / 2) * 17; return `<path d="M${x - 9} ${y} q9 12 18 0" fill="#C08A50" stroke="${POL}" stroke-width="2"/>`; }).join("")).join("")}
+    <path d="M70 118 Q100 96 130 118 Q132 160 100 168 Q68 160 70 118Z" fill="#E7CBA9" ${pS}/>${pEyes(128, o.sleep, 14)}<ellipse cx="100" cy="148" rx="7" ry="5" fill="#5a3b2a"/><path d="M93 156 q7 5 14 0" fill="none" stroke="#5a3b2a" stroke-width="2.5" stroke-linecap="round"/>${pBlush(142)}`,
+  calico: o => `<path d="M140 172 Q184 172 174 132" fill="none" stroke="${POL}" stroke-width="14" stroke-linecap="round"/><path d="M140 172 Q184 172 174 132" fill="none" stroke="#2b2b30" stroke-width="9" stroke-linecap="round"/>
+    ${pLimbs("#FFFBF4")}<path d="M60 136 Q70 124 84 132 Q80 150 64 152Z" fill="#F0A04B"/><path d="M118 160 Q132 150 142 160 Q136 176 120 174Z" fill="#2b2b30"/>
+    <path d="M52 64 L60 20 L92 44Z" fill="#F0A04B" ${pS} stroke-linejoin="round"/><path d="M148 64 L140 20 L108 44Z" fill="#2b2b30" ${pS} stroke-linejoin="round"/><path d="M60 30 l6 14 10 -2z M140 30 l-6 14 -10 -2z" fill="#FFC9D2"/>
+    <circle cx="100" cy="88" r="48" fill="#FFFBF4" ${pS}/><path d="M54 80 Q60 44 96 42 Q86 66 58 96Z" fill="#F0A04B"/><path d="M146 80 Q140 44 106 42 Q118 66 142 96Z" fill="#2b2b30"/>
+    ${pEyes(88, o.sleep)}<path d="M95 102 h10 l-5 6z" fill="#F3A0B0"/><path d="M100 108 v3 M92 112 q4 4 8 0 q4 4 8 0" fill="none" stroke="#3a2a20" stroke-width="2.4" stroke-linecap="round"/><path d="M60 104 h-18 M60 110 h-16 M140 104 h18 M140 110 h16" stroke="#bbb" stroke-width="1.6"/>${pBlush(106)}`
+};
+/* 各時期配件：成長期領巾、進階期護理帽＋急救包、Leader 期背心＋大聲公＋光芒 */
+const PET_ACC = {
+  scarf: c => `<path d="M64 126 Q100 146 136 126 L134 138 Q100 156 66 138Z" fill="${c}" ${pS}/><path d="M118 136 l10 18 -12 -4z" fill="${c}" ${pS} stroke-linejoin="round"/>`,
+  cap: () => `<path d="M60 52 Q100 22 140 52 L134 64 Q100 46 66 64Z" fill="#fff" ${pS}/><rect x="92" y="34" width="16" height="16" rx="3" fill="#fff" stroke="${POL}" stroke-width="2"/><path d="M100 37 v10 M95 42 h10" stroke="#E5484D" stroke-width="3.2"/>`,
+  kit: () => `<rect x="138" y="140" width="38" height="30" rx="6" fill="#E5484D" ${pS}/><rect x="150" y="134" width="14" height="8" rx="3" fill="none" stroke="${POL}" stroke-width="3"/><path d="M157 147 v16 M149 155 h16" stroke="#fff" stroke-width="4"/>`,
+  vest: () => `<path d="M64 128 Q100 146 136 128 L138 172 Q100 184 62 172Z" fill="#FF8A1F" opacity=".95" ${pS}/><path d="M64 152 Q100 166 136 152" stroke="#FFF36B" stroke-width="6" fill="none"/>`,
+  horn: () => `<g transform="rotate(-24 40 140)"><path d="M24 132 L52 122 L52 154 L24 144Z" fill="#F5F5F5" ${pS} stroke-linejoin="round"/><rect x="16" y="132" width="10" height="12" rx="2" fill="#6650C0" stroke="${POL}" stroke-width="2"/><path d="M58 126 q8 12 0 24" fill="none" stroke="#6650C0" stroke-width="3" stroke-linecap="round"/></g>`
+};
+function petSVG(sp, stage, opt = {}){
+  const D = PET_DRAW[sp] || PET_DRAW.bear, c = (PET_SP[sp] || PET_SP.bear).c;
+  if (stage <= 0) return `<svg viewBox="0 0 200 210" class="petsvg" role="img" aria-label="${PET_SP[sp].n}・幼年期"><ellipse cx="100" cy="196" rx="70" ry="8" fill="#000" opacity=".1"/>
+    <g transform="translate(100 128) scale(.78) translate(-100 -100)">${D({ sleep: !opt.awake, tails: 1 })}</g>
+    <path d="M24 156 Q100 126 176 156 L168 198 Q100 212 32 198Z" fill="#A9D3F5" ${pS}/><path d="M34 166 Q100 142 166 166" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="6 7"/>
+    ${opt.awake ? "" : `<text x="150" y="70" font-size="22" fill="#7a8a9a">z</text><text x="164" y="52" font-size="15" fill="#7a8a9a">z</text>`}</svg>`;
+  const acc = stage === 1 ? [PET_ACC.scarf(c)] : stage === 2 ? [PET_ACC.scarf(c), PET_ACC.cap(), PET_ACC.kit()] : [PET_ACC.vest(), PET_ACC.cap(), PET_ACC.horn(), PET_ACC.kit()];
+  const sc = [.8, .86, .93, 1][stage], glow = stage === 3;
+  return `<svg viewBox="0 0 200 210" class="petsvg" role="img" aria-label="${PET_SP[sp].n}・${PET_STAGE[stage]}">${glow ? `<defs><radialGradient id="pg${sp}"><stop offset="0" stop-color="#FFE9A8" stop-opacity=".95"/><stop offset="1" stop-color="#FFE9A8" stop-opacity="0"/></radialGradient></defs><circle cx="100" cy="110" r="98" fill="url(#pg${sp})"/>` : ""}
+    <ellipse cx="100" cy="194" rx="54" ry="7" fill="#000" opacity=".12"/>
+    <g transform="translate(100 196) scale(${sc}) translate(-100 -196)">${D({ tails: sp === "fox" ? [1, 1, 3, 9][stage] : 1, wing: stage >= 2 })}${acc.join("")}</g>
+    ${glow ? [[26, 40], [170, 50], [20, 150], [180, 138]].map(([x, y]) => `<path d="M${x} ${y - 9} l3 6 6 3 -6 3 -3 6 -3 -6 -6 -3 6 -3z" fill="#F5C518"/>`).join("") : ""}</svg>`;
+}
+const petArt = (sp, stage, opt) => PET_IMG[sp] && PET_IMG[sp][stage] ? `<img class="petimg" src="${PET_IMG[sp][stage]}" alt="${esc(PET_SP[sp].n)}・${PET_STAGE[stage]}" decoding="async">` : petSVG(sp, stage, opt);
+
+/* ---------- 狀態：從闖關進度算出拿到多少飼料、水、點心；餵了多少記在 pet ---------- */
+function zoneDone(z){ const Z = QUESTS[z]; if (!Z) return false; const st = store.get("quest-" + z, {}); return Z.stages.every((_, i) => (st[i] || 0) > 0); }
+function petEarned(){
+  let food = 0, snack = 0; Object.keys(QUESTS).forEach(z => { const st = store.get("quest-" + z, {}); Object.values(st).forEach(v => { if (v > 0) food++; if (v >= 3) snack++; }); });
+  const P = store.get("pet", null), D = store.get("daily", {}), days = new Set((P && P.wd) || []);
+  Object.keys(D).forEach(k => { if ((D[k].pass || 0) >= DAY_GOAL) days.add(k); });
+  return { food, snack, water: days.size, days: [...days].sort() };
+}
+function petState(){
+  const P = store.get("pet", null); if (!P) return null;
+  const E = petEarned(); if (E.days.length !== (P.wd || []).length) { P.wd = E.days; store.set("pet", P); }
+  const fed = P.fed || { food: 0, water: 0, snack: 0 }, have = { food: Math.max(0, E.food - fed.food), water: Math.max(0, E.water - fed.water), snack: Math.max(0, E.snack - fed.snack) };
+  const xp = P.xp || 0, lv = Math.floor(xp / 100) + 1, stage = P.stage || 0, gate = PET_GATE[stage + 1];
+  const gz = gate ? (gate.any || gate.all).map(z => ({ z, n: ZONE_NAME[z], ok: zoneDone(z), q: qProgZ(z) })) : [];
+  const zoneOk = gate ? (gate.any ? gz.some(x => x.ok) : gz.every(x => x.ok)) : false;
+  const can = !!gate && xp >= gate.xp && zoneOk;
+  const zonesDone = Object.keys(QUESTS).filter(zoneDone);
+  return { P, E, have, xp, lv, stage, gate, gz, zoneOk, can, zonesDone, total: have.food + have.water + have.snack };
+}
+function qProgZ(z){ const Z = QUESTS[z], st = store.get("quest-" + z, {}); return Z ? { n: Z.stages.filter((_, i) => st[i]).length, tot: Z.stages.length } : { n: 0, tot: 0 }; }
+/* 圖鑑：領養的那隻＋每闖完一區解鎖一隻 */
+function petDex(S){ const own = S ? S.P.sp : ""; const n = S ? 1 + S.zonesDone.length : 0; const order = [own, ...PET_ORDER.filter(x => x !== own)].filter(Boolean); return new Set(order.slice(0, n)); }
+const PET_SAY = ["今天也一起加油吧！", "你學會一件事，我就長大一點點。", "交班辛苦了，先喝口水。", "我在這裡等你闖下一關！", "累了就摸摸我，休息一下。", "你昨天學的，今天就用得上。", "有不懂的，記得問學長姐喔。"];
+const PET_HUNGRY = ["我聞到飼料的味道了！", "可以餵我嗎？", "肚子咕嚕咕嚕…"];
+
+/* ---------- 首頁小卡 ---------- */
+function petCard(){
+  const S = petState();
+  if (!S) return `<a class="petcard adopt" href="#pet"><div class="pcart">${petSVG("bear", 0)}</div><div><b>領養你的急診夥伴</b><span>闖一關得一份飼料、達成每日目標得一瓶水，養牠長大成為 Leader！</span></div><span class="go">去領養 →</span></a>`;
+  const sp = PET_SP[S.P.sp], nx = S.gate ? S.gate.xp : S.xp;
+  return `<a class="petcard" href="#pet" style="--pc:${sp.c}"><div class="pcart">${petArt(S.P.sp, S.stage)}</div>
+    <div class="pcm"><div class="pch"><b>${esc(S.P.name || sp.n)}</b><span class="pclv">Lv.${S.lv}・${PET_SPstage(S.P.sp, S.stage)}</span></div>
+      <div class="pcbar"><i style="width:${S.gate ? Math.min(100, S.xp / nx * 100) : 100}%"></i></div><small>${S.gate ? `經驗 ${S.xp} / ${nx}・下一階段：${PET_STAGE[S.stage + 1]}` : `經驗 ${S.xp}・已是最終型態`}</small>
+      <span class="pcsay">${S.total ? `🍖${S.have.food} 💧${S.have.water} 🍰${S.have.snack}　${esc(PET_HUNGRY[Math.floor(Date.now() / 36e5) % PET_HUNGRY.length])}` : esc(pickCheer(PET_SAY, 7))}</span></div>
+    <span class="go">${S.can ? "可以進化！" : S.total ? "去餵牠 →" : "看看牠 →"}</span></a>`;
+}
+const PET_SPstage = (sp, stage) => stage === 3 && PET_SP[sp].last ? PET_SP[sp].last : PET_STAGE[stage];
+/* 闖關結果畫面：拿到什麼 */
+function petGainHTML(stars){
+  if (!stars) return "";
+  const P = store.get("pet", null), sp = P ? PET_SP[P.sp] : null;
+  return `<a class="petgain" href="#pet"><span class="pgi">${P ? petArt(P.sp, P.stage || 0) : petSVG("bear", 0)}</span><span><b>獲得 🍖 飼料 ×1${stars >= 3 ? "、🍰 點心 ×1" : ""}</b><small>${P ? `去餵 ${esc(P.name || sp.n)} ›` : "還沒有寵物？去領養一隻 ›"}</small></span></a>`;
+}
+
+/* ---------- 寵物頁 ---------- */
+function petPage(){
+  setBar("我的寵物", "陪你一起成長的急診夥伴", "home", "--z-leader");
+  const S = petState(), v = $("view");
+  if (!S) return petAdopt();
+  const sp = PET_SP[S.P.sp], nx = S.gate ? S.gate.xp : S.xp, dex = petDex(S), today = dayKey(), aff = Math.min(5, S.P.aff || 0);
+  v.innerHTML = `<div class="petwrap" style="--pc:${sp.c}">
+    <section class="pethero"><div class="petstage" id="petTap" role="button" tabindex="0" aria-label="摸摸牠">${petArt(S.P.sp, S.stage)}<div class="petbub" id="petBub" hidden></div></div>
+      <div class="petinfo"><div class="pih"><h2>${esc(S.P.name || sp.n)}</h2><button class="mini" id="petRename">改名</button></div>
+        <div class="pitag"><span class="pclv">Lv.${S.lv}</span><b>${PET_SPstage(S.P.sp, S.stage)}</b><small>${esc(sp.n)}・${esc(sp.st[S.stage])}</small></div>
+        <div class="pcbar big"><i style="width:${S.gate ? Math.min(100, S.xp / nx * 100) : 100}%"></i></div><small>${S.gate ? `經驗 ${S.xp} / ${nx}` : `經驗 ${S.xp}・最終型態`}</small>
+        <div class="paff" title="親密度">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= aff ? "on" : ""}">♥</i>`).join("")}<small>親密度（每天摸摸、餵食會增加）</small></div>
+        <div class="pfeed">${[["food", "🍖", "飼料", "闖過一關"], ["water", "💧", "水", "達成每日目標"], ["snack", "🍰", "點心", "闖關拿 3 星"]].map(([k, ic, n, how]) => `<button class="pfb" data-feed="${k}" ${S.have[k] ? "" : "disabled"}><i>${ic}</i><b>${n} ×${S.have[k]}</b><small>${how}・+${PET_XP[k]} 經驗</small></button>`).join("")}</div>
+        ${S.total > 1 ? `<button class="btn" id="feedAll">全部餵完（${S.total} 份）</button>` : ""}
+        ${S.gate ? `<div class="pgate ${S.can ? "ok" : ""}"><b>進化到「${PET_STAGE[S.stage + 1]}」需要</b>
+          <span class="${S.xp >= S.gate.xp ? "y" : ""}">${S.xp >= S.gate.xp ? "✓" : "○"} 經驗 ${S.gate.xp}（目前 ${S.xp}）</span>
+          <span class="${S.zoneOk ? "y" : ""}">${S.zoneOk ? "✓" : "○"} ${esc(S.gate.txt)}：${S.gz.map(x => `${x.n} ${x.q.n}/${x.q.tot}`).join("、")}</span>
+          ${S.can ? `<button class="btn big" id="evolve">✨ 進化！</button>` : ""}</div>` : `<div class="pgate ok"><b>🎉 已經是最終型態：${esc(sp.st[3])}</b></div>`}
+      </div></section>
+    <section class="panel"><h3 class="h3">成長路線</h3><div class="pevo">${[0, 1, 2, 3].map(i => `<div class="pev ${i <= S.stage ? "on" : ""} ${i === S.stage ? "now" : ""}"><span class="lvb">Lv.${i + 1}　${i === 3 && sp.last ? sp.last : PET_STAGE[i]}</span>${i <= S.stage ? petArt(S.P.sp, i) : `<div class="plock">${petSVG(S.P.sp, i)}</div>`}<small>${esc(sp.st[i])}</small>${i ? `<em>${esc(PET_GATE[i].txt)}</em>` : `<em>領養</em>`}</div>`).join("")}</div></section>
+    <section class="panel"><h3 class="h3">寵物圖鑑 <small>${dex.size} / ${PET_ORDER.length}・每闖完一張闖關地圖解鎖一隻</small></h3>
+      <div class="pdex">${PET_ORDER.map(k => { const on = dex.has(k), s = PET_SP[k]; return `<div class="pdc ${on ? "" : "lock"}" style="--pc:${s.c}"><div class="pda">${on ? petArt(k, k === S.P.sp ? S.stage : 1) : `<div class="plock">${petSVG(k, 1)}</div>`}</div><b>${on ? esc(s.n) : "？？？"}</b><small>${on ? esc(s.tag) : "闖完下一張地圖解鎖"}</small>${on ? `<p>${esc(s.lore)}</p>` : ""}</div>`; }).join("")}</div></section>
+    <section class="panel"><h3 class="h3">怎麼養</h3><ul class="phow"><li>🍖 闖過一關（1 星以上）得 1 份飼料</li><li>🍰 闖關拿到 3 星再加 1 份點心</li><li>💧 達成每日目標（今天過 1 關）得 1 瓶水</li><li>✨ 經驗夠了、而且闖完指定的區，就能進化</li><li>💤 不會餓壞、不會生病：輪班忙的時候，牠會乖乖等你</li></ul>
+      ${ACC && !(ME || ACC.cachedUser()) ? `<p class="hint">目前存在這支手機。<a href="#acct">用員編登入</a>後會存到雲端，換手機也不會不見。</p>` : `<p class="hint">已用員編登入：寵物與闖關進度會存到雲端。</p>`}</section></div>`;
+  const P = S.P;
+  const say = (t, hearts) => { const b = $("petBub"); if (!b) return; b.textContent = t; b.hidden = false; b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); clearTimeout(b._t); b._t = setTimeout(() => b.hidden = true, 2600);
+    if (hearts) { const st = $("petTap"); for (let i = 0; i < 4; i++) { const h = document.createElement("i"); h.className = "pheart"; h.textContent = "♥"; h.style.left = (30 + Math.random() * 40) + "%"; h.style.animationDelay = i * .12 + "s"; st.appendChild(h); setTimeout(() => h.remove(), 1600); } } };
+  $("petTap").onclick = () => { if (P.pat !== today) { P.pat = today; P.aff = Math.min(5, (P.aff || 0) + 1); store.set("pet", P); setTimeout(petPage, 900); }
+    const st = $("petTap").firstElementChild; st.classList.remove("bounce"); void st.getBoundingClientRect(); st.classList.add("bounce"); say(S.total ? PET_HUNGRY[Math.floor(Math.random() * 3)] : PET_SAY[Math.floor(Math.random() * PET_SAY.length)], true); };
+  $("petRename").onclick = () => { const n = prompt("幫牠取個名字（最多 8 個字）", P.name || sp.n); if (n === null) return; P.name = n.trim().slice(0, 8) || sp.n; store.set("pet", P); petPage(); };
+  const feed = (k, n) => { const S2 = petState(); n = Math.min(n, S2.have[k]); if (!n) return 0; P.fed = P.fed || { food: 0, water: 0, snack: 0 }; P.fed[k] += n; P.xp = (P.xp || 0) + n * PET_XP[k]; if (!P.fedDay || P.fedDay !== today) { P.fedDay = today; P.aff = Math.min(5, (P.aff || 0) + 1); } store.set("pet", P); return n * PET_XP[k]; };
+  v.querySelectorAll("[data-feed]").forEach(b => b.onclick = () => { const k = b.dataset.feed, g = feed(k, 1); if (!g) return; petPage(); setTimeout(() => { const st = $("petTap"); if (!st) return; st.firstElementChild.classList.add("bounce"); const b2 = $("petBub"); b2.textContent = `好好吃！經驗 +${g}`; b2.hidden = false; b2.classList.add("pop"); setTimeout(() => b2.hidden = true, 2000); }, 30); });
+  if ($("feedAll")) $("feedAll").onclick = () => { let g = 0; ["food", "water", "snack"].forEach(k => g += feed(k, 999)); petPage(); toast(`吃飽飽！經驗 +${g}`); };
+  if ($("evolve")) $("evolve").onclick = () => petEvolve();
+}
+function petAdopt(){
+  const v = $("view"); let pick = "";
+  v.innerHTML = `<section class="hello"><div><h2>選一隻陪你成長的急診夥伴</h2><p>闖一關得一份飼料、達成每日目標得一瓶水；闖完一區，牠就進化一次，最後和你一起成為 Leader。</p></div></section>
+    <div class="padopt">${PET_ORDER.map(k => { const s = PET_SP[k]; return `<button class="pac" data-sp="${k}" style="--pc:${s.c}"><div class="pacart">${petSVG(k, 1)}</div><b>${esc(s.n)}</b><span>${esc(s.tag)}</span><small>${esc(s.trait)}</small></button>`; }).join("")}</div>
+    <section class="panel stack" id="adoptBox" hidden><b id="adoptT"></b><label class="fld">幫牠取名字（可以之後再改）<input id="petName" maxlength="8"></label><button class="btn big" id="adoptGo">領養！</button>
+      <p class="hint">領養後，你之前闖過的關卡也會變成飼料，可以馬上餵。</p></section>`;
+  v.onclick = e => { const b = e.target.closest("[data-sp]"); if (b) { pick = b.dataset.sp; v.querySelectorAll("[data-sp]").forEach(x => x.classList.toggle("on", x === b)); $("adoptBox").hidden = false; $("adoptT").textContent = `你選了：${PET_SP[pick].n}（${PET_SP[pick].tag}）`; $("petName").value = PET_SP[pick].n; $("adoptBox").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+    if (e.target.closest("#adoptGo") && pick) { store.set("pet", { sp: pick, name: ($("petName").value || "").trim().slice(0, 8) || PET_SP[pick].n, stage: 0, xp: 0, fed: { food: 0, water: 0, snack: 0 }, aff: 1, born: dayKey(), wd: [] }); confetti(); petPage(); } };
+}
+function petEvolve(){
+  const S = petState(); if (!S || !S.can) return;
+  const P = S.P, from = S.stage, to = from + 1, sp = PET_SP[P.sp];
+  P.stage = to; store.set("pet", P);
+  const ov = document.createElement("div"); ov.className = "pevov";
+  ov.innerHTML = `<div class="pevbox"><div class="pevart"><div class="pevfrom">${petArt(P.sp, from)}</div><div class="pevto">${petArt(P.sp, to)}</div></div>
+    <h2>✨ ${esc(P.name || sp.n)} 進化了！</h2><b>${PET_SPstage(P.sp, to)}・${esc(sp.st[to])}</b><button class="btn big" id="pevOk">太棒了！</button></div>`;
+  document.body.appendChild(ov); confetti(); $("pevOk").onclick = () => { ov.remove(); petPage(); };
+}
+
+/* ================= 學習進度雲端同步：用員編登入時，闖關、每日紀錄、勳章、寵物存到「er-learn 紀錄」 ================= */
+const SYNC = { tm: 0, busy: 0, pulled: 0, skip: 0 };
+const syncUser = () => ME || (ACC && ACC.cachedUser && ACC.cachedUser());
+function hubAll(){ const o = {}; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith("ed-hub:")) { try { o[k.slice(7)] = JSON.parse(localStorage.getItem(k)); } catch (e) {} } } } catch (e) {} return o; }
+function hubMerge(k, a, b){
+  if (a === undefined || a === null) return b; if (b === undefined || b === null) return a;
+  const obj = x => x && typeof x === "object" && !Array.isArray(x);
+  if (/^quest-/.test(k) && obj(a) && obj(b)) { const o = Object.assign({}, b); Object.keys(a).forEach(i => o[i] = Math.max(+a[i] || 0, +o[i] || 0)); return o; }
+  if (k === "daily" && obj(a) && obj(b)) { const o = Object.assign({}, b); Object.keys(a).forEach(d => { const x = a[d] || {}, y = o[d] || {}; o[d] = { pass: Math.max(x.pass || 0, y.pass || 0), try: Math.max(x.try || 0, y.try || 0) }; }); return o; }
+  if (["medals", "wt-done", "rt-done", "resus-pre"].includes(k) && obj(a) && obj(b)) { const o = Object.assign({}, b); Object.keys(a).forEach(i => { if (a[i] && !o[i]) o[i] = a[i]; }); return o; }
+  if ((/-best$/.test(k) || /^best-/.test(k)) && typeof a === "number" && typeof b === "number") return Math.max(a, b);
+  if (k === "pet" && obj(a) && obj(b)) { const sa = (a.stage || 0) * 1e6 + (a.xp || 0), sb = (b.stage || 0) * 1e6 + (b.xp || 0), w = Object.assign({}, sa >= sb ? a : b);
+    w.wd = [...new Set([...(a.wd || []), ...(b.wd || [])])].sort(); w.aff = Math.max(a.aff || 0, b.aff || 0); return w; }
+  return a;
+}
+async function syncPull(){
+  if (!BK_API() || !syncUser() || SYNC.busy) return; SYNC.busy = 1;
+  try {
+    const r = await bkApi("progGet", {}); if (!r || !r.ok) return;
+    const cloud = r.data ? JSON.parse(r.data) : {}, local = hubAll(), keys = new Set([...Object.keys(cloud), ...Object.keys(local)]);
+    let changed = false; SYNC.skip = 1;
+    keys.forEach(k => { const m = hubMerge(k, local[k], cloud[k]); if (JSON.stringify(m) !== JSON.stringify(local[k])) { store.set(k, m); changed = true; } });
+    SYNC.skip = 0; SYNC.pulled = 1;
+    if (changed && typeof render === "function") { try { render(); } catch (e) {} }
+    if (JSON.stringify(cloud) !== JSON.stringify(hubAll())) syncPush(true);
+  } catch (e) {} finally { SYNC.busy = 0; SYNC.skip = 0; }
+}
+function syncPush(now){
+  if (!BK_API() || !syncUser() || !SYNC.pulled) return;
+  clearTimeout(SYNC.tm); SYNC.tm = setTimeout(async () => { const r = await bkApi("progPut", { data: JSON.stringify(hubAll()) }); if (r && !r.ok && r.error) console.warn("進度同步失敗", r.error); }, now ? 50 : 6000);
+}
+(() => { const set0 = store.set; store.set = (k, v) => { set0.call(store, k, v); if (!SYNC.skip) syncPush(); }; })();
+addEventListener("pagehide", () => { if (SYNC.tm && navigator.sendBeacon && BK_API() && syncUser() && SYNC.pulled) { clearTimeout(SYNC.tm); const t = ACC && ACC.token && ACC.token(); try { navigator.sendBeacon(BK_API(), new Blob([JSON.stringify({ action: "progPut", token: t, data: JSON.stringify(hubAll()) })], { type: "text/plain" })); } catch (e) {} } });
 
 /* ---------- 我的帳號 ---------- */
 const bkBanner = b => `<a class="qbanner" href="#bk-${b}" style="--zz:var(${BOOKS[b].color});margin-bottom:12px"><div class="ill" style="width:52px;height:52px;background:rgba(255,255,255,.92)">${img("record")}</div><div><b>線上正式手冊</b><span>登入後由指導員評值、記實習時數，最後護理長會談簽核，可列印 PDF</span></div><span class="go">開啟</span></a>`;
@@ -2436,7 +2710,7 @@ function afterCheer(stars){
   const head = stars && t.pass === DAY_GOAL ? "今日目標達成" : stars ? `今天已過 ${t.pass} 關` : "今天也挑戰了";
   const msg = stars ? (CHEER.streak[streak] && t.pass === DAY_GOAL ? CHEER.streak[streak] : pickCheer(t.pass >= 3 ? CHEER.more : CHEER.done, t.pass)) : pickCheer(CHEER.tried, t.try);
   setTimeout(checkMedals, 300);
-  return `<div class="cheer ${stars ? "ok" : ""}"><b>${head}${streak > 1 && stars ? `・連續 ${streak} 天` : ""}</b><span>${esc(msg)}</span></div>`;
+  return `<div class="cheer ${stars ? "ok" : ""}"><b>${head}${streak > 1 && stars ? `・連續 ${streak} 天` : ""}</b><span>${esc(msg)}</span></div>` + petGainHTML(stars);
 }
 function questState(z){
   const Z = QUESTS[z], st = store.get("quest-" + z, {});
@@ -3654,7 +3928,7 @@ const NAV = [
   ["", [["home", "首頁", "hospital"], ["quest", "成長地圖", "map"], ["news", "公告", "record"]]],
   ["學習區", [["treat", "治療區", "zTreat", "--z-treat"], ["obs", "留觀區", "zObs", "--z-obs"], ["peds", "兒科", "baby", "--z-peds"], ["resus", "急救區", "zResus", "--z-resus"], ["triage", "檢傷區", "zTriage", "--z-triage"], ["leader", "Leader", "zLeader", "--z-leader"]]],
   ["教學與演練", [["special", "特殊教學", "police", "--z-spec"], ["team", "團體演練", "fireext", "--z-spec"], ["pgy", "PGY 新人專區", "pgy"]]],
-  ["其他", [["badges", "我的勳章", "works"], ["works", "作品發表", "works"], ["games", "遊戲區", "games"]]],
+  ["其他", [["pet", "我的寵物", "teddy"], ["badges", "我的勳章", "works"], ["works", "作品發表", "works"], ["games", "遊戲區", "games"]]],
 ];
 function navKey(r){
   const m = r.match(/^([a-z]+)-(.+)$/), p = m ? m[1] : r;
@@ -3670,8 +3944,10 @@ function navKey(r){
 }
 function drawSide(){
   const k = navKey(route);
-  $("sideIn").innerHTML = `<a class="sbrand" href="#home">${img("hospital")}<span>嘉基急診學習站</span></a>` + NAV.map(([g, items]) => `${g ? `<div class="sgrp">${g}</div>` : ""}${items.map(([r, n, a, c]) =>
-    `<a class="sitem" href="#${r}" ${r === k ? 'aria-current="page"' : ""} style="--sc:var(${c || "--brand"})">${img(a)}<span>${n}</span></a>`).join("")}`).join("");
+  let fold = {}; try { fold = JSON.parse(localStorage.getItem("hub-side-fold") || "{}"); } catch (e) {}
+  $("sideIn").innerHTML = `<a class="sbrand" href="#home">${img("hospital")}<span>嘉基急診學習站</span></a>` + NAV.map(([g, items]) => { const open = !g || !fold[g] || items.some(x => x[0] === k);
+    return `${g ? `<button class="sgrp" data-sg="${g}" aria-expanded="${open}"><span>${g}</span><i aria-hidden="true">▾</i></button>` : ""}<div class="sgi" ${open ? "" : "hidden"}>${items.map(([r, n, a, c]) =>
+    `<a class="sitem" href="#${r}" ${r === k ? 'aria-current="page"' : ""} style="--sc:var(${c || "--brand"})">${img(a)}<span>${n}</span></a>`).join("")}</div>`; }).join("");
 }
 function sideOpen(on){
   document.body.classList.toggle("navopen", on); $("scrim").hidden = !on; $("fab").setAttribute("aria-expanded", String(on));
@@ -3679,7 +3955,11 @@ function sideOpen(on){
 }
 $("fab").onclick = () => sideOpen(!document.body.classList.contains("navopen"));
 $("scrim").onclick = () => sideOpen(false);
-$("side").onclick = e => { if (e.target.closest("a")) sideOpen(false); };
+$("side").onclick = e => { const g = e.target.closest("[data-sg]");
+  if (g) { let fold = {}; try { fold = JSON.parse(localStorage.getItem("hub-side-fold") || "{}"); } catch (x) {} const open = g.getAttribute("aria-expanded") === "true";
+    fold[g.dataset.sg] = open ? 1 : 0; try { localStorage.setItem("hub-side-fold", JSON.stringify(fold)); } catch (x) {}
+    g.setAttribute("aria-expanded", String(!open)); g.nextElementSibling.hidden = open; return; }
+  if (e.target.closest("a")) sideOpen(false); };
 addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("navopen")) { sideOpen(false); $("fab").focus(); } });
 addEventListener("hashchange", () => setTimeout(drawSide));
 setTimeout(drawSide);
