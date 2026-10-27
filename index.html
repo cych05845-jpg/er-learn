@@ -1292,6 +1292,7 @@ body.lcfull .wrap{zoom:1}
 .tmtop em{font-style:normal;font-weight:900;color:#A86F10;text-align:center}.tmtop span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 32% 28%,#fff,color-mix(in oklab,var(--tc) 60%,#fff) 50%,var(--tc));font-size:14px}
 .tmtop b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tmtop i{font-style:normal;color:var(--ink-2);font-size:12.5px;white-space:nowrap}
 .tmlinks{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.tmlinks a{flex:1 1 auto;text-align:center;text-decoration:none;font-weight:700;font-size:13.5px;padding:7px 10px;border-radius:999px;border:1.5px solid color-mix(in oklab,#E0A526 40%,var(--line));color:var(--ink);background:var(--surface)}
+.pethouse{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;text-decoration:none;color:var(--ink);background:linear-gradient(120deg,color-mix(in oklab,var(--pc,#3B5BA9) 16%,var(--surface)),var(--surface));border:1.5px solid color-mix(in oklab,var(--pc,#3B5BA9) 35%,var(--line));border-radius:18px;padding:10px 14px;margin-bottom:12px}.pethouse>span:first-child{font-size:28px}.pethouse b{display:block}.pethouse small{color:var(--ink-2);font-size:12.5px}.pethouse em{font-style:normal;font-weight:800;color:var(--pc,#3B5BA9);white-space:nowrap}
 .petcard{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:14px;align-items:center;text-decoration:none;color:var(--ink);background:linear-gradient(135deg,color-mix(in oklab,var(--pc,#3B5BA9) 12%,var(--surface)),var(--surface));border:1.5px solid color-mix(in oklab,var(--pc,#3B5BA9) 30%,var(--line));border-radius:22px;padding:12px 16px}
 .petcard .pcart{width:96px}.petcard b{font-size:17px}.petcard .go{font-weight:800;color:var(--pc,#3B5BA9);white-space:nowrap}
 .petcard.adopt span{display:block;color:var(--ink-2);font-size:13.5px;margin-top:2px}
@@ -1691,7 +1692,7 @@ function home(){
     <a class="qbanner" href="#quest"><div class="ill" style="width:52px;height:52px;background:rgba(255,255,255,.92)">${img("map")}</div><div><b>急診成長地圖</b><span>新進 → 兒科 → 急救區 → 檢傷 → Leader，一站一站往上</span></div><span class="go">看我的地圖</span></a></div>
     <aside class="homr"><div class="sec-h"><h2>公告</h2><span class="row" style="gap:14px">${canAnnounce() ? `<a href="#bmanage">＋ 發公告</a>` : ""}<a href="#news">全部公告 ›</a></span></div>
     ${newsHTML(sortedNews().slice(0, 3))}
-    <section class="qlinks"><h3>常用入口</h3>${[["#team", "fireext", "團隊擬真演練", "多人連線急救、000 火災"], ["#special", "police", "特殊教學", "院內代號、暴力、毒化災"], ["#pgy", "pgy", "PGY 新人專區", `已完成 ${pg.done} / ${pg.total}`], ["#badges", "works", "我的勳章", "闖關與每日成就"]].map(x => `<a href="${x[0]}"><span class="qi">${img(x[1])}</span><span><b>${x[2]}</b><small>${x[3]}</small></span><i aria-hidden="true">›</i></a>`).join("")}</section></aside></div>
+    <section class="qlinks"><h3>常用入口</h3>${[["#team", "fireext", "團隊擬真演練", "多人連線急救、000 火災"], ["#special", "police", "特殊教學", "院內代號、暴力、毒化災"], ["#pgy", "pgy", "PGY 新人專區", `已完成 ${pg.done} / ${pg.total}`], ["#badges", "works", "我的勳章", "闖關與每日成就"], [PET_URL, "house", "寵物小屋", "養寵物、換裝、看任務"]].map(x => `<a href="${x[0]}"><span class="qi">${img(x[1])}</span><span><b>${x[2]}</b><small>${x[3]}</small></span><i aria-hidden="true">›</i></a>`).join("")}</section></aside></div>
     <div class="sec-h"><h2>學習區（依年資）</h2></div>
     <div class="zones">${ZONES.map(([id, n, s, a, c, live, yr]) => `<button class="zone ${live ? "" : "soon"}" style="--zz:var(${c})" ${live ? `data-z="${id}"` : 'aria-disabled="true"'}>
       <div><span class="yr">${yr}</span><b>${n}</b><span>${s}</span>${ZONE_Q[id] ? (q => `<div class="zp${q.n === q.tot ? " full" : ""}"><small>${q.n === q.tot ? "全部過關" : q.n ? "闖關進度" : "還沒開始"}<em>${q.n} / ${q.tot}</em></small><div class="zbar"><i style="width:${q.n / q.tot * 100}%"></i></div></div>`)(qProg(ZONE_Q[id])) : ""}<div class="st">${live ? (ZONE_Q[id] && qProg(ZONE_Q[id]).n ? "繼續學習" : "開始學習") : "建置中"}</div></div><div class="ill">${img(a)}</div></button>`).join("")}</div>
@@ -1875,6 +1876,7 @@ const PET_SAY = ["今天也一起加油吧！", "你學會一件事，我就長�
 const PET_HUNGRY = ["我聞到飼料的味道了！", "可以餵我嗎？", "肚子咕嚕咕嚕…"];
 
 /* ---------- 首頁小卡 ---------- */
+const PET_URL = "https://cych05845-jpg.github.io/er-pet/";
 function petCard(){
   const S = petState();
   if (!S) return `<a class="petcard adopt" href="#pet"><div class="pcart">${petSVG("bear", 0)}</div><div><b>領養你的急診夥伴</b><span>闖一關得一份飼料、達成每日目標得一瓶水，養牠長大成為 Leader！</span></div><span class="go">去領養 →</span></a>`;
@@ -1900,6 +1902,7 @@ function petPage(){
   if (!S) return petAdopt();
   const sp = PET_SP[S.P.sp], nx = S.gate ? S.gate.xp : S.xp, dex = petDex(S), today = dayKey(), aff = Math.min(5, S.P.aff || 0);
   v.innerHTML = `<div class="petwrap" style="--pc:${sp.c}">
+    <a class="pethouse" href="${PET_URL}"><span aria-hidden="true">🏠</span><span><b>進入寵物小屋</b><small>換裝、任務、圖鑑、紀錄都在這裡・和這裡的寵物是同一隻</small></span><em>前往 ›</em></a>
     <section class="pethero"><div class="petstage" id="petTap" role="button" tabindex="0" aria-label="摸摸牠">${petArt(S.P.sp, S.stage)}<div class="petbub" id="petBub" hidden></div></div>
       <div class="petinfo"><div class="pih"><h2>${esc(S.P.name || sp.n)}</h2><button class="mini" id="petRename">改名</button></div>
         <div class="pitag"><span class="pclv">Lv.${S.lv}</span><b>${PET_SPstage(S.P.sp, S.stage)}</b><small>${esc(sp.n)}・${esc(sp.st[S.stage])}</small></div>
