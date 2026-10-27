@@ -1279,6 +1279,19 @@ body.lcfull .wrap{zoom:1}
 
 /* ---------- 我的寵物 ---------- */
 .petsvg,.petimg{width:100%;height:auto;display:block}
+.tmcard{border-radius:22px;border:1.5px solid color-mix(in oklab,#E0A526 35%,var(--line));background:linear-gradient(135deg,color-mix(in oklab,#E0A526 12%,var(--surface)),var(--surface) 60%);padding:12px 16px;margin-top:12px}
+.tmhead{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;text-decoration:none;color:var(--ink)}
+.tmorb{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:24px;background:radial-gradient(circle at 32% 28%,#fff8d6,#F2C14E 45%,#B9801A);box-shadow:inset -3px -4px 8px rgba(0,0,0,.18),0 4px 10px rgba(185,128,26,.35)}
+.tmhead small{display:block;color:var(--ink-2);font-size:12.5px}.tmhead b{font-size:17px}.tmhead .go{font-weight:800;color:#A86F10;white-space:nowrap}
+.tmhint{margin:8px 0 0;color:var(--ink-2);font-size:13.5px}
+.tmmine{display:flex;gap:12px;align-items:center;margin-top:10px;padding:8px 10px;border-radius:14px;background:color-mix(in oklab,#E0A526 14%,var(--surface))}
+.tmbig{font-weight:900;font-size:18px;white-space:nowrap}.tmmine b{display:block}.tmmine small{color:var(--ink-2);font-size:12.5px}
+.tmtop{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+.tmtop li{display:grid;grid-template-columns:22px 28px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:14px;padding:3px 6px;border-radius:10px}
+.tmtop li.me{background:color-mix(in oklab,#E0A526 18%,transparent);outline:1.5px solid #E0A526}
+.tmtop em{font-style:normal;font-weight:900;color:#A86F10;text-align:center}.tmtop span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 32% 28%,#fff,color-mix(in oklab,var(--tc) 60%,#fff) 50%,var(--tc));font-size:14px}
+.tmtop b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tmtop i{font-style:normal;color:var(--ink-2);font-size:12.5px;white-space:nowrap}
+.tmlinks{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.tmlinks a{flex:1 1 auto;text-align:center;text-decoration:none;font-weight:700;font-size:13.5px;padding:7px 10px;border-radius:999px;border:1.5px solid color-mix(in oklab,#E0A526 40%,var(--line));color:var(--ink);background:var(--surface)}
 .petcard{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:14px;align-items:center;text-decoration:none;color:var(--ink);background:linear-gradient(135deg,color-mix(in oklab,var(--pc,#3B5BA9) 12%,var(--surface)),var(--surface));border:1.5px solid color-mix(in oklab,var(--pc,#3B5BA9) 30%,var(--line));border-radius:22px;padding:12px 16px}
 .petcard .pcart{width:96px}.petcard b{font-size:17px}.petcard .go{font-weight:800;color:var(--pc,#3B5BA9);white-space:nowrap}
 .petcard.adopt span{display:block;color:var(--ink-2);font-size:13.5px;margin-top:2px}
@@ -1674,6 +1687,7 @@ function home(){
     <section class="hello"><div><span class="hi-eyebrow"><i class="pulse" aria-hidden="true"></i>${greet()}<time>${hiDate()}</time></span><h2>${ME ? esc(given(ME.name)) + "，" : ""}今天想練哪一區？</h2><p>依你輪到的工作區域學習，一站一站往上。${cheer()}</p></div>${img("hospital")}</section>
     ${todayCard()}
     ${petCard()}
+    ${teamCard()}
     <a class="qbanner" href="#quest"><div class="ill" style="width:52px;height:52px;background:rgba(255,255,255,.92)">${img("map")}</div><div><b>急診成長地圖</b><span>新進 → 兒科 → 急救區 → 檢傷 → Leader，一站一站往上</span></div><span class="go">看我的地圖</span></a></div>
     <aside class="homr"><div class="sec-h"><h2>公告</h2><span class="row" style="gap:14px">${canAnnounce() ? `<a href="#bmanage">＋ 發公告</a>` : ""}<a href="#news">全部公告 ›</a></span></div>
     ${newsHTML(sortedNews().slice(0, 3))}
@@ -1692,6 +1706,38 @@ function home(){
     </div>
     <p class="foot">本站為急診部教育訓練之用，非正式醫療紀錄，也不取代臨床判斷。插圖 OpenMoji（CC BY-SA 4.0）。</p>`;
   $("view").onclick = e => { const b = e.target.closest("[data-z]"); if (b) go(b.dataset.z); };
+  teamFill();
+}
+/* ---------- 首頁：團隊賽卡片（排行榜／我的隊伍，資料來自後端，5 分鐘快取） ---------- */
+const TC_STORY = ["春節守夜", "梅雨與腸病毒", "夏日熱浪", "寒冬守護戰"];
+const tcSeason = () => { const d = new Date(Date.now() + 8 * 36e5); return { y: d.getUTCFullYear(), q: Math.floor(d.getUTCMonth() / 3) + 1 }; };
+let TC_CACHE = null;
+function teamCard(){
+  const ss = tcSeason();
+  return `<section class="tmcard"><a class="tmhead" href="${SIM_URL}#lb"><span class="tmorb" aria-hidden="true">🏆</span><span><small>團隊賽・${ss.y} Q${ss.q}</small><b>${TC_STORY[ss.q - 1]}</b></span><span class="go">看排行榜 ›</span></a>
+    <div class="tmbody" id="tmBody"><p class="tmhint">組一支固定隊（Leader級＋檢傷級＋急救區級保底），一起闖正式教案、點亮守護燈。</p></div>
+    <div class="tmlinks"><a href="${SIM_URL}#team">我的隊伍</a><a href="${SIM_URL}#lb">賽季排行榜</a><a href="${SIM_URL}">開始演練</a></div></section>`;
+}
+async function teamFill(){
+  const el = () => $("tmBody"); if (!el() || !BK_API()) return;
+  if (!TC_CACHE || Date.now() - TC_CACHE.at > 3e5) {
+    const tok = ACC && ACC.token && ACC.token();
+    const [b, m] = await Promise.all([bkApi("gameBoard", {}), tok ? bkApi("gameMe", {}) : Promise.resolve(null)]);
+    if (!b || !b.ok) return; TC_CACHE = { at: Date.now(), b, m: m && m.ok ? m : null };
+  }
+  const box = el(); if (!box) return;
+  const T = (TC_CACHE.b.teams || []).filter(t => t.games), my = TC_CACHE.m && TC_CACHE.m.team;
+  const row = (t, i) => `<li class="${my && t.id === my.id ? "me" : ""}"><em>${i + 1}</em><span style="--tc:${esc(t.color || "#3B5BA9")}">${esc(t.emoji || "⭐")}</span><b>${esc(t.name)}</b><i>${t.avg} 分・★${t.stars}</i></li>`;
+  let h = "";
+  if (my) {
+    const i = T.findIndex(t => t.id === my.id), t = T[i];
+    if (t) { const up = i > 0 ? T[i - 1] : null;
+      h = `<div class="tmmine"><span class="tmbig">${my.emoji} 第 ${i + 1} 名</span><span><b>${esc(my.name)}</b><small>${t.avg} 分・★${t.stars}・已打 ${t.games} 場${up ? `・再 ${Math.max(1, up.avg - t.avg + 1)} 分就超越 ${esc(up.emoji)} ${esc(up.name)}` : "・目前領先全院！"}</small></span></div>`; }
+    else h = `<div class="tmmine"><span class="tmbig">${my.emoji}</span><span><b>${esc(my.name)}</b><small>${my.ok ? "陣容合格，這季還沒打計分場，去闖一場正式教案吧！" : "陣容還差：" + esc((my.miss || []).join("、")) + "，補齊才能計分"}</small></span></div>`;
+  } else if (TC_CACHE.m) h = `<p class="tmhint">你還沒有隊伍。去「我的隊伍」建隊或加入同事的隊。</p>`;
+  if (T.length) h += `<ol class="tmtop">${T.slice(0, 3).map(row).join("")}</ol>`;
+  else if (!h) h = `<p class="tmhint">這一季還沒有隊伍上榜，第一名等你來拿！</p>`;
+  box.innerHTML = h;
 }
 function news(){
   setBar("公告", "課程、作業與學習站更新", "home", "--z-leader");
@@ -1758,21 +1804,43 @@ const PET_DRAW = {
     <circle cx="100" cy="88" r="48" fill="#FFFBF4" ${pS}/><path d="M54 80 Q60 44 96 42 Q86 66 58 96Z" fill="#F0A04B"/><path d="M146 80 Q140 44 106 42 Q118 66 142 96Z" fill="#2b2b30"/>
     ${pEyes(88, o.sleep)}<path d="M95 102 h10 l-5 6z" fill="#F3A0B0"/><path d="M100 108 v3 M92 112 q4 4 8 0 q4 4 8 0" fill="none" stroke="#3a2a20" stroke-width="2.4" stroke-linecap="round"/><path d="M60 104 h-18 M60 110 h-16 M140 104 h18 M140 110 h16" stroke="#bbb" stroke-width="1.6"/>${pBlush(106)}`
 };
-/* 各時期配件：成長期領巾、進階期護理帽＋急救包、Leader 期背心＋大聲公＋光芒 */
+/* 各時期配件：成長期領巾＋聽診器、進階期急診手術帽＋急救包、Leader 期背心＋大聲公＋光芒（男女都適用） */
 const PET_ACC = {
   scarf: c => `<path d="M64 126 Q100 146 136 126 L134 138 Q100 156 66 138Z" fill="${c}" ${pS}/><path d="M118 136 l10 18 -12 -4z" fill="${c}" ${pS} stroke-linejoin="round"/>`,
-  cap: () => `<path d="M60 52 Q100 22 140 52 L134 64 Q100 46 66 64Z" fill="#fff" ${pS}/><rect x="92" y="34" width="16" height="16" rx="3" fill="#fff" stroke="${POL}" stroke-width="2"/><path d="M100 37 v10 M95 42 h10" stroke="#E5484D" stroke-width="3.2"/>`,
+  cap: () => `<path d="M56 62 Q56 24 100 22 Q144 24 144 62 Q100 50 56 62Z" fill="#2A9D8F" ${pS}/><path d="M56 62 Q100 48 144 62 L142 70 Q100 58 58 70Z" fill="#23867A" ${pS}/>${[[74, 40], [96, 32], [120, 38], [86, 50], [110, 48], [132, 52]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.2" fill="#BFEDE6"/>`).join("")}<text x="100" y="47" font-size="13" font-weight="900" text-anchor="middle" fill="#ffffff" font-family="Arial,sans-serif">ER</text>`,
+  steth: () => `<path d="M76 128 Q72 156 92 162 Q108 166 112 150" fill="none" stroke="#5A6B7A" stroke-width="4" stroke-linecap="round"/><path d="M124 128 Q128 150 116 156" fill="none" stroke="#5A6B7A" stroke-width="4" stroke-linecap="round"/><circle cx="113" cy="149" r="7" fill="#C9D3DB" ${pS}/><circle cx="113" cy="149" r="3" fill="#8A99A6"/>`,
   kit: () => `<rect x="138" y="140" width="38" height="30" rx="6" fill="#E5484D" ${pS}/><rect x="150" y="134" width="14" height="8" rx="3" fill="none" stroke="${POL}" stroke-width="3"/><path d="M157 147 v16 M149 155 h16" stroke="#fff" stroke-width="4"/>`,
   vest: () => `<path d="M64 128 Q100 146 136 128 L138 172 Q100 184 62 172Z" fill="#FF8A1F" opacity=".95" ${pS}/><path d="M64 152 Q100 166 136 152" stroke="#FFF36B" stroke-width="6" fill="none"/>`,
   horn: () => `<g transform="rotate(-24 40 140)"><path d="M24 132 L52 122 L52 154 L24 144Z" fill="#F5F5F5" ${pS} stroke-linejoin="round"/><rect x="16" y="132" width="10" height="12" rx="2" fill="#6650C0" stroke="${POL}" stroke-width="2"/><path d="M58 126 q8 12 0 24" fill="none" stroke="#6650C0" stroke-width="3" stroke-linecap="round"/></g>`
 };
-function petSVG(sp, stage, opt = {}){
+/* ---------- 3D 立體感：把平面色塊換成球面漸層（左上亮、右下暗）＋柔和外框＋高光＋落影 ---------- */
+const SH3 = { n: 0 };
+function hexMix(h, t, k){ const p = x => parseInt(x, 16), a = [p(h.slice(1, 3)), p(h.slice(3, 5)), p(h.slice(5, 7))], b = t === "w" ? [255, 255, 255] : [20, 12, 8];
+  return "#" + a.map((v, i) => Math.round(v + (b[i] - v) * k).toString(16).padStart(2, "0")).join(""); }
+function to3D(svg){
+  const id = "s" + (++SH3.n), defs = {}, big = /^#[0-9a-fA-F]{6}$/;
+  let out = svg.replace(/fill="(#[0-9a-fA-F]{6})"/g, (m, c) => { const k = c.toLowerCase(); if (k === "#000000" || k === "#111111" || k === "#ffffff") return m;
+    const g = `${id}${k.slice(1)}`; defs[g] = `<radialGradient id="${g}" cx="38%" cy="30%" r="78%"><stop offset="0" stop-color="${hexMix(k, "w", .42)}"/><stop offset=".5" stop-color="${k}"/><stop offset="1" stop-color="${hexMix(k, "b", .38)}"/></radialGradient>`; return `fill="url(#${g})"`; });
+  out = out.replace(/stroke="#3a2a20" stroke-width="3"/g, 'stroke="#3a2a20" stroke-opacity=".28" stroke-width="2"').replace(/stroke="#3a2a20" stroke-width="2(\.5)?"/g, 'stroke="#3a2a20" stroke-opacity=".3" stroke-width="1.6"');
+  /* 眼睛的大高光 */
+  out = out.replace(/<circle cx="([\d.]+)" cy="([\d.]+)" r="(2\.[0-9]+|2)" fill="#fff"\/>/g, (m, x, y) => `<circle cx="${x}" cy="${y}" r="3.6" fill="#fff"/><circle cx="${+x - 4}" cy="${+y + 5}" r="1.4" fill="#fff" opacity=".8"/>`);
+  const extra = `<filter id="${id}f" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#3a2a20" flood-opacity=".22"/></filter>
+    <radialGradient id="${id}h" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff" stop-opacity=".65"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>`;
+  out = out.replace(/(<svg[^>]*>)/, `$1<defs>${Object.values(defs).join("")}${extra}</defs>`);
+  /* 整隻加落影；頭頂左上加一塊柔光 */
+  out = out.replace(/<g transform="translate\(100 (\d+)\) scale\(([\d.]+)\) translate\(-100 -(\d+)\)">/, (m) => m.replace("<g ", `<g filter="url(#${id}f)" `));
+  out = out.replace(/<\/svg>$/, `<ellipse cx="80" cy="58" rx="24" ry="14" fill="url(#${id}h)" opacity=".55" transform="rotate(-20 80 58)"/></svg>`);
+  return out;
+}
+
+function petSVG(sp, stage, opt = {}){ return to3D(petSVG0(sp, stage, opt)); }
+function petSVG0(sp, stage, opt = {}){
   const D = PET_DRAW[sp] || PET_DRAW.bear, c = (PET_SP[sp] || PET_SP.bear).c;
   if (stage <= 0) return `<svg viewBox="0 0 200 210" class="petsvg" role="img" aria-label="${PET_SP[sp].n}・幼年期"><ellipse cx="100" cy="196" rx="70" ry="8" fill="#000" opacity=".1"/>
     <g transform="translate(100 128) scale(.78) translate(-100 -100)">${D({ sleep: !opt.awake, tails: 1 })}</g>
     <path d="M24 156 Q100 126 176 156 L168 198 Q100 212 32 198Z" fill="#A9D3F5" ${pS}/><path d="M34 166 Q100 142 166 166" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="6 7"/>
     ${opt.awake ? "" : `<text x="150" y="70" font-size="22" fill="#7a8a9a">z</text><text x="164" y="52" font-size="15" fill="#7a8a9a">z</text>`}</svg>`;
-  const acc = stage === 1 ? [PET_ACC.scarf(c)] : stage === 2 ? [PET_ACC.scarf(c), PET_ACC.cap(), PET_ACC.kit()] : [PET_ACC.vest(), PET_ACC.cap(), PET_ACC.horn(), PET_ACC.kit()];
+  const acc = stage === 1 ? [PET_ACC.scarf(c), PET_ACC.steth()] : stage === 2 ? [PET_ACC.scarf(c), PET_ACC.steth(), PET_ACC.cap(), PET_ACC.kit()] : [PET_ACC.vest(), PET_ACC.steth(), PET_ACC.cap(), PET_ACC.horn(), PET_ACC.kit()];
   const sc = [.8, .86, .93, 1][stage], glow = stage === 3;
   return `<svg viewBox="0 0 200 210" class="petsvg" role="img" aria-label="${PET_SP[sp].n}・${PET_STAGE[stage]}">${glow ? `<defs><radialGradient id="pg${sp}"><stop offset="0" stop-color="#FFE9A8" stop-opacity=".95"/><stop offset="1" stop-color="#FFE9A8" stop-opacity="0"/></radialGradient></defs><circle cx="100" cy="110" r="98" fill="url(#pg${sp})"/>` : ""}
     <ellipse cx="100" cy="194" rx="54" ry="7" fill="#000" opacity=".12"/>
@@ -1883,6 +1951,8 @@ function petEvolve(){
 const SYNC = { tm: 0, busy: 0, pulled: 0, skip: 0 };
 const syncUser = () => ME || (ACC && ACC.cachedUser && ACC.cachedUser());
 function hubAll(){ const o = {}; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith("ed-hub:")) { try { o[k.slice(7)] = JSON.parse(localStorage.getItem(k)); } catch (e) {} } } } catch (e) {} return o; }
+/* 上傳時附上各區闖關進度摘要（寵物網站用來判斷進化條件） */
+function hubPack(){ const o = hubAll(); try { o.__zones = {}; Object.keys(QUESTS).forEach(z => { const q = qProgZ(z); o.__zones[z] = { n: q.n, tot: q.tot, name: ZONE_NAME[z] || QUESTS[z].name }; }); o.__at = Date.now(); } catch (e) {} return o; }
 function hubMerge(k, a, b){
   if (a === undefined || a === null) return b; if (b === undefined || b === null) return a;
   const obj = x => x && typeof x === "object" && !Array.isArray(x);
@@ -1900,7 +1970,7 @@ async function syncPull(){
     const r = await bkApi("progGet", {}); if (!r || !r.ok) return;
     const cloud = r.data ? JSON.parse(r.data) : {}, local = hubAll(), keys = new Set([...Object.keys(cloud), ...Object.keys(local)]);
     let changed = false; SYNC.skip = 1;
-    keys.forEach(k => { const m = hubMerge(k, local[k], cloud[k]); if (JSON.stringify(m) !== JSON.stringify(local[k])) { store.set(k, m); changed = true; } });
+    keys.forEach(k => { if (k.startsWith("__")) return; const m = hubMerge(k, local[k], cloud[k]); if (JSON.stringify(m) !== JSON.stringify(local[k])) { store.set(k, m); changed = true; } });
     SYNC.skip = 0; SYNC.pulled = 1;
     if (changed && typeof render === "function") { try { render(); } catch (e) {} }
     if (JSON.stringify(cloud) !== JSON.stringify(hubAll())) syncPush(true);
@@ -1908,10 +1978,10 @@ async function syncPull(){
 }
 function syncPush(now){
   if (!BK_API() || !syncUser() || !SYNC.pulled) return;
-  clearTimeout(SYNC.tm); SYNC.tm = setTimeout(async () => { const r = await bkApi("progPut", { data: JSON.stringify(hubAll()) }); if (r && !r.ok && r.error) console.warn("進度同步失敗", r.error); }, now ? 50 : 6000);
+  clearTimeout(SYNC.tm); SYNC.tm = setTimeout(async () => { const r = await bkApi("progPut", { data: JSON.stringify(hubPack()) }); if (r && !r.ok && r.error) console.warn("進度同步失敗", r.error); }, now ? 50 : 6000);
 }
 (() => { const set0 = store.set; store.set = (k, v) => { set0.call(store, k, v); if (!SYNC.skip) syncPush(); }; })();
-addEventListener("pagehide", () => { if (SYNC.tm && navigator.sendBeacon && BK_API() && syncUser() && SYNC.pulled) { clearTimeout(SYNC.tm); const t = ACC && ACC.token && ACC.token(); try { navigator.sendBeacon(BK_API(), new Blob([JSON.stringify({ action: "progPut", token: t, data: JSON.stringify(hubAll()) })], { type: "text/plain" })); } catch (e) {} } });
+addEventListener("pagehide", () => { if (SYNC.tm && navigator.sendBeacon && BK_API() && syncUser() && SYNC.pulled) { clearTimeout(SYNC.tm); const t = ACC && ACC.token && ACC.token(); try { navigator.sendBeacon(BK_API(), new Blob([JSON.stringify({ action: "progPut", token: t, data: JSON.stringify(hubPack()) })], { type: "text/plain" })); } catch (e) {} } });
 
 /* ---------- 我的帳號 ---------- */
 const bkBanner = b => `<a class="qbanner" href="#bk-${b}" style="--zz:var(${BOOKS[b].color});margin-bottom:12px"><div class="ill" style="width:52px;height:52px;background:rgba(255,255,255,.92)">${img("record")}</div><div><b>線上正式手冊</b><span>登入後由指導員評值、記實習時數，最後護理長會談簽核，可列印 PDF</span></div><span class="go">開啟</span></a>`;
