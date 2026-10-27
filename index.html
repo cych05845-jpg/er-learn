@@ -1712,29 +1712,33 @@ function home(){
 /* ---------- 首頁：團隊賽卡片（排行榜／我的隊伍，資料來自後端，5 分鐘快取） ---------- */
 const TC_STORY = ["春節守夜", "梅雨與腸病毒", "夏日熱浪", "寒冬守護戰"];
 const tcSeason = () => { const d = new Date(Date.now() + 8 * 36e5); return { y: d.getUTCFullYear(), q: Math.floor(d.getUTCMonth() / 3) + 1 }; };
-let TC_CACHE = null;
+let TC_CACHE = (() => { try { const o = JSON.parse(localStorage.getItem("ed-hub:tc") || "null"); return o ? Object.assign(o, { at: 0 }) : null; } catch (e) { return null; } })();
 function teamCard(){
   const ss = tcSeason();
   return `<section class="tmcard"><a class="tmhead" href="${SIM_URL}#lb"><span class="tmorb" aria-hidden="true">🏆</span><span><small>團隊賽・${ss.y} Q${ss.q}</small><b>${TC_STORY[ss.q - 1]}</b></span><span class="go">看排行榜 ›</span></a>
-    <div class="tmbody" id="tmBody"><p class="tmhint">組一支固定隊（Leader級＋檢傷級＋急救區級保底），一起闖正式教案、點亮守護燈。</p></div>
+    <div class="tmbody" id="tmBody"><p class="tmhint">組一支固定隊（Leader級＋檢傷級＋急救區級保底）。初級 1,000、中級 2,000、高級 4,000、地獄級 8,000 積分，挑戰越難分越高！</p></div>
     <div class="tmlinks"><a href="${SIM_URL}#team">我的隊伍</a><a href="${SIM_URL}#lb">賽季排行榜</a><a href="${SIM_URL}">開始演練</a></div></section>`;
 }
 async function teamFill(){
   const el = () => $("tmBody"); if (!el() || !BK_API()) return;
+  if (TC_CACHE) tcRender();   // 先顯示上次的資料
   if (!TC_CACHE || Date.now() - TC_CACHE.at > 3e5) {
     const tok = ACC && ACC.token && ACC.token();
     const [b, m] = await Promise.all([bkApi("gameBoard", {}), tok ? bkApi("gameMe", {}) : Promise.resolve(null)]);
-    if (!b || !b.ok) return; TC_CACHE = { at: Date.now(), b, m: m && m.ok ? m : null };
+    if (!b || !b.ok) return; TC_CACHE = { at: Date.now(), b, m: m && m.ok ? m : null }; try { localStorage.setItem("ed-hub:tc", JSON.stringify(TC_CACHE)); } catch (e) {}
   }
-  const box = el(); if (!box) return;
+  tcRender();
+}
+function tcRender(){
+  const box = $("tmBody"); if (!box || !TC_CACHE) return;
   const T = (TC_CACHE.b.teams || []).filter(t => t.games), my = TC_CACHE.m && TC_CACHE.m.team;
-  const row = (t, i) => `<li class="${my && t.id === my.id ? "me" : ""}"><em>${i + 1}</em><span style="--tc:${esc(t.color || "#3B5BA9")}">${esc(t.emoji || "⭐")}</span><b>${esc(t.name)}</b><i>${t.avg} 分・★${t.stars}</i></li>`;
+  const row = (t, i) => `<li class="${my && t.id === my.id ? "me" : ""}"><em>${i + 1}</em><span style="--tc:${esc(t.color || "#3B5BA9")}">${esc(t.emoji || "⭐")}</span><b>${esc(t.name)}</b><i>${t.avg.toLocaleString()} 積分</i></li>`;
   let h = "";
   if (my) {
     const i = T.findIndex(t => t.id === my.id), t = T[i];
     if (t) { const up = i > 0 ? T[i - 1] : null;
-      h = `<div class="tmmine"><span class="tmbig">${my.emoji} 第 ${i + 1} 名</span><span><b>${esc(my.name)}</b><small>${t.avg} 分・★${t.stars}・已打 ${t.games} 場${up ? `・再 ${Math.max(1, up.avg - t.avg + 1)} 分就超越 ${esc(up.emoji)} ${esc(up.name)}` : "・目前領先全院！"}</small></span></div>`; }
-    else h = `<div class="tmmine"><span class="tmbig">${my.emoji}</span><span><b>${esc(my.name)}</b><small>${my.ok ? "陣容合格，這季還沒打計分場，去闖一場正式教案吧！" : "陣容還差：" + esc((my.miss || []).join("、")) + "，補齊才能計分"}</small></span></div>`;
+      h = `<div class="tmmine"><span class="tmbig">${my.emoji} 第 ${i + 1} 名</span><span><b>${esc(my.name)}</b><small>${t.avg.toLocaleString()} 積分・攻略 ${Object.keys(t.best || {}).length} 題${up ? `・再 ${Math.max(1, up.avg - t.avg + 1).toLocaleString()} 積分就超越 ${esc(up.emoji)} ${esc(up.name)}` : "・目前領先全院！"}</small></span></div>`; }
+    else h = `<div class="tmmine"><span class="tmbig">${my.emoji}</span><span><b>${esc(my.name)}</b><small>${my.ok ? "陣容合格，這季還沒打計分場：選個難度挑戰一題吧！" : "陣容還差：" + esc((my.miss || []).join("、")) + "，補齊才能計分"}</small></span></div>`;
   } else if (TC_CACHE.m) h = `<p class="tmhint">你還沒有隊伍。去「我的隊伍」建隊或加入同事的隊。</p>`;
   if (T.length) h += `<ol class="tmtop">${T.slice(0, 3).map(row).join("")}</ol>`;
   else if (!h) h = `<p class="tmhint">這一季還沒有隊伍上榜，第一名等你來拿！</p>`;
