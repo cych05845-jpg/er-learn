@@ -35,11 +35,11 @@ footer .box:nth-child(1){border-top:4px solid var(--t0)} footer .box:nth-child(2
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media (max-width:600px){header{padding:14px 16px!important}header h1{font-size:24px}header .lead{font-size:13px;line-height:1.5}}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.6;max-width:1180px;margin:0 auto;
+@media (max-width:600px){header{padding:14px 16px!important}header h1{font-size:24px}header .lead{font-size:14.5px;line-height:1.5}}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16.5px;line-height:1.65;max-width:1180px;margin:0 auto;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.25}
-h1{font-size:clamp(26px,3.4vw,38px)} h2{font-size:20px} h3{font-size:16px}
+h1{font-size:clamp(28px,3.6vw,40px)} h2{font-size:22px} h3{font-size:18px}
 p{margin:0}
 button,textarea,input{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -51,54 +51,54 @@ header{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content
 .status b{width:9px;height:9px;border-radius:50%;background:var(--line);display:inline-block}
 .status.ok b{background:var(--p)}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:-1px}
-.tabs button{border:1px solid var(--line);background:var(--bg);border-radius:10px 10px 0 0;padding:10px 16px;display:flex;gap:8px;align-items:center}
+.tabs button{border:1px solid var(--line);background:var(--bg);border-radius:10px 10px 0 0;padding:12px 18px;display:flex;gap:8px;align-items:center;font-size:16.5px}
 .tabs button.on{background:var(--paper);border-bottom-color:var(--paper);font-weight:700;color:var(--ink)}
 .tabs button i{font-family:var(--mono);font-style:normal;font-size:11px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--ink);color:var(--bg);display:grid;place-items:center}
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:0 12px 12px 12px;padding:clamp(16px,2.5vw,28px);display:none;gap:18px;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr)}
 .panel.on{display:grid}
 @media (max-width:820px){.panel{grid-template-columns:1fr}}
 .panel>*{min-width:0}
-label.f{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:13px;color:var(--muted)}
-textarea{width:100%;min-height:150px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);resize:vertical;line-height:1.55}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px;color:var(--muted)}
+textarea{width:100%;min-height:150px;padding:12px 14px;font-size:16px;border:1px solid var(--line);border-radius:10px;background:var(--bg);resize:vertical;line-height:1.55}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
-.btn{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:9px 16px;font-weight:500}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:11px 18px;font-weight:600;font-size:16px}
 .btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .btn:disabled{opacity:.5;cursor:default}
-.chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted);margin-top:12px}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:15px;color:var(--muted);margin-top:12px}
 .chk input{margin-top:4px}
 .warn{display:none;background:var(--warn-soft);color:var(--warn);border-radius:8px;padding:8px 12px;font-size:13px;margin-top:8px}
 .warn.on{display:block}
 .out{display:flex;flex-direction:column;gap:12px}
-.out .ph{color:var(--muted);font-size:14px;border:1px dashed var(--line);border-radius:10px;padding:16px}
+.out .ph{color:var(--muted);font-size:16px;border:1px dashed var(--line);border-radius:10px;padding:16px}
 .pico{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))}
 .pico div{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg);border-top:5px solid var(--k)}
 .pico b.k{font-family:var(--mono);font-size:12px;color:var(--k);letter-spacing:.08em}
-.pico p{margin-top:4px;font-weight:500}
-.pico small{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
-.mono{font-family:var(--mono);font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;white-space:pre-wrap;word-break:break-word;overflow-x:auto}
+.pico p{margin-top:4px;font-weight:600;font-size:18px}
+.pico small{display:block;color:var(--muted);font-size:14px;margin-top:4px}
+.mono{font-family:var(--mono);font-size:14.5px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;white-space:pre-wrap;word-break:break-word;overflow-x:auto}
 .box{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg)}
 .box.ink{background:var(--ink-soft);border-color:transparent}
 .box h3{margin-bottom:6px}
 .links{display:flex;gap:8px;flex-wrap:wrap}
 .links a{text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:7px 12px;background:var(--paper);color:var(--ink);font-weight:500;font-size:14px}
-.stream{white-space:pre-wrap;line-height:1.75;font-size:16px}
-.sec{border-radius:12px;padding:14px 16px;border-left:6px solid var(--t,var(--ink));background:var(--ts,var(--ink-soft));font-size:15.5px;line-height:1.7;white-space:pre-wrap}
-.sec h4{margin:0 0 6px;font-size:16px;color:var(--t,var(--ink))}
+.stream{white-space:pre-wrap;line-height:1.75;font-size:17.5px}
+.sec{border-radius:12px;padding:16px 18px;border-left:6px solid var(--t,var(--ink));background:var(--ts,var(--ink-soft));font-size:17px;line-height:1.75;white-space:pre-wrap}
+.sec h4{margin:0 0 8px;font-size:19px;color:var(--t,var(--ink))}
 .sec.c1{--t:var(--t0);--ts:var(--t0-soft)} .sec.c2{--t:var(--t1);--ts:var(--t1-soft)} .sec.c3{--t:var(--t2);--ts:var(--t2-soft)} .sec.c4{--t:var(--accent);--ts:var(--accent-soft)} .sec.c5{--t:var(--ink);--ts:var(--ink-soft)}
 .chips2{display:flex;gap:8px;flex-wrap:wrap}
 .chips2 button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:8px 14px;font-weight:600}
 .chips2 button.best{border-color:var(--t1);color:var(--t1)}
-.ck{width:100%;border-collapse:collapse;font-size:14.5px} .ck th{background:var(--ink-soft);font-size:13px} .ck td,.ck th{border:1px solid var(--line);padding:8px;vertical-align:top}
-.ck td.q{min-width:180px;font-weight:600} .ck td.quote{color:var(--muted);font-size:13.5px;min-width:200px}
+.ck{width:100%;border-collapse:collapse;font-size:15.5px} .ck th{background:var(--ink-soft);font-size:14.5px} .ck td,.ck th{border:1px solid var(--line);padding:8px;vertical-align:top}
+.ck td.q{min-width:180px;font-weight:600} .ck td.quote{color:var(--muted);font-size:14.5px;min-width:200px}
 .ck .f-yes{color:var(--t0);font-weight:700} .ck .f-no{color:var(--warn);font-weight:700} .ck .f-part{color:var(--t1);font-weight:700}
 .ck select,.ck input{font:inherit;padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--fg);width:100%}
-.ev{width:100%;border-collapse:collapse;font-size:13.5px} .ev td,.ev th{border:1px solid var(--line);padding:6px 8px;vertical-align:top} .ev th{background:var(--t2-soft)}
+.ev{width:100%;border-collapse:collapse;font-size:15px} .ev td,.ev th{border:1px solid var(--line);padding:6px 8px;vertical-align:top} .ev th{background:var(--t2-soft)}
 .ev select{font:inherit;padding:4px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--fg)}
 .stream.thinking{color:var(--muted)}
 ul{margin:0;padding-left:1.2em} li{margin:3px 0}
 footer{margin-top:24px;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));font-size:13px;color:var(--muted)}
 footer .box{background:var(--paper)}
-.note{font-size:12.5px;color:var(--muted)}
+.note{font-size:14.5px;color:var(--muted)}
 details.adv summary{cursor:pointer;font-weight:700}
 details.box summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
 details.box summary::before{content:"▸";color:var(--muted);font-size:12px}
@@ -110,10 +110,10 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
 .dbs{display:grid;gap:10px}
 .dbs>div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper);display:grid;gap:6px;min-width:0}
 .dbs>div>b{font-size:15px;color:var(--ink)}
-.dbs .mono{font-size:12.5px}
+.dbs .mono{font-size:14px}
 .dbs .row{margin-top:2px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.chips span{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;background:var(--paper)}
+.chips span{font-family:var(--mono);font-size:13.5px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;background:var(--paper)}
 </style>
 
 <header>
@@ -261,13 +261,18 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
     <label class="f">貼上 Review 的結論、主要結果與 GRADE（或由步驟 3 一鍵帶入）
       <textarea id="q3" placeholder="例：Cochrane CD0xxxxx（search date 2025-03）。ECPR vs 傳統 CPR：存活出院 RR 1.12 (0.86–1.47) low certainty；良好神經學預後 RR 1.30 (0.95–1.78) low certainty…"></textarea>
     </label>
-    <label class="f" style="margin-top:10px">單位與情境（選填）
+    <label class="f" style="margin-top:10px">單位與情境
       <input id="unit" style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)" value="急診部，年就診約 8–9 萬人次">
     </label>
+    <div class="pico" style="margin-top:10px">
+      <label class="f">資源與可行性（人力、設備、成本、訓練）<input id="ctxRes" placeholder="例：有 ECMO 團隊但夜班人力不足；無專職 perfusionist" style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)"></label>
+      <label class="f">病人價值觀與接受度<input id="ctxVal" placeholder="例：家屬多重視神經學預後勝於單純存活" style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)"></label>
+      <label class="f">各 outcome 的 MID（最小重要差異）<input id="ctxMid" placeholder="例：存活出院絕對差 ≥2%；良好神經學預後 ≥3%（沒填 AI 會建議並標假設）" style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)"></label>
+    </div>
     <div class="warn" id="w3">偵測到疑似病人可識別資料。請移除後再送出。</div>
     <label class="chk"><input type="checkbox" id="c3"><span>我確認內容不含病人可識別資料。</span></label>
-    <div class="row"><button class="btn primary" id="go3">草擬作業流程與 QI 指標</button><button class="btn" id="stop3" hidden>停止</button><button class="btn" id="copy3" hidden>複製草稿</button><span class="note" id="n3"></span></div>
-    <details class="box" style="margin-top:14px"><summary><h3 style="display:inline">草稿會包含</h3></summary><div style="margin-top:8px"><ul><li>適用對象（= Review 的 P）、步驟（= I）</li><li>3 個可量化的 QI 指標（= O，優先選 GRADE ≥ moderate 者）</li><li>證據等級註記；low / very low 的項目標示「建議小規模試行」</li><li>可直接貼進 QCC 主題選定或 protocol 修訂提案的「證據依據」段落</li></ul></div></details>
+    <div class="row"><button class="btn primary" id="go3">① Core GRADE：證據到決策（EtD）</button><button class="btn" id="stop3" hidden>停止</button><button class="btn" id="copy3" hidden>複製草稿</button><span class="note" id="n3"></span></div>
+    <details class="box" style="margin-top:14px"><summary><h3 style="display:inline">這一步怎麼走（Core GRADE 第 6 篇：從確定性到建議）</h3></summary><div style="margin-top:8px"><ol><li><b>證據到決策（EtD）</b>：每個 outcome 的確定性、效果相對 MID 的大小、利弊平衡，再加上價值觀、資源、可行性、接受度、公平性，得出建議方向與強度（強烈／有條件）</li><li><b>你確認或修改建議強度</b>（下拉可改），AI 不替你定案</li><li><b>作業流程草稿</b>：每一條步驟標註建議強度與證據確定性；QI 指標只選確定性 ≥ 中等的 outcome；有條件建議的項目寫成「小規模試行＋監測」</li></ol><p class="note" style="margin-top:6px">強烈建議 = 幾乎所有充分知情的病人都會選；有條件建議 = 多數會選，但要依情境與病人偏好。</p></div></details>
   </div>
   <div class="out" id="o3"><div class="ph">草稿會逐字顯示在這裡。它是起點，不是定稿：請由單位主管與品管會審閱。</div></div>
 </section>
@@ -368,6 +373,7 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
       ${d.question_en?'<div class="box"><b>英文 PICO 問句</b><p>'+esc(d.question_en)+'</p></div>':''}
       ${one?`<div class="box ink"><h3>一鍵執行</h3><div class="mono" id="one">${esc(one)}</div><div class="row"><a class="btn primary" style="text-decoration:none" href="${clRun}" target="_blank" rel="noopener">在 Cochrane 執行這個搜尋式 ↗</a><button class="btn" id="cpO">複製一行版</button></div><p class="note" style="margin-top:6px">會帶著完整語法開啟 Cochrane 搜尋結果頁。若結果為 0，多半是 MeSH 詞拼法不符，請改用下方關鍵字版或到 MeSH 瀏覽器確認。</p></div>`:''}
       <div><b>Cochrane Search Manager 多行版（寫進報告用）</b><div class="mono" id="srch">${esc(d.search||'')}</div><div class="row"><button class="btn" id="cpS">複製多行版</button><button class="btn" id="cpQ">複製關鍵字：${esc(simple)}</button></div></div>
+      <div class="box" style="border-left:4px solid var(--t1)"><h3>到 Cochrane 驗證 AI 給的詞</h3><div class="links"><a href="https://www.cochranelibrary.com/en/advanced-search/mesh" target="_blank" rel="noopener">MeSH 瀏覽器：確認 ${esc((d.P||{}).mesh||'')}${(d.I||{}).mesh?' / '+esc(d.I.mesh):''} 存不存在 ↗</a><a href="https://www.cochranelibrary.com/en/advanced-search/search-manager" target="_blank" rel="noopener">Search manager：貼多行版 ↗</a><a href="https://www.cochranelibrary.com/en/advanced-search/pico" target="_blank" rel="noopener">PICO search：P 填 ${esc((d.P||{}).en||'')}、I 填 ${esc((d.I||{}).en||'')} ↗</a></div><p class="note" style="margin-top:6px">MeSH 詞找不到就是 AI 編的，改用它建議的同義詞或在瀏覽器裡挑正式詞。</p></div>
       <div class="links"><a href="${cl}" target="_blank" rel="noopener">只用關鍵字開 Cochrane ↗</a><a href="https://www.cochranelibrary.com/cca" target="_blank" rel="noopener">Clinical Answers ↗</a><a href="https://www.epistemonikos.org/en/search?q=${encodeURIComponent(simple)}" target="_blank" rel="noopener">Epistemonikos（其他 SR）↗</a></div>
       <div class="box"><h3>同一策略，三個資料庫的寫法</h3>
         <div class="dbs">
@@ -449,7 +455,7 @@ G. 最終確定性（高／中／低／極低）與 Core GRADE 式結論句：�
     $('go2').textContent=s?'辨認設計、分級，並列出可用的評讀工具':(fw()==='core'?'以 Core GRADE 判讀並翻成白話':'翻成白話並標示確定性');
   });
   // ---- SoF mode: stream, then split into colored sections
-  const HEAD=/^(?:[一二三四五六七八九十]+[、.．]|[A-G][.．、]|\d+[.．、]|跟主管報告版|跟部長報告版|結論|總結)/;
+  const HEAD=/^(?:[一二三四五六七八九十]+[、.．]|[A-G][.．、]|跟主管報告版|跟部長報告版|結論|總結)/;
   function renderBlocks(el,text){
     const lines=text.split('\n'); const secs=[]; let cur=null;
     for(const ln of lines){ if(HEAD.test(ln.trim())){cur={h:ln.trim(),b:[]};secs.push(cur)} else if(cur)cur.b.push(ln); else {cur={h:'',b:[ln]};secs.push(cur)} }
@@ -607,20 +613,77 @@ ${$('q2').value.trim().slice(0,40000)}`;
   $('q2').addEventListener('input',()=>{pendingImages=null});
   $('to4').onclick=()=>{
     $('q3').value=(flow.pico?'PICO：\n'+picoText()+'\n\n':'')+'步驟 3 判讀結果：\n'+(flow.appraisal||'')+'\n\n（請補上 Review 編號 CD0xxxxx 與 search date）';
+    if(!$('ctxMid').value.trim()&&$('mid').value.trim())$('ctxMid').value=$('mid').value.trim();
     goTab(2); renderHandoff();
   };
   renderHandoff();
-  streamer(3,()=>`你是急重症護理品質管理專家。根據以下證據摘要${flow.pico?'與 PICO（P 對應適用對象、I 對應作業步驟、O 對應監測指標）':''}，為「${$('unit').value.trim()||'臨床單位'}」草擬一份作業流程提案，繁體中文，結構如下：
-一、證據依據（引用來源、search date、各 outcome 的 GRADE；缺的寫「待補」，不可捏造）
-二、適用對象（對應 Review 的 P，列出納入與排除條件）
-三、作業步驟（對應 I，條列、可執行、標明角色）
-四、監測指標（3 個可量化 QI 指標：定義、分子分母、資料來源；優先選 GRADE 為 moderate 以上的 outcome）
-五、證據強度註記（low / very low 的項目明確標示「建議小規模試行並監測」）
-六、下一步（送審單位、需要的訓練、檢討週期）
-嚴禁加入證據中沒有的數字；避免醫療建議以外的空話。
+  // ---- Step 4: A) Core GRADE evidence-to-decision  B) protocol built on the confirmed recommendation
+  const ctx=()=>`單位與情境：${$('unit').value.trim()||'未填'}\n資源與可行性：${$('ctxRes').value.trim()||'未填'}\n病人價值觀與接受度：${$('ctxVal').value.trim()||'未填'}\nMID：${$('ctxMid').value.trim()||'未填（請建議並標示「假設值」）'}`;
+  const P_ETD=()=>`你是熟悉 Core GRADE（Guyatt 等，BMJ 2025；第 6 篇：從證據確定性到建議）的實證方法學者。根據以下證據摘要${flow.pico?'與 PICO':''}與單位情境，完成「證據到決策（Evidence to Decision）」。只回覆一個 JSON 物件：
+{"outcomes":[{"name":"outcome","effect":"效果量與信賴區間（照摘要抄，沒有寫「未提供」）","certainty":"高／中／低／極低","vs_mid":"相對於 MID：很可能有重要效果／很可能不重要／不確定","mid_used":"採用的 MID 與是否為假設值","weight":"對決策的權重：關鍵／重要／次要"}],
+ "balance":"利弊平衡一句：淨效益明確／可能有淨效益／不確定／可能有淨害",
+ "domains":{"values":"價值觀與偏好：一句","resources":"資源與成本：一句","feasibility":"可行性：一句","acceptability":"接受度：一句","equity":"公平性：一句"},
+ "recommendation":{"direction":"支持／反對","strength":"強烈／有條件","text":"一句 Core GRADE 式建議句，例：對於…，我們有條件建議…（低確定性證據）","rationale":"兩句以內：為何是這個強度（確定性、效果大小 vs MID、價值觀、資源哪一項決定了強度）"},
+ "would_change":"什麼新證據或情境改變會讓建議改變（一句）"}
+規則：確定性為低或極低時幾乎不應給強烈建議，除非符合 Core GRADE 的例外情境並說明；嚴禁補充摘要中沒有的數字；MID 未提供時給建議值並標「假設值」。
 
-證據摘要：
-${$('q3').value.trim().slice(0,12000)}`,'copy3');
+${flow.pico?'PICO：\n'+picoText()+'\n\n':''}證據摘要：
+${$('q3').value.trim().slice(0,12000)}
+
+${ctx()}`;
+  const P_PROTO=(etd,strength)=>`你是急重症護理品質管理專家。下面是已完成的 Core GRADE 證據到決策結果，使用者確認的建議強度為「${strength}」。請為「${$('unit').value.trim()||'臨床單位'}」草擬作業流程提案，繁體中文，結構固定如下：
+一、建議句（照 EtD 的建議句，標明方向、強度、證據確定性）
+二、證據依據（來源、search date、各 outcome 的效果量與確定性；缺的寫「待補」，不可捏造）
+三、適用對象（對應 P，納入與排除條件）
+四、作業步驟（對應 I，條列、標明角色；每一條末尾標註【強烈建議／有條件建議】與該步驟所依據 outcome 的確定性；有條件建議的步驟寫成「小規模試行＋監測」並說明需與病人／家屬討論的點）
+五、監測指標（3 個可量化 QI 指標：定義、分子分母、資料來源、頻率；只選確定性 ≥ 中等的 outcome，不夠就寫「目前無確定性 ≥ 中等的 outcome，改以過程指標」）
+六、資源與可行性對策（對應 EtD 的 resources／feasibility）
+七、檢討與更新（何時重新檢視建議、哪些新證據會改變建議，對應 EtD 的 would_change）
+八、送審與揭露（送審單位、訓練、AI 協助揭露句）
+嚴禁加入證據中沒有的數字；避免空話。
+
+EtD 結果（JSON）：
+${JSON.stringify(etd)}
+
+${ctx()}`;
+  let ctl3=null, lastEtd=null; $('stop3').onclick=()=>ctl3?.abort();
+  function renderEtd(d){
+    lastEtd=d; const oc=Array.isArray(d.outcomes)?d.outcomes:[]; const r=d.recommendation||{}; const dm=d.domains||{};
+    const cert=c=>/高/.test(c)?'⊕⊕⊕⊕':/中/.test(c)?'⊕⊕⊕◯':/極低/.test(c)?'⊕◯◯◯':/低/.test(c)?'⊕⊕◯◯':'';
+    $('o3').innerHTML=`
+      <div class="sec c2"><h4>① 各 outcome：確定性與效果 vs MID</h4><div class="tw"><table class="ck"><tr><th>Outcome</th><th>效果量</th><th>確定性</th><th>相對 MID</th><th>MID</th><th>權重</th></tr>
+        ${oc.map(o=>`<tr><td class="q">${esc2(o.name)}</td><td>${esc2(o.effect)}</td><td><b>${esc2(o.certainty)}</b> <span class="sym">${cert(String(o.certainty||''))}</span></td><td>${esc2(o.vs_mid)}</td><td class="quote">${esc2(o.mid_used)}</td><td>${esc2(o.weight)}</td></tr>`).join('')}</table></div>
+        <p style="margin-top:8px"><b>利弊平衡：</b>${esc2(d.balance)}</p></div>
+      <div class="sec c3"><h4>② 其他決策面向</h4>• 價值觀與偏好：${esc2(dm.values)}\n• 資源與成本：${esc2(dm.resources)}\n• 可行性：${esc2(dm.feasibility)}\n• 接受度：${esc2(dm.acceptability)}\n• 公平性：${esc2(dm.equity)}</div>
+      <div class="sec c4"><h4>③ 建議（請確認或修改強度）</h4><p style="font-size:17px;font-weight:700">${esc2(r.text)}</p><p>${esc2(r.rationale)}</p>
+        <div class="row" style="margin-top:8px"><span class="note">方向</span><select id="recDir" style="font:inherit;padding:7px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--fg)"><option ${/反對/.test(r.direction||'')?'':'selected'}>支持</option><option ${/反對/.test(r.direction||'')?'selected':''}>反對</option></select>
+        <span class="note">強度</span><select id="recStr" style="font:inherit;padding:7px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--fg)"><option ${/強烈/.test(r.strength||'')?'selected':''}>強烈</option><option ${/強烈/.test(r.strength||'')?'':'selected'}>有條件</option></select>
+        <button class="btn primary" id="goProto">② 依此建議草擬作業流程</button></div>
+        <p class="note" style="margin-top:6px">會改變建議的情況：${esc2(d.would_change)}</p></div>
+      <div id="protoOut"></div>`;
+    $('goProto').onclick=runProto;
+  }
+  async function runEtd(){
+    if(!ready(3,$('q3'),$('c3'),$('w3')))return;
+    ctl3=new AbortController(); $('go3').disabled=true;$('stop3').hidden=false;$('copy3').hidden=true;
+    $('o3').innerHTML='<div class="stream thinking">思考中…（證據到決策）</div>'; showOut(3);
+    try{ const d=await sample.json(P_ETD(),{signal:ctl3.signal,modelTier:'default'}); renderEtd(d); }
+    catch(e){ $('o3').innerHTML='<div class="ph">'+(e.code==='cancelled'?'已停止。':'沒有產生結果，請再按一次。')+(e.text?'<div class="mono" style="margin-top:8px">'+esc(e.text.slice(0,1500))+'</div>':'')+'</div>'; fail(e,$('n3')); }
+    finally{$('go3').disabled=false;$('stop3').hidden=true}
+  }
+  async function runProto(){
+    if(!lastEtd)return; const strength=$('recDir').value+'、'+$('recStr').value+'建議';
+    lastEtd.recommendation=Object.assign({},lastEtd.recommendation,{direction:$('recDir').value,strength:$('recStr').value});
+    ctl3=new AbortController(); $('goProto').disabled=true;$('stop3').hidden=false;
+    const out=$('protoOut'); out.innerHTML='<div class="stream thinking">思考中…（草擬作業流程）</div>'; const el=out.firstChild; el.scrollIntoView({block:'start'});
+    try{
+      const {text,truncated}=await sample(P_PROTO(lastEtd,strength),{signal:ctl3.signal,modelTier:'default',onText:({text})=>{el.classList.remove('thinking');el.textContent=text}});
+      renderBlocks(el,text); if(truncated)$('n3').textContent='內容被截斷。';
+      $('copy3').hidden=false; $('copy3').onclick=e=>copy(text,e.target);
+    }catch(e){ el.classList.remove('thinking'); el.textContent=e.text||(e.code==='cancelled'?'已停止。':''); fail(e,$('n3')); }
+    finally{$('goProto').disabled=false;$('stop3').hidden=true}
+  }
+  $('go3').onclick=runEtd;
 
   // connect
   (async()=>{

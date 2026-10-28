@@ -1,5 +1,5 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Cochrane × AI 全院課程</title><style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-</head><body>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Cochrane × AI 全院課程</title><style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: one slide at a time; a 5-segment rail (實證五步驟 Ask→Acquire→Appraise→Apply→Assess) drives the progress bar and each slide's color. */
@@ -166,7 +166,7 @@ table{border-collapse:collapse;width:100%;font-size:14px} th,td{border:1px solid
   <div class="rail">
     <span class="s1"><i id="r1"></i><em>1 Ask</em></span><span class="s2"><i id="r2"></i><em>2 Acquire</em></span><span class="s3"><i id="r3"></i><em>3 Appraise</em></span><span class="s4"><i id="r4"></i><em>4 Apply</em></span><span class="s5"><i id="r5"></i><em>5 Assess</em></span>
   </div>
-  <span class="counter" id="counter">1 / 23</span>
+  <span class="counter" id="counter">1 / 24</span>
 </div>
 
 <div class="stage" id="stage">
@@ -268,7 +268,8 @@ table{border-collapse:collapse;width:100%;font-size:14px} th,td{border:1px solid
     <div><h3>Medical terms (MeSH)：先找正式詞，再送進去</h3><p>打一個詞，瀏覽器顯示它在 MeSH 樹上的位置、上下層、定義與同義詞（Entry terms）。勾 <b>Explode all trees</b> 會連下層詞一起找；可加 qualifier（如 /therapy）。右邊「Send to Search manager」把這個詞變成一行。已更新 MeSH 2026。適合：確認 AI 建議的 MeSH 詞到底存不存在。</p></div>
     <div><h3>PICO search：直接指定「這個詞是 P、那個詞是 I」</h3><p>Cochrane 把每篇 Review 的 P/I/C/O 人工標註好了，你填的不是關鍵字而是 PICO 角色，所以不會抓到「只是在討論段提到 ECMO」的文章。命中少但準。<span class="pill new">2026</span> 搜尋結果和 Abstract 底下都看得到 PICO 標籤，點一下就能找同主題 Review。</p></div>
   </div>
-  <div class="box ink"><h3>一句話記法</h3><p>探路用 Search；寫報告用 Search manager；確認詞用 MeSH；想一次找對用 PICO search。</p></div>
+  <div class="box ink"><h3>一句話記法</h3><p>探路用 Search；寫報告用 Search manager；確認詞用 MeSH；想一次找對用 PICO search。</p>
+    <div class="nav" style="margin-top:8px"><a class="btn" style="text-decoration:none" href="https://www.cochranelibrary.com/en/advanced-search" target="_blank" rel="noopener">開 Search ↗</a><a class="btn" style="text-decoration:none" href="https://www.cochranelibrary.com/en/advanced-search/search-manager" target="_blank" rel="noopener">開 Search manager ↗</a><a class="btn" style="text-decoration:none" href="https://www.cochranelibrary.com/en/advanced-search/mesh" target="_blank" rel="noopener">開 MeSH 瀏覽器 ↗</a><a class="btn" style="text-decoration:none" href="https://www.cochranelibrary.com/en/advanced-search/pico" target="_blank" rel="noopener">開 PICO search ↗</a></div></div>
   <p class="speaker"><b>講者備註：</b>現場把四個分頁各點一次，每個停 30 秒，讓大家看到長相就好；深入操作留到七步驟那頁。</p>
 </section>
 
@@ -285,8 +286,29 @@ table{border-collapse:collapse;width:100%;font-size:14px} th,td{border:1px solid
     <tr><td><b>結果頁多給什麼</b></td><td>PICO 標籤、GRADE、Clinical Answer 連結、撤稿標籤</td><td>只有列表，評讀自己做</td><td>只有列表</td></tr>
     <tr><td><b>弱點</b></td><td>幾乎只有介入型問題；觀察性、診斷、質性研究少</td><td>品質要自己過濾</td><td>需授權，介面較複雜</td></tr>
     <tr><td><b>一鍵執行</b></td><td>可以（網址帶搜尋式）</td><td>可以（網址帶搜尋式）</td><td>不行，複製貼上</td></tr>
+    <tr><td><b>結果 0 篇代表</b></td><td>常態：沒人做過這題的 SR → 去 Epistemonikos 或下大海</td><td>多半是搜尋式寫錯</td><td>多半是 Emtree 詞不對</td></tr>
+    <tr><td><b>結果 300 篇代表</b></td><td>搜尋式太寬，先拿掉泛詞</td><td>算精準</td><td>算精準</td></tr>
   </table></div>
   <div class="box ink"><h3>順序</h3><p>前景問題先查 Cochrane（小水池，已評讀）；沒有，再去 PubMed、Embase 撈（大海，步驟 3 自己做）；Cochrane 沒做但別人做過的 SR，去 Epistemonikos。</p></div>
+</section>
+
+<!-- 8c same question four methods -->
+<section class="slide s2">
+  <span class="tag"><b></b>Step 2 · 實作 · 同一題，四種搜法，四種答案</span>
+  <h2>現場做給你看：方法不同，結果數差很多</h2>
+  <p class="lead">題目固定：到院前心跳停止成人，ECPR vs 傳統 CPR。四種方法依序跑，把命中數填進表格（點格子可以打字）。</p>
+  <div class="tw"><table>
+    <tr><th style="width:190px">方法</th><th>輸入什麼</th><th style="width:110px">Reviews</th><th style="width:110px">Trials</th><th>通常會看到</th></tr>
+    <tr><td><b>① 搜尋列 關鍵字</b></td><td><span class="kbd">ECPR cardiac arrest</span></td><td contenteditable="true" class="kbd"> </td><td contenteditable="true" class="kbd"> </td><td>最寬。只打縮寫會漏掉寫全名的文章；加 "extracorporeal" 數字會變</td></tr>
+    <tr><td><b>② 搜尋列 一行語法</b></td><td><span class="kbd">([mh "Heart Arrest"] OR (cardiac arrest):ti,ab,kw) AND (extracorporeal*):ti,ab,kw</span></td><td contenteditable="true" class="kbd"> </td><td contenteditable="true" class="kbd"> </td><td>MeSH＋自由詞並列，比①準也比①全；AI 工具一鍵執行的就是這個</td></tr>
+    <tr><td><b>③ Search manager</b><br><a class="lnk" href="https://www.cochranelibrary.com/en/advanced-search/search-manager" target="_blank" rel="noopener" style="font-size:13px">開 ↗</a></td><td>同②拆成 #1–#5，每行看命中數</td><td contenteditable="true" class="kbd"> </td><td contenteditable="true" class="kbd"> </td><td>結果數跟②一樣，但看得到「哪一行把結果拉寬／縮窄」，報告截這張圖</td></tr>
+    <tr><td><b>④ PICO search</b><br><a class="lnk" href="https://www.cochranelibrary.com/en/advanced-search/pico" target="_blank" rel="noopener" style="font-size:13px">開 ↗</a></td><td>P = Out-of-hospital cardiac arrest　I = Extracorporeal CPR</td><td contenteditable="true" class="kbd"> </td><td class="note">（只找 Reviews）</td><td>最少、最準。只抓 PICO 標籤相符的 Review，不會抓到討論段提到 ECMO 的文章</td></tr>
+  </table></div>
+  <div class="cols">
+    <div class="box ink"><h3>要讓台下看到的三件事</h3><ul><li>①→② 數字變了：因為 Cochrane 沒有自動對應，MeSH 要自己加</li><li>③ 每一行的命中數：哪一行是「大水管」</li><li>④ 數字最小但每一篇都對題：PICO 標籤的價值</li></ul></div>
+    <div class="box acc"><h3>一句話</h3><p>結果數不是越多越好，是「對題的比例」越高越好。報告裡寫的是③，床邊用的是④，探路用①，AI 幫你做②。</p></div>
+  </div>
+  <p class="speaker"><b>講者備註：</b>課前先跑一次把四組數字記下來備用，現場網路慢時直接唸。Trials 的差異通常比 Reviews 更明顯。</p>
 </section>
 
 <!-- 9 Step2 hands-on steps -->
@@ -425,7 +447,7 @@ table{border-collapse:collapse;width:100%;font-size:14px} th,td{border:1px solid
   <div class="cols">
     <div class="box"><h3>三個問題</h3><ul><li>我們的病人跟 Review 的 P 像不像？（年齡、嚴重度、場域）</li><li>我們做得到 I 嗎？（人力、設備、訓練、成本）</li><li>病人與家屬在意的 O 是什麼？</li></ul></div>
     <div class="box ink"><h3>一篇 Review 可以變成三樣東西</h3><ul><li><b>單位 Protocol</b>：P → 適用對象；I → 步驟；O → 監測指標；註記 GRADE 與 search date</li><li><b>QCC / 醫品圈題目</b>：「證據強但院內執行率低」是最好的題目</li><li><b>研究 / 醫品獎</b>：GRADE low 的 outcome、Gap Map 的空格</li></ul></div>
-    <div class="box acc"><h3>AI 工具第 4 步</h3><p>把步驟 3 的結果一鍵帶過去，草擬：證據依據、適用對象（P）、步驟（I）、3 個 QI 指標（O）、證據強度註記。它是起點，不是定稿，由單位主管與品管會審。</p></div>
+    <div class="box acc"><h3>AI 工具第 4 步：先 EtD，再 protocol</h3><p>Core GRADE 第 6 篇的「證據到決策」：每個 outcome 的確定性與效果 vs MID → 利弊平衡 → 價值觀、資源、可行性、接受度、公平性 → 建議方向與強度（強烈／有條件）。<b>強度由你確認</b>，再草擬流程，每一步標註強度與確定性。</p></div>
   </div>
 </section>
 
