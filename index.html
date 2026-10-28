@@ -1361,6 +1361,7 @@ body.lcfull .wrap{zoom:1}
 <!-- 嘉基急診帳號中心：登入、權限、公告後端 -->
 <script src="https://cych05845-jpg.github.io/ed-account/account-sdk.js"></script>
 <script src="config.js"></script>
+<script src="ask.js"></script>
 <script>
 /* ---------- visual components ---------- */
 const T = (l, txt) => `<span class="tag lvbg${l}">${txt || l + " 級"}</span>`;
@@ -1592,8 +1593,8 @@ function render(){
   }
   const v = $("view"); v.classList.remove("view"); void v.offsetWidth; v.classList.add("view");
   v.onclick = v.oninput = v.onchange = null;
-  const m = route.match(/^(lc|lw|lq|ta|tqs|lqs|rqs|rt|cqs|oqs|pqs|sqs|wt|ws|tm|jt|drill|bk|bkm|bks|bkp)-(.+)$/);
-  if (m) ({ lc, lw: x => lw(+x), lq: x => lq(+x), ta: x => ta(+x), tqs: x => qstage("t", +x), lqs: x => qstage("l", +x), rqs: x => qstage("r", +x), rt: rtopic, cqs: x => qstage("c", +x), oqs: x => qstage("o", +x), pqs: x => qstage("p", +x), sqs: x => qstage("s", +x), wt: wtopic, ws: sortPage, tm: tmPage, jt: jtopic, drill: drillRoute, bk: bkMine, bkm: bkMentor, bks: bkSignPage, bkp: bkPrint })[m[1]](m[2]);
+  const m = route.match(/^(lk|lc|lw|lq|ta|tqs|lqs|rqs|rt|cqs|oqs|pqs|sqs|wt|ws|tm|jt|drill|bk|bkm|bks|bkp)-(.+)$/);
+  if (m) ({ lk: x => { const c = CPL[x]; if (c) { L.attr = c.attr; L.cpl = x; L.cat = null; L.q = ""; L.sel.clear(); } lookup(); if (c) setTimeout(() => { const el = $("lkCri"); if (el) el.scrollIntoView({ block: "start" }); }, 80); }, lc, lw: x => lw(+x), lq: x => lq(+x), ta: x => ta(+x), tqs: x => qstage("t", +x), lqs: x => qstage("l", +x), rqs: x => qstage("r", +x), rt: rtopic, cqs: x => qstage("c", +x), oqs: x => qstage("o", +x), pqs: x => qstage("p", +x), sqs: x => qstage("s", +x), wt: wtopic, ws: sortPage, tm: tmPage, jt: jtopic, drill: drillRoute, bk: bkMine, bkm: bkMentor, bks: bkSignPage, bkp: bkPrint })[m[1]](m[2]);
   else ({ room, team, codes, special: () => wardHub("s"), squest: () => qmap("s"), vsign, treat: () => wardHub("c"), obs: () => wardHub("o"), peds: () => wardHub("p"), cquest: () => qmap("c"), oquest: () => qmap("o"), pquest: () => qmap("p"), otier, home, triage, lookup, practice: pHome, ref, handout, news, pgy, works, games, rush, flash, leader, lmap, lcourse, lbook, ldrill, tassess: () => assessHub("t"), lassess: () => assessHub("l"), tbook, taudit, texam: () => quiz("t"), lsjt: () => quiz("l"), tnote: () => noteView("t"), lnote: () => noteView("l"), llog, quest, tquest: () => qmap("t"), lquest: () => qmap("l"), rquest: () => qmap("r"), resus: resusHub, rbook, rdrug, acct, bmanage, badges, pet: petPage, drill: () => drillRoute(""), bkm: () => bkMentor("") }[route] || home)();
   const y = RESTORING ? (SCROLL[route] || 0) : 0; window.scrollTo(0, y); if (y) requestAnimationFrame(() => window.scrollTo(0, y));
 }
@@ -1686,6 +1687,7 @@ function home(){
   const pg = pgyProgress();
   $("view").innerHTML = `<div class="homtop"><div class="homl">
     <section class="hello"><div><span class="hi-eyebrow"><i class="pulse" aria-hidden="true"></i>${greet()}<time>${hiDate()}</time></span><h2>${ME ? esc(given(ME.name)) + "，" : ""}今天想練哪一區？</h2><p>依你輪到的工作區域學習，一站一站往上。${cheer()}</p></div>${img("hospital")}</section>
+    ${typeof askBarHTML === "function" ? askBarHTML() : ""}
     ${todayCard()}
     ${petCard()}
     ${teamCard()}
@@ -4013,7 +4015,7 @@ function navKey(r){
   if (p === "jt") { const x = JT_BY[m[2]]; return x ? WZ[x.z].home : "home"; }
   const map = { cquest: "treat", cqs: "treat", oquest: "obs", oqs: "obs", otier: "obs", pquest: "peds", pqs: "peds", squest: "special", sqs: "special", codes: "special", vsign: "special",
     rt: "resus", room: "resus", rqs: "resus", rquest: "resus", rbook: "resus", rdrug: "resus", tm: "team", ws: { c: "treat", o: "obs", p: "peds" }[m && m[2]] || "home",
-    tqs: "triage", tquest: "triage", ta: "triage", lc: "leader", lw: "leader", lq: "leader", lqs: "leader", lquest: "leader", rush: "games", flash: "games", drill: "team" };
+    tqs: "triage", tquest: "triage", ta: "triage", lk: "triage", lc: "leader", lw: "leader", lq: "leader", lqs: "leader", lquest: "leader", rush: "games", flash: "games", drill: "team" };
   if (map[p]) return map[p];
   if (TABS.triage.some(t => t[0] === r) || ["tbook", "taudit", "texam", "tnote", "tassess"].includes(r)) return "triage";
   if (TABS.leader.some(t => t[0] === r) || ["lsjt", "llog", "lnote", "lassess"].includes(r)) return "leader";
