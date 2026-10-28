@@ -113,6 +113,61 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
   <div class="status" id="status"><b></b>連線中</div>
 </header>
 
+
+<details id="keyBox" class="box" hidden style="margin:-4px 0 14px;padding:12px 14px;border-left:4px solid var(--accent)">
+  <summary style="cursor:pointer;font-weight:700">AI 設定：填入你自己的 API 金鑰 <span class="note" id="keyState"></span></summary>
+  <div class="row" style="margin-top:8px">
+    <select id="kProv" style="padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)">
+      <option value="openai">OpenAI</option><option value="anthropic">Anthropic（Claude）</option><option value="gemini">Google Gemini</option>
+    </select>
+    <input id="kModel" placeholder="模型名稱" style="padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:220px">
+    <input id="kKey" type="password" placeholder="貼上 API key" style="padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);flex:1;min-width:220px">
+    <button class="btn primary" id="kSave">儲存</button><button class="btn" id="kClear">清除</button>
+  </div>
+  <p class="note" style="margin-top:6px">金鑰只存在這台裝置的瀏覽器，不會上傳到任何伺服器；每次呼叫直接從瀏覽器送到該家 API，費用算在你的帳號。共用電腦用完請按「清除」。申請：OpenAI → platform.openai.com；Anthropic → console.anthropic.com；Gemini → aistudio.google.com。</p>
+</details>
+<script>
+// All AI calls go through the viewer's own API key (Claude's built-in runtime is used instead when the page runs inside claude.ai).
+(function(){
+  const $=id=>document.getElementById(id);
+  const DEF={openai:'gpt-4o-mini',anthropic:'claude-sonnet-5-5',gemini:'gemini-2.5-flash'};
+  const cfg=()=>{try{return JSON.parse(localStorage.getItem('ebmKey')||'null')}catch(e){return null}};
+  const parseJson=raw=>{const t=s=>{try{return JSON.parse(s)}catch(e){return null}};let v=t(raw);if(v==null){const m=raw.match(/```(?:json)?\s*([\s\S]*?)```/);if(m)v=t(m[1])}if(v==null){const a=raw.indexOf('{'),b=raw.lastIndexOf('}');if(a>=0&&b>a)v=t(raw.slice(a,b+1))}return v};
+  const toText=input=>typeof input==='string'?input:input.map(m=>m.content).join('\n\n');
+  function paint(){const c=cfg();$('keyState').textContent=c&&c.key?'　已設定：'+c.prov+' / '+c.model:'　尚未設定';$('keyBox').open=!(c&&c.key);if(c){$('kProv').value=c.prov;$('kModel').value=c.model;$('kKey').value=c.key}else{$('kModel').value=DEF[$('kProv').value]}window.dispatchEvent(new Event('ebmkey'))}
+  async function callApi(c,prompt,signal){
+    let r,body;
+    if(c.prov==='openai'){
+      r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',signal,headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.key},body:JSON.stringify({model:c.model,messages:[{role:'user',content:prompt}],temperature:0.2})});
+      body=await r.json(); if(!r.ok)throw new Error(body.error?.message||r.status); return body.choices?.[0]?.message?.content||'';
+    }
+    if(c.prov==='anthropic'){
+      r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',signal,headers:{'Content-Type':'application/json','x-api-key':c.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:c.model,max_tokens:4000,messages:[{role:'user',content:prompt}]})});
+      body=await r.json(); if(!r.ok)throw new Error(body.error?.message||r.status); return (body.content||[]).map(x=>x.text||'').join('');
+    }
+    r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(c.model)+':generateContent?key='+encodeURIComponent(c.key),{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
+    body=await r.json(); if(!r.ok)throw new Error(body.error?.message||r.status); return (body.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+  }
+  async function run(input,opts,wantJson){
+    const c=cfg(); if(!(c&&c.key)){$('keyBox').open=true;$('keyBox').scrollIntoView({block:'start'});throw{code:'no_key',message:'no key'}}
+    const prompt=(wantJson?'請只回覆一個 JSON 物件，不要加任何說明文字或 ``` 標記。\n\n':'')+toText(input);
+    opts?.onText?.({text:'（正在呼叫 '+c.prov+' / '+c.model+'…）',delta:''});
+    let raw; try{ raw=await callApi(c,prompt,opts?.signal) }catch(e){ if(e.name==='AbortError')throw{code:'cancelled',message:'cancelled'}; throw{code:'upstream_error',message:String(e.message||e)} }
+    if(!raw||!raw.trim())throw{code:'empty_completion',message:'empty'};
+    if(wantJson){const v=parseJson(raw); if(v==null)throw{code:'invalid_json',message:'no json',text:raw}; return v}
+    opts?.onText?.({text:raw,delta:raw}); return {text:raw,truncated:false,modelTierApplied:'default'};
+  }
+  $('kProv').onchange=()=>{$('kModel').value=DEF[$('kProv').value]};
+  $('kSave').onclick=()=>{const c={prov:$('kProv').value,model:$('kModel').value.trim()||DEF[$('kProv').value],key:$('kKey').value.trim()}; if(!c.key){$('keyState').textContent='　請先貼上 API key';return} try{localStorage.setItem('ebmKey',JSON.stringify(c))}catch(e){} paint()};
+  $('kClear').onclick=()=>{try{localStorage.removeItem('ebmKey')}catch(e){} $('kKey').value=''; paint()};
+  const sample=(input,opts)=>run(input,opts,false);
+  sample.json=(input,opts)=>run(input,opts,true);
+  sample.limits=async()=>({maxPromptBytes:262144});
+  sample.hasKey=()=>!!(cfg()&&cfg().key);
+  window.__byoSample=sample; paint();
+})();
+</script>
+
 <div class="tabs" id="tabs">
   <button class="on" data-t="0"><i>1·2</i>Ask + Acquire：拆 PICO、檢索</button>
   <button data-t="1"><i>3</i>Appraise：讀懂 SoF 表</button>
@@ -212,57 +267,7 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
 </footer>
 
 
-<div id="byo" hidden style="position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:grid;place-items:center;padding:16px">
-  <div style="background:var(--paper);color:var(--fg);border-radius:14px;max-width:760px;width:100%;max-height:92vh;overflow:auto;padding:18px;display:grid;gap:10px">
-    <h3 style="margin:0">用你自己的 AI 跑這一步</h3>
-    <p class="note" style="margin:0">1. 複製提示詞 → 2. 貼到你慣用的 AI → 3. 把 AI 的回答整段貼回下方 → 4. 套用。工具會接手後面的整理與銜接。</p>
-    <div class="mono" id="byoPrompt" style="max-height:220px;overflow:auto;font-size:12.5px"></div>
-    <div class="row" style="margin:0">
-      <button class="btn primary" id="byoCopy">複製提示詞</button>
-      <a class="btn" href="https://chatgpt.com/" target="_blank" rel="noopener" style="text-decoration:none">開 ChatGPT ↗</a>
-      <a class="btn" href="https://gemini.google.com/" target="_blank" rel="noopener" style="text-decoration:none">開 Gemini ↗</a>
-      <a class="btn" href="https://claude.ai/new" target="_blank" rel="noopener" style="text-decoration:none">開 Claude ↗</a>
-      <a class="btn" href="https://copilot.microsoft.com/" target="_blank" rel="noopener" style="text-decoration:none">開 Copilot ↗</a>
-    </div>
-    <label class="f">貼上 AI 的回答<textarea id="byoAnswer" style="min-height:140px" placeholder="把 AI 回覆的全文貼進來"></textarea></label>
-    <div class="row" style="margin:0"><button class="btn primary" id="byoApply">套用回答</button><button class="btn" id="byoCancel">取消</button><span class="note" id="byoNote"></span></div>
-  </div>
-</div>
-<script>
-// Bring-your-own-AI adapter: same interface as the Claude runtime's sample(), answered by the viewer pasting a reply.
-(function(){
-  const $=id=>document.getElementById(id);
-  let pending=null;
-  function ask(input,opts,wantJson){
-    const text=typeof input==='string'?input:input.map(m=>m.content).join('\n\n');
-    const prompt=(wantJson?'請只回覆一個 JSON 物件，不要加任何說明文字或 ``` 標記。\n\n':'')+text;
-    $('byoPrompt').textContent=prompt; $('byoAnswer').value=''; $('byoNote').textContent=''; $('byo').hidden=false;
-    return new Promise((resolve,reject)=>{
-      pending={resolve,reject,wantJson,opts};
-      opts?.signal?.addEventListener('abort',()=>{if(pending){$('byo').hidden=true;pending.reject({code:'cancelled',message:'cancelled'});pending=null}});
-    });
-  }
-  $('byoCopy').onclick=e=>{const t=$('byoPrompt').textContent;const done=()=>{e.target.textContent='已複製';setTimeout(()=>e.target.textContent='複製提示詞',1200)};
-    try{navigator.clipboard.writeText(t).then(done).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();done()})}catch(err){}};
-  $('byoCancel').onclick=()=>{if(pending){pending.reject({code:'cancelled',message:'cancelled'});pending=null}$('byo').hidden=true};
-  $('byoApply').onclick=()=>{
-    if(!pending)return; const raw=$('byoAnswer').value.trim(); if(!raw){$('byoNote').textContent='請先貼上回答。';return}
-    const p=pending;
-    if(p.wantJson){
-      let v=null; const tryParse=s=>{try{return JSON.parse(s)}catch(e){return null}};
-      v=tryParse(raw); if(v==null){const m=raw.match(/```(?:json)?\s*([\s\S]*?)```/);if(m)v=tryParse(m[1])}
-      if(v==null){const a=raw.indexOf('{'),b=raw.lastIndexOf('}');if(a>=0&&b>a)v=tryParse(raw.slice(a,b+1))}
-      if(v==null){$('byoNote').textContent='讀不到 JSON，請確認 AI 回的是 JSON 格式（可請它「只回 JSON」）。';return}
-      pending=null;$('byo').hidden=true;p.resolve(v);return;
-    }
-    pending=null;$('byo').hidden=true; p.opts?.onText?.({text:raw,delta:raw}); p.resolve({text:raw,truncated:false,modelTierApplied:'default'});
-  };
-  const sample=(input,opts)=>ask(input,opts,false);
-  sample.json=(input,opts)=>ask(input,opts,true);
-  sample.limits=async()=>({maxPromptBytes:262144});
-  window.__byoSample=sample;
-})();
-</script>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
@@ -289,7 +294,7 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
     function fb(){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}ta.remove();done()}};
   $('copyDisc').onclick=()=>copy($('disc').textContent,$('copyDisc'));
 
-  const errCopy={not_granted:'你尚未允許此頁使用 Claude，功能已停用。',sampling_disabled:'此帳號無法使用 Claude。',rate_limited:'呼叫太頻繁或額度已滿，請稍後再試。',session_expired:'請重新登入 claude.ai。',refused:'Claude 拒絕回答這個內容，請調整後再試。',invalid_json:'回覆格式不完整，請再按一次。',prompt_too_large:'內容太長，請只貼需要的段落。',empty_completion:'沒有產生內容，請簡化後再試。',upstream_error:'連線中斷，請再試一次。'};
+  const errCopy={no_key:'請先在上方「AI 設定」填入你的 API 金鑰。',not_granted:'你尚未允許此頁使用 Claude，功能已停用。',sampling_disabled:'此帳號無法使用 Claude。',rate_limited:'呼叫太頻繁或額度已滿，請稍後再試。',session_expired:'請重新登入 claude.ai。',refused:'Claude 拒絕回答這個內容，請調整後再試。',invalid_json:'回覆格式不完整，請再按一次。',prompt_too_large:'內容太長，請只貼需要的段落。',empty_completion:'沒有產生內容，請簡化後再試。',upstream_error:'API 呼叫失敗，請檢查金鑰、模型名稱或額度後再試。'};
   const hideCodes=new Set(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed']);
   function fail(e,note){ if(e.code==='cancelled')return; note.textContent=errCopy[e.code]||errCopy.upstream_error; if(hideCodes.has(e.code)){setStatus(false,' 未取得 Claude 使用權限');document.querySelectorAll('.btn.primary').forEach(b=>b.disabled=true)} }
   function ready(n,ta,chk,w){ if(!sample)return false; if(!guard(ta,w)){return false} if(!chk.checked){$('n'+n).textContent='請先勾選確認未含病人資料。';return false} if(!ta.value.trim()){$('n'+n).textContent='請先輸入內容。';return false} $('n'+n).textContent='';return true }
@@ -516,7 +521,7 @@ ${$('q3').value.trim().slice(0,12000)}`,'copy3');
   // connect
   (async()=>{
     try{ sample=(await window.claude?.use?.('sample'))||window.__byoSample }catch(e){ sample=null }
-    if(sample===window.__byoSample){ setStatus(true,' 自備 AI 模式：按下按鈕會給你提示詞，貼到你的 AI 再貼回來'); } else if(sample){ setStatus(true,' Claude 已就緒'); }
+    if(sample===window.__byoSample){ const up=()=>setStatus(sample.hasKey(), sample.hasKey()?' 使用你的 API 金鑰':' 請先在上方填入 API 金鑰'); up(); window.addEventListener('ebmkey',up); $('keyBox').hidden=false; } else if(sample){ setStatus(true,' Claude 已就緒'); $('keyBox').hidden=true; }
     else { setStatus(false,' 此頁需在 claude.ai 中開啟才能使用 AI 功能'); document.querySelectorAll('.btn.primary').forEach(b=>b.disabled=true); }
   })();
 })();
