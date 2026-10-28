@@ -1,0 +1,658 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Cochrane × AI 全院課程</title><style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one slide at a time; a 5-segment rail (實證五步驟 Ask→Acquire→Appraise→Apply→Assess) drives the progress bar and each slide's color. */
+:root{
+  --bg:#eef2f8; --paper:#ffffff; --fg:#161b2e; --muted:#5a6480; --line:#d5dbea;
+  --ink:#1b2a6b; --ink-soft:#e3e8fb; --accent:#ff6b3d; --accent-soft:#ffe4da;
+  --s1:#0f9d8a; --s1-soft:#d8f5ef; --s2:#2f6fe4; --s2-soft:#dde8ff; --s3:#b23fb0; --s3-soft:#f6ddf5; --s4:#e0771a; --s4-soft:#ffe9d2; --s5:#6b7a99; --s5-soft:#e6eaf3;
+  --good:#1f9d55; --warn:#e08a16; --bad:#d9453d;
+  --display:"Microsoft JhengHei","微軟正黑體","Noto Sans TC","PingFang TC",sans-serif; --body:"Microsoft JhengHei","微軟正黑體","Noto Sans TC","PingFang TC",sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1220; --paper:#181c2e; --fg:#eceef8; --muted:#a3abc8; --line:#2d3350;
+  --ink:#c7d1ff; --ink-soft:#232a52; --accent:#ff8a63; --accent-soft:#4a2416;
+  --s1:#3fd3bb; --s1-soft:#123f38; --s2:#7aa5ff; --s2-soft:#1a2b5c; --s3:#e07fdc; --s3-soft:#44194a; --s4:#ffa052; --s4-soft:#4a2c12; --s5:#a3b0cc; --s5-soft:#262d42;
+  --good:#5fd38c; --warn:#f0b24e; --bad:#ff7f78; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1220; --paper:#181c2e; --fg:#eceef8; --muted:#a3abc8; --line:#2d3350;
+  --ink:#c7d1ff; --ink-soft:#232a52; --accent:#ff8a63; --accent-soft:#4a2416;
+  --s1:#3fd3bb; --s1-soft:#123f38; --s2:#7aa5ff; --s2-soft:#1a2b5c; --s3:#e07fdc; --s3-soft:#44194a; --s4:#ffa052; --s4-soft:#4a2c12; --s5:#a3b0cc; --s5-soft:#262d42;
+  --good:#5fd38c; --warn:#f0b24e; --bad:#ff7f78; color-scheme:dark}
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.6;display:flex;flex-direction:column;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 10px;box-sizing:border-box}
+*{box-sizing:border-box}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.25;margin:0;font-weight:900}
+h1{font-size:clamp(28px,4.4vw,52px)} h2{font-size:clamp(22px,2.8vw,34px)} h3{font-size:clamp(16px,1.6vw,20px);font-weight:700}
+p{margin:0}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible,[tabindex]:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.top .eyebrow{letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--ink)}
+.rail{flex:1;min-width:220px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.rail span{height:18px;border-radius:4px;background:var(--line);position:relative;overflow:hidden;font-size:10px;line-height:18px;text-align:center;color:var(--muted);font-weight:700;letter-spacing:.04em}
+.rail span i{position:absolute;inset:0;width:0;background:var(--seg,var(--ink));transition:width .3s;opacity:.35}
+.rail span em{position:relative;font-style:normal}
+.counter{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+.stage{flex:1;min-height:0;position:relative;margin-top:10px;--seg:var(--ink);--soft:var(--ink-soft)}
+.slide{position:absolute;inset:0;background:linear-gradient(135deg,var(--soft) 0%,var(--paper) 38%);border:1px solid var(--line);border-top:8px solid var(--seg);border-radius:14px;padding:clamp(18px,3.2vw,44px);overflow:auto;display:none;flex-direction:column;gap:16px}
+.slide.on{display:flex}
+.slide .tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--seg)}
+.slide .tag b{width:10px;height:10px;border-radius:50%;background:var(--seg);display:inline-block}
+.slide h2{color:var(--seg)}
+.s1{--seg:var(--s1);--soft:var(--s1-soft)} .s2{--seg:var(--s2);--soft:var(--s2-soft)} .s3{--seg:var(--s3);--soft:var(--s3-soft)} .s4{--seg:var(--s4);--soft:var(--s4-soft)} .s5{--seg:var(--s5);--soft:var(--s5-soft)}
+.slide.cover{background:linear-gradient(120deg,var(--ink) 0%,#3a3fa8 55%,var(--accent) 140%);color:#fff;border-top-color:var(--accent)}
+.slide.cover .tag,.slide.cover .lead,.slide.cover .speaker{color:#e8ebff}
+.slide.cover h1,.slide.cover h2{color:#fff}
+.slide.cover .box{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3);color:#fff}
+.slide.cover .box.ink{background:rgba(255,255,255,.22);border-left-color:#fff}
+.slide.cover .kbd{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4)}
+.slide.cover .speaker b{color:#fff}
+.slide.end{background:linear-gradient(135deg,var(--accent-soft) 0%,var(--paper) 45%);border-top-color:var(--accent)}
+.slide.end h2{color:var(--accent)}
+.lead{font-size:clamp(15px,1.4vw,19px);max-width:62ch;color:var(--muted)}
+.cols{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.cols>*{min-width:0}
+.box{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--paper)}
+.box h3{margin-bottom:6px}
+.box.ink{background:var(--soft);border-color:transparent;border-left:4px solid var(--seg)}
+.box.acc{background:var(--accent-soft);border-color:transparent;border-left:4px solid var(--accent)}
+ul,ol{margin:0;padding-left:1.2em} li{margin:3px 0}
+.kbd{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:5px;padding:1px 6px;background:var(--bg)}
+.mono{font-family:var(--mono);font-size:13.5px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:8px 14px;font-weight:500}
+.btn.primary{background:var(--seg);color:var(--paper);border-color:var(--seg)}
+.btn.on{background:var(--accent);border-color:var(--accent);color:#1a1205}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--soft);color:var(--seg)}
+.pill.new{background:var(--accent-soft);color:#7a4f06}
+:root[data-theme="dark"] .pill.new,:root:not([data-theme="light"]) .pill.new{color:var(--accent)}
+.note{font-size:13px;color:var(--muted)}
+.speaker{margin-top:auto;border-top:1px dashed var(--line);padding-top:10px;font-size:13px;color:var(--muted)}
+.speaker b{color:var(--fg)}
+.bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;flex-wrap:wrap}
+.bottom .hint{font-size:12px;color:var(--muted)}
+.nav{display:flex;gap:8px;flex-wrap:wrap}
+.bottom .btn.primary{background:var(--ink);border-color:var(--ink)}
+a.lnk{color:var(--seg);font-weight:700;text-decoration:none;border-bottom:2px solid var(--seg)}
+
+/* 5A map */
+.five{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:10px}
+.five div{border-radius:12px;padding:14px;background:var(--paper);border:1px solid var(--line);border-top:6px solid var(--c)}
+.five div b.n{font-family:var(--mono);color:var(--c);font-size:12px;letter-spacing:.08em}
+.five div h3{margin:2px 0 6px;color:var(--c)}
+.five small{display:block;color:var(--muted);font-size:12.5px}
+.five .who{margin-top:8px;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;display:inline-block}
+.five .who.c{background:var(--accent-soft);color:#7a4f06} .five .who.y{background:var(--ink-soft);color:var(--ink)}
+:root[data-theme="dark"] .five .who.c,:root:not([data-theme="light"]) .five .who.c{color:var(--accent)}
+
+/* pyramid */
+.pyr{display:flex;flex-direction:column;align-items:center;gap:6px}
+.pyr button{border:0;border-radius:6px;padding:9px 12px;font-weight:500;color:var(--fg);transition:transform .15s}
+.pyr button.on{background:var(--accent)!important;color:#1a1205;transform:scale(1.04)}
+.pyr button:nth-child(1){width:34%;background:var(--s1-soft)} .pyr button:nth-child(2){width:48%;background:var(--s2-soft)} .pyr button:nth-child(3){width:62%;background:var(--ink-soft)} .pyr button:nth-child(4){width:76%;background:var(--s3-soft)} .pyr button:nth-child(5){width:90%;background:var(--accent-soft)}
+@media (max-width:600px){.pyr button{width:100%!important}}
+
+/* tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:var(--bg);border-radius:8px 8px 0 0;padding:8px 14px}
+.tabs button.on{background:var(--paper);border-bottom-color:var(--paper);font-weight:700;color:var(--seg);border-top:3px solid var(--seg)}
+.tabpane{border:1px solid var(--line);border-radius:0 10px 10px 10px;padding:16px;margin-top:-1px;background:var(--paper)}
+.tabpane>div{display:none} .tabpane>div.on{display:block}
+
+/* pico builder */
+.pico{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.pico label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;color:var(--muted)}
+.pico input{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--fg)}
+.pico label b{display:inline-block;width:26px;height:26px;border-radius:7px;color:#fff;text-align:center;line-height:26px;font-family:var(--mono)}
+
+/* poll */
+.poll{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.poll button{text-align:left;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--paper);position:relative;overflow:hidden}
+.poll button i{position:absolute;left:0;top:0;bottom:0;width:0;z-index:0;transition:width .4s;background:var(--s1-soft)}
+.poll button:nth-child(2) i{background:var(--s2-soft)} .poll button:nth-child(3) i{background:var(--s3-soft)} .poll button:nth-child(4) i{background:var(--s4-soft)} .poll button:nth-child(5) i{background:var(--accent-soft)}
+.poll button span{position:relative;z-index:1;display:flex;justify-content:space-between;gap:8px}
+
+/* quiz */
+.q{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:12px 14px;background:var(--paper)}
+.q p{font-weight:700;margin-bottom:8px}
+.q .opts{display:grid;gap:6px}
+.q .opts button{text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 12px}
+.q .opts button.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--paper))}
+.q .opts button.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--paper))}
+.q .exp{display:none;margin-top:8px;font-size:13.5px;color:var(--muted)} .q .exp.on{display:block}
+
+/* flip */
+.flip{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.flip .card{border:1px solid var(--line);border-top:4px solid var(--s3);border-radius:10px;padding:14px;background:var(--paper);cursor:pointer}
+.flip .card:nth-child(2){border-top-color:var(--s1)} .flip .card:nth-child(3){border-top-color:var(--s2)}
+.flip .card .back{display:none;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)} .flip .card.open .back{display:block}
+.flip .card .front{font-weight:700}
+
+/* steps */
+.steps{display:grid;gap:8px;counter-reset:s}
+.steps div{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);cursor:pointer}
+.steps div::before{counter-increment:s;content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--seg);color:var(--paper);font-family:var(--mono);display:grid;place-items:center;font-weight:500}
+.steps div.done{opacity:.55;text-decoration:line-through}
+.steps div.done::before{background:var(--good);content:"✓"}
+
+/* table */
+table{border-collapse:collapse;width:100%;font-size:14px} th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top} th{background:var(--soft)}
+.tw{overflow-x:auto}
+.sym{font-size:18px;letter-spacing:2px;color:var(--seg)}
+
+/* SoF reader */
+.sof{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.sof button{text-align:left;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--paper)}
+.sof button b{display:block;color:var(--seg);font-size:13px;margin-bottom:3px}
+.sof button.on{border-color:var(--seg);background:var(--soft)}
+
+/* timeline */
+.tl{display:grid;gap:10px}
+.tl div{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;border-left:3px solid var(--soft);padding-left:10px}
+.tl time{font-family:var(--mono);font-size:13px;color:var(--seg);font-weight:500}
+@media (max-width:520px){.tl div{grid-template-columns:1fr}}
+
+.timer{font-family:var(--mono);font-size:clamp(40px,7vw,80px);font-weight:500;font-variant-numeric:tabular-nums;color:var(--accent);line-height:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="top">
+  <span class="eyebrow">Cochrane × AI 全院教育訓練</span>
+  <div class="rail">
+    <span class="s1"><i id="r1"></i><em>1 Ask</em></span><span class="s2"><i id="r2"></i><em>2 Acquire</em></span><span class="s3"><i id="r3"></i><em>3 Appraise</em></span><span class="s4"><i id="r4"></i><em>4 Apply</em></span><span class="s5"><i id="r5"></i><em>5 Assess</em></span>
+  </div>
+  <span class="counter" id="counter">1 / 23</span>
+</div>
+
+<div class="stage" id="stage">
+
+<!-- 1 cover -->
+<section class="slide cover on">
+  <span class="tag"><b></b>開場</span>
+  <h1>實證五步驟 × Cochrane × AI<br>從臨床疑問到改變做法</h1>
+  <p class="lead">一堂照著實證五步驟走的課。步驟 1、2 自己做（會用 AI 幫忙），步驟 3 讓 Cochrane 替你做，步驟 4、5 帶回單位。</p>
+  <div class="cols">
+    <div class="box ink"><h3>你會帶走</h3><ul><li>一個可直接複製的 PICO 與 Cochrane 搜尋式</li><li>用 AI 工具在 3 分鐘內完成檢索</li><li>看懂 Cochrane 已經替你做好的「評讀」</li><li>把證據變成單位 protocol 與 QI 指標的方法</li></ul></div>
+    <div class="box"><h3>上課方式</h3><ul><li>每個步驟都有一個動手環節</li><li>鍵盤 <span class="kbd">←</span> <span class="kbd">→</span> 翻頁</li><li>課後保留此網頁與「EBM 證據助理」工具</li></ul></div>
+  </div>
+  <p class="speaker"><b>講者備註：</b>請大家先打開「EBM 證據助理」網頁（連結貼聊天室），第 1 次使用會跳出同意視窗，先按掉。</p>
+</section>
+
+<!-- 2 5A map -->
+<section class="slide">
+  <span class="tag"><b></b>課程地圖</span>
+  <h2>實證五步驟（5A）：哪些自己做、哪些 Cochrane 已經做好</h2>
+  <div class="five">
+    <div style="--c:var(--s1)"><b class="n">STEP 1</b><h3>Ask 提問</h3><small>把臨床疑問拆成 PICO</small><span class="who y">你做 · AI 幫</span></div>
+    <div style="--c:var(--s2)"><b class="n">STEP 2</b><h3>Acquire 檢索</h3><small>MeSH + 關鍵字，在 Cochrane 找到 Review / Clinical Answer</small><span class="who y">你做 · AI 幫</span></div>
+    <div style="--c:var(--s3)"><b class="n">STEP 3</b><h3>Appraise 評讀</h3><small>Risk of bias、GRADE、Summary of Findings</small><span class="who c">Cochrane 已做好，你學會讀</span></div>
+    <div style="--c:var(--s4)"><b class="n">STEP 4</b><h3>Apply 應用</h3><small>結合病人、單位情境，寫成 protocol</small><span class="who y">你做 · AI 幫起草</span></div>
+    <div style="--c:var(--s5)"><b class="n">STEP 5</b><h3>Assess 評值</h3><small>QI 指標、追蹤 Review 有沒有更新</small><span class="who y">單位品管</span></div>
+  </div>
+  <p class="lead">一般資料庫（PubMed）停在步驟 2，接下來要自己評讀；Cochrane 的每篇 Review 都已經做完步驟 3，所以今天我們可以直接走到步驟 4。</p>
+</section>
+
+<!-- 3 poll -->
+<section class="slide">
+  <span class="tag"><b></b>暖身投票</span>
+  <h2>你今天最想帶走什麼？</h2>
+  <p class="lead">點一下你的答案（本頁只統計這台裝置，講者可請大家舉手同步）。</p>
+  <div class="poll" id="poll">
+    <button data-k="a"><i></i><span>N 級報告 / 個案報告的文獻要怎麼快速找<em>0</em></span></button>
+    <button data-k="b"><i></i><span>我已經在用 ChatGPT，想知道怎麼用才安全<em>0</em></span></button>
+    <button data-k="c"><i></i><span>被問「為什麼要這樣做」時怎麼有依據地回答<em>0</em></span></button>
+    <button data-k="d"><i></i><span>想做研究 / 醫品獎，找題目<em>0</em></span></button>
+    <button data-k="e"><i></i><span>Cochrane 介面看不懂，想有人帶一次<em>0</em></span></button>
+  </div>
+  <p class="speaker"><b>講者備註：</b>依票數調整：a、e 多 → 步驟 2 多花時間；b 多 → 多講 AI 守則；c 多 → 步驟 3 的「三句話」多練；d 多 → Gap Map 多講。</p>
+</section>
+
+<!-- 5 Step1 Ask: PICO -->
+<section class="slide s1">
+  <span class="tag"><b></b>Step 1 · Ask 提問</span>
+  <h2>把「我覺得」變成可以回答的問題</h2>
+  <div class="cols">
+    <div class="box"><h3>背景問題 vs 前景問題</h3><ul><li><b>背景</b>：ECPR 是什麼？→ 教科書、UpToDate</li><li><b>前景</b>：ECPR 比傳統 CPR 存活率好嗎？→ Cochrane</li></ul><p class="note" style="margin-top:6px">今天只處理前景問題。</p></div>
+    <div class="box ink"><h3>PICO 四格</h3><ul><li><b>P</b> 族群：誰？什麼情境？</li><li><b>I</b> 介入：想做什麼？</li><li><b>C</b> 對照：跟什麼比？（常常是「現行做法」）</li><li><b>O</b> 結果：病人在意的結果，不是檢驗值</li></ul></div>
+    <div class="box acc"><h3>常見卡關</h3><ul><li>O 寫成「改善照護品質」→ 太模糊，改成「跌倒率」「存活出院」</li><li>C 空白 → 寫「常規照護」就好</li><li>一個問題塞三個 I → 拆成三題</li></ul></div>
+  </div>
+  <p class="speaker"><b>講者備註：</b>請台下用 30 秒，在便利貼寫下自己單位的一個前景問題，等等步驟 2 直接拿來用。</p>
+</section>
+
+<!-- 6 PICO builder -->
+<section class="slide s1">
+  <span class="tag"><b></b>Step 1 · 動手</span>
+  <h2>PICO 拆解器：填四格，長出搜尋式</h2>
+  <div class="pico">
+    <label><span><b style="background:var(--s1)">P</b> 族群 Population</span><input id="pP" value="out-of-hospital cardiac arrest"></label>
+    <label><span><b style="background:var(--s2)">I</b> 介入 Intervention</span><input id="pI" value="extracorporeal cardiopulmonary resuscitation"></label>
+    <label><span><b style="background:var(--s3)">C</b> 對照 Comparison</span><input id="pC" value="conventional CPR"></label>
+    <label><span><b style="background:var(--s4)">O</b> 結果 Outcome</span><input id="pO" value="survival with good neurological outcome"></label>
+  </div>
+  <div class="mono" id="picoOut"></div>
+  <div class="nav"><button class="btn primary" id="openCL">一鍵在 Cochrane 執行這個搜尋式 ↗</button><button class="btn" id="copyPico">複製搜尋式</button><button class="btn" id="copyPrompt">複製「請 AI 幫我拆 PICO」提示詞</button></div>
+  <p class="speaker"><b>講者備註：</b>先手動示範一次，讓大家知道 AI 之後幫忙做的是什麼；下一步再換成 AI 工具。</p>
+</section>
+
+<!-- 7 Step2 Acquire: what's inside -->
+<section class="slide s2">
+  <span class="tag"><b></b>Step 2 · Acquire 檢索</span>
+  <h2>一次搜尋，四種內容</h2>
+  <div class="tabs" id="tabs">
+    <button class="on" data-t="0">Cochrane Reviews</button><button data-t="1">CENTRAL</button><button data-t="2">Clinical Answers</button><button data-t="3">其他系統性回顧</button>
+  </div>
+  <div class="tabpane" id="tabpane">
+    <div class="on"><h3>Cochrane Database of Systematic Reviews（CDSR）</h3><p>主菜。每篇都有 Abstract、Plain Language Summary、Summary of Findings 表、GRADE 等級。2026 年起 Abstract 下方直接列出 PICO 標籤，點一下就能找同主題的 Review。</p></div>
+    <div><h3>CENTRAL 試驗資料庫</h3><p>全球 RCT 登錄庫，來源含 PubMed、Embase、CINAHL、ClinicalTrials.gov，每月更新。<span class="pill new">2026</span> 已撤稿的試驗在搜尋結果直接顯示「Retracted」標籤。</p></div>
+    <div><h3>Cochrane Clinical Answers（CCA）</h3><p>給臨床端的一頁問答：一個問題、一句結論、一張結果表，底下附 PICO 標籤與原始 Review 連結。忙的時候先看這裡。</p></div>
+    <div><h3>Epistemonikos 其他 SR</h3><p>非 Cochrane 的系統性回顧。Cochrane 沒做過的題目，常常這裡有，但步驟 3 要自己做。</p></div>
+  </div>
+  <p class="speaker"><b>講者備註：</b>現場示範：首頁搜尋列輸入 "tranexamic acid trauma" → 看結果頁四個 tab 的數字。</p>
+</section>
+
+<!-- 8 Step2: Advanced Search four modes -->
+<section class="slide s2">
+  <span class="tag"><b></b>Step 2 · Advanced Search 的四個分頁</span>
+  <h2>點 Advanced Search 右邊的下拉選單，會看到四種搜尋方式</h2>
+  <div class="tabs" id="asTabs">
+    <button class="on" data-t="0">Search</button><button data-t="1">Search manager</button><button data-t="2">Medical terms (MeSH)</button><button data-t="3">PICO search</button>
+  </div>
+  <div class="tabpane" id="asPane">
+    <div class="on"><h3>Search：多欄位的單次搜尋</h3><p>左邊下拉選欄位（Title Abstract Keyword、Author、DOI…），右邊打詞，<b>+ Add search line</b> 可以疊好幾行再一次送出。適合：第一次探路、看這題有沒有 Review。它也吃完整語法，所以 AI 工具的一行版可以直接貼在這裡或用網址帶進來。</p><p class="note" style="margin-top:6px">下方「Search limits」可限年份、內容類型、Cochrane Group。</p></div>
+    <div><h3>Search manager：一行一個概念，再組合</h3><p>每行一個 #號，<span class="kbd">#1 OR #2</span>、<span class="kbd">#3 AND #4</span> 組起來；每行旁邊即時顯示命中數，<span class="kbd">S▾</span> 按鈕選欄位、<span class="kbd">MeSH▾</span> 按鈕直接開 MeSH 瀏覽器。可以儲存、設通知。適合：寫進 N 級報告、QCC、論文的「檢索策略」，審查委員看的就是這個畫面。</p></div>
+    <div><h3>Medical terms (MeSH)：先找正式詞，再送進去</h3><p>打一個詞，瀏覽器顯示它在 MeSH 樹上的位置、上下層、定義與同義詞（Entry terms）。勾 <b>Explode all trees</b> 會連下層詞一起找；可加 qualifier（如 /therapy）。右邊「Send to Search manager」把這個詞變成一行。已更新 MeSH 2026。適合：確認 AI 建議的 MeSH 詞到底存不存在。</p></div>
+    <div><h3>PICO search：直接指定「這個詞是 P、那個詞是 I」</h3><p>Cochrane 把每篇 Review 的 P/I/C/O 人工標註好了，你填的不是關鍵字而是 PICO 角色，所以不會抓到「只是在討論段提到 ECMO」的文章。命中少但準。<span class="pill new">2026</span> 搜尋結果和 Abstract 底下都看得到 PICO 標籤，點一下就能找同主題 Review。</p></div>
+  </div>
+  <div class="box ink"><h3>一句話記法</h3><p>探路用 Search；寫報告用 Search manager；確認詞用 MeSH；想一次找對用 PICO search。</p></div>
+  <p class="speaker"><b>講者備註：</b>現場把四個分頁各點一次，每個停 30 秒，讓大家看到長相就好；深入操作留到七步驟那頁。</p>
+</section>
+
+<!-- 8a Cochrane vs others -->
+<section class="slide s2">
+  <span class="tag"><b></b>Step 2 · Cochrane 跟其他資料庫差在哪</span>
+  <h2>小而準的水池 vs 什麼都有的大海</h2>
+  <div class="tw"><table>
+    <tr><th style="width:120px"></th><th>Cochrane Library</th><th>PubMed</th><th>Embase</th></tr>
+    <tr><td><b>收什麼</b></td><td>只有系統性回顧與 RCT，研究設計已先篩過</td><td>所有類型，三千多萬篇</td><td>所有類型，藥物、器材、歐洲與會議文獻多</td></tr>
+    <tr><td><b>結果量</b></td><td>幾篇到幾十篇</td><td>常常上千篇，要自己加 filter</td><td>上千篇，含大量會議摘要</td></tr>
+    <tr><td><b>主題詞</b></td><td>MeSH</td><td>MeSH（同一棵樹）</td><td>Emtree（另一棵樹）</td></tr>
+    <tr><td><b>自動對應</b></td><td><b>沒有</b>。打 "heart attack" 不會自動找 MeSH，要自己寫 <span class="kbd">[mh]</span></td><td><b>有</b>。打俗名會自動對到 MeSH 並 explode</td><td>有 mapping 選項，要勾</td></tr>
+    <tr><td><b>結果頁多給什麼</b></td><td>PICO 標籤、GRADE、Clinical Answer 連結、撤稿標籤</td><td>只有列表，評讀自己做</td><td>只有列表</td></tr>
+    <tr><td><b>弱點</b></td><td>幾乎只有介入型問題；觀察性、診斷、質性研究少</td><td>品質要自己過濾</td><td>需授權，介面較複雜</td></tr>
+    <tr><td><b>一鍵執行</b></td><td>可以（網址帶搜尋式）</td><td>可以（網址帶搜尋式）</td><td>不行，複製貼上</td></tr>
+  </table></div>
+  <div class="box ink"><h3>順序</h3><p>前景問題先查 Cochrane（小水池，已評讀）；沒有，再去 PubMed、Embase 撈（大海，步驟 3 自己做）；Cochrane 沒做但別人做過的 SR，去 Epistemonikos。</p></div>
+</section>
+
+<!-- 9 Step2 hands-on steps -->
+<section class="slide s2">
+  <span class="tag"><b></b>Step 2 · 實機操作</span>
+  <h2>七步驟，跟著做（點一下打勾）</h2>
+  <div class="steps" id="steps">
+    <div><span><b>院內 IP 或 VPN 登入</b>：Cochrane 走機構授權，院外要經圖書館 proxy。</span></div>
+    <div><span><b>Advanced Search → MeSH</b>：輸入 "Heart Arrest"，選對 tree，勾 explode all trees。</span></div>
+    <div><span><b>Send to Search Manager</b>：MeSH 與自由詞用 OR 併成一行，P 與 I 再 AND。</span></div>
+    <div><span><b>左側 filter</b>：先限 Cochrane Reviews；要找試驗再切 Trials。</span></div>
+    <div><span><b>看結果卡片</b>：有沒有 Clinical Answer 連結？PICO 標籤對不對？有沒有 Retracted？</span></div>
+    <div><span><b>Save search / RSS</b>：CDSR 與 CCA 都能訂閱，新證據主動找你。</span></div>
+    <div><span><b>Cite → 匯出 RIS</b>：進 EndNote / Zotero，報告的檢索策略直接截圖 Search Manager。</span></div>
+  </div>
+</section>
+
+<!-- 10 Step2 AI retrieval -->
+<section class="slide s2">
+  <span class="tag"><b></b>Step 2 · 動手 · AI 完成檢索</span>
+  <h2>用「EBM 證據助理」3 分鐘走完步驟 1 + 2</h2>
+  <div class="cols">
+    <div class="box ink"><h3>工具做的事</h3><ol><li>你用口語輸入問題（中英文皆可）</li><li>AI 回傳四張 PICO 卡：中英文、同義詞、建議 MeSH</li><li>自動組出 Search Manager 格式的搜尋式</li><li>一鍵開 Cochrane Library、PubMed（限 SR）、Clinical Answers</li><li>列出進 Cochrane 後要檢查的三件事</li></ol></div>
+    <div class="box"><h3>你做的事</h3><ul><li>勾選「不含病人資料」才可送出（工具會自動偵測身分證字號、病歷號、生日）</li><li>到 Cochrane 的 MeSH 瀏覽器確認 AI 建議的 MeSH 詞存在</li><li>結果為 0 → 先拿掉 C 那一行再搜</li><li>把實際用的搜尋式截圖，那才是你的檢索策略</li></ul></div>
+  </div>
+  <div class="box acc"><h3>AI 的邊界</h3><p>它不會上網、不知道 Cochrane 這個月新增或撤稿了什麼。它幫你「問對問題、組對搜尋式」；「找到了什麼」要在 Cochrane 裡看。</p></div>
+  <p class="speaker"><b>講者備註：</b>現場請一位同仁用自己便利貼上的問題操作，投影出來。對照剛剛手動版，讓大家看到省了什麼、沒省什麼。</p>
+</section>
+
+<!-- 11 Step3 intro -->
+<section class="slide s3">
+  <span class="tag"><b></b>Step 3 · Appraise 評讀</span>
+  <h2>Cochrane 已經替你做完的事</h2>
+  <p class="lead">一般文獻的步驟 3 要自己拿 CASP 或 JBI 工具逐項評，很花時間。Cochrane Review 每篇都內建這三樣，你的工作從「做評讀」變成「讀評讀」。</p>
+  <div class="cols">
+    <div class="box ink"><h3>Risk of bias（RoB 2）</h3><p>每個納入試驗的偏差風險，紅黃綠燈圖。看「紅燈多不多」就夠。</p></div>
+    <div class="box ink"><h3>GRADE 證據確定性</h3><p>每個 outcome 一個等級：High / Moderate / Low / Very low，附降級理由（不精確、不一致、偏差、間接）。</p></div>
+    <div class="box ink"><h3>Summary of Findings 表</h3><p>一張表看完：每千人的絕對效果、相對效果（RR / OR）、信賴區間、參與人數、GRADE。這是整篇 Review 最值錢的一頁。</p></div>
+  </div>
+  <p class="speaker"><b>講者備註：</b>打開一篇 Review，直接點右側目錄的 "Summary of findings"，示範不用讀全文也能評讀。</p>
+</section>
+
+<!-- 11b Step3: which article type -->
+<section class="slide s3">
+  <span class="tag"><b></b>Step 3 · 不是 Cochrane 的文章怎麼辦</span>
+  <h2>先問「這是哪一種文章」，再挑工具</h2>
+  <p class="lead">從 PubMed、Embase 撈到的單篇文章，沒有人替你評讀。不同設計問的問題不同，工具也不同；拿 RCT 的標準去評世代研究，審查委員一眼就看出來。</p>
+  <div class="tw"><table>
+    <tr><th style="width:140px">文章類型</th><th>核心問題</th><th>專用工具</th><th>通用系列（JBI / CASP / CEBM）</th></tr>
+    <tr><td><b>系統性回顧</b></td><td>找得全嗎？合併得對嗎？</td><td><b>AMSTAR 2</b>、ROBIS</td><td>JBI SR、CASP SR、CEBM SR 單</td></tr>
+    <tr><td><b>RCT</b></td><td>隨機、隱匿、盲化、失訪、選擇性報告</td><td><b>RoB 2</b></td><td>JBI RCT、CASP RCT、CEBM RCT 單</td></tr>
+    <tr><td><b>類實驗 / 非隨機介入</b></td><td>沒有隨機，怎麼控制干擾？</td><td>ROBINS-I</td><td>JBI 類實驗</td></tr>
+    <tr><td><b>世代 / 病例對照</b></td><td>干擾因子、選樣、暴露與結果怎麼量</td><td><b>NOS</b>（Newcastle-Ottawa）、ROBINS-E</td><td>JBI 世代／病例對照、CASP 世代／病例對照</td></tr>
+    <tr><td><b>橫斷</b></td><td>抽樣、測量工具、反應率</td><td>AXIS</td><td>JBI 分析性橫斷</td></tr>
+    <tr><td><b>預後 / 預測模型</b></td><td>追蹤完整嗎？預後因子怎麼量？</td><td><b>QUIPS</b>（預後因子）、PROBAST（預測模型）</td><td>CEBM 預後單、CASP 臨床預測規則</td></tr>
+    <tr><td><b>診斷準確性</b></td><td>參考標準、盲化、病人光譜</td><td><b>QUADAS-2</b></td><td>JBI 診斷、CASP 診斷、CEBM 診斷單</td></tr>
+    <tr><td><b>質性</b></td><td>方法與問題相符、反身性、資料飽和</td><td>（整體用 GRADE-CERQual）</td><td><b>CASP 質性</b>、JBI 質性</td></tr>
+    <tr><td><b>混合方法</b></td><td>兩種資料有沒有真的整合？</td><td>MMAT</td><td>—</td></tr>
+    <tr><td><b>臨床指引</b></td><td>制定過程嚴謹嗎？利益衝突？</td><td><b>AGREE II</b></td><td>—</td></tr>
+    <tr><td><b>個案報告 / 系列</b></td><td>描述完整嗎？</td><td>Murad 工具</td><td>JBI 個案報告／系列</td></tr>
+  </table></div>
+  <div class="cols">
+    <div class="box ink"><h3>兩種路線</h3><p><b>專用工具</b>（RoB 2、NOS、AMSTAR 2、QUIPS、QUADAS-2、AGREE II）各管一種設計，國際期刊與 Cochrane 用這套；<b>通用系列</b>（JBI、CASP、CEBM 評讀單）一套涵蓋多種設計，台灣護理報告常用。一份報告選一條路線，別混。</p><p class="note" style="margin-top:6px">證據等級（Level）另外看設計分級，台灣常用 Oxford CEBM；一份報告只用一套。PRISMA、CONSORT、STROBE 是報告規範，不是評讀工具。</p></div>
+    <div class="box acc"><h3>AI 工具第 3 步的「單篇文章」模式</h3><p>先選工具偏好（自動 / JBI / CASP / CEBM），AI 判斷設計、指定清單，把每一條題目標「文中有寫／沒寫」並引用段落；<b>判斷欄留白給你填</b>。AI 定位，你打勾。</p></div>
+  </div>
+</section>
+
+<!-- 12 Step3 SoF reader -->
+<section class="slide s3">
+  <span class="tag"><b></b>Step 3 · 動手</span>
+  <h2>SoF 表怎麼讀：點每一欄</h2>
+  <div class="sof" id="sof">
+    <button data-i="0"><b>Outcome</b>看的是病人在意的結果嗎？是替代指標還是硬指標？</button>
+    <button data-i="1"><b>假設風險 vs 對應風險</b>每 1000 人中，不做 vs 做，各幾人發生。這是跟主管講最有感的數字。</button>
+    <button data-i="2"><b>相對效果 (95% CI)</b>RR / OR 與信賴區間。區間跨過 1 = 不確定，不等於無效。</button>
+    <button data-i="3"><b>參與者 / 研究數</b>幾篇、幾人。少於幾百人要小心「不精確」。</button>
+    <button data-i="4"><b>GRADE</b>⊕⊕⊕⊕ 到 ⊕◯◯◯。腳註寫為什麼被降級。</button>
+    <button data-i="5"><b>Comments</b>作者的提醒，常常藏著「這結果只適用某族群」。</button>
+  </div>
+  <div class="box ink" id="sofInfo"><h3>先點一欄</h3><p>每欄下面都有一個「讀的時候問自己的問題」。</p></div>
+</section>
+
+<!-- 13 Step3 GRADE + 3 sentences -->
+<section class="slide s3">
+  <span class="tag"><b></b>Step 3 · 說出來</span>
+  <h2>GRADE 四級與「跟主管講的三句話」</h2>
+  <div class="cols">
+    <div class="tw"><table>
+      <tr><th>GRADE</th><th>符號</th><th>怎麼說</th></tr>
+      <tr><td>High</td><td class="sym">⊕⊕⊕⊕</td><td>「證據確定性高，建議納入 protocol。」</td></tr>
+      <tr><td>Moderate</td><td class="sym">⊕⊕⊕◯</td><td>「證據中等，建議採用並設指標追蹤。」</td></tr>
+      <tr><td>Low</td><td class="sym">⊕⊕◯◯</td><td>「證據偏低，建議小規模試行；這也是我們做研究的機會。」</td></tr>
+      <tr><td>Very low</td><td class="sym">⊕◯◯◯</td><td>「目前證據不足以支持改變做法。」</td></tr>
+    </table></div>
+    <div class="q" id="gq">
+      <p>小測：SoF 表寫「RR 0.85 (0.70–1.03), moderate certainty」，你會怎麼跟部長報告？</p>
+      <div class="opts">
+        <button data-ok="0">有效，降低 15% 死亡率，建議全院推行</button>
+        <button data-ok="1">點估計偏向有利，但信賴區間跨過 1，證據中等；建議小規模試行並監測</button>
+        <button data-ok="0">沒有統計顯著，所以沒效，不用管</button>
+      </div>
+      <div class="exp">跨過 1 不等於「沒效」，而是「不確定」；moderate 代表值得試、但要量。這一句話是全院最該學會的 EBM。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 Step3 AI translate -->
+<section class="slide s3">
+  <span class="tag"><b></b>Step 3 · 動手 · AI 幫你讀</span>
+  <h2>把 SoF 表貼進工具，翻成白話</h2>
+  <div class="cols">
+    <div class="box"><h3>三種輸入</h3><ol><li>從 Review 頁面複製 SoF 表文字</li><li>匯入 Review PDF，工具自動找到 Summary of findings 頁面帶入文字</li><li>表格複雜時，改送 PDF 頁面影像讓 AI 直接看表</li></ol><p class="note" style="margin-top:6px">PDF 只在瀏覽器裡解析，不會上傳。</p></div>
+    <div class="box ink"><h3>兩種評讀框架</h3><ul><li><b>標準 GRADE</b>：照 Cochrane 原表，每個 outcome 一句話，跨 1 寫「不確定」</li><li><b>Core GRADE</b>（BMJ 2025）：先定目標（有沒有效 vs 夠不夠重要）→ 換成每千人絕對效果 → 跟 MID 比 → 信賴區間跨過 MID 才算不精確</li></ul></div>
+    <div class="box acc"><h3>不變的規則</h3><ul><li>不得補表中沒有的數字</li><li>MID 若是 AI 建議的，一律標「假設值」</li><li>複製結果後，<b>對照原表</b>每一個數字再使用</li></ul></div>
+  </div>
+  <div class="box acc"><h3>為什麼 AI 在這一步特別適合</h3><p>SoF 表是結構化資料，AI 擅長「翻譯格式」不擅長「判斷真偽」。表是 Cochrane 做的、翻譯是 AI 做的、核對是你做的，三方各司其職。</p></div>
+</section>
+
+<!-- 15 Step3 AI vs Cochrane flip -->
+<section class="slide s3">
+  <span class="tag"><b></b>Step 3 · 為什麼不能只信 AI</span>
+  <h2>比一比：AI 的回答 vs. Cochrane 的證據</h2>
+  <p class="lead">先猜 AI 會怎麼說，再點卡片翻開 Cochrane 怎麼說。三題對應：確定性、撤稿、過期。</p>
+  <div class="flip" id="flip">
+    <div class="card" tabindex="0"><div class="front">Q1：「OHCA 做目標體溫管理 33°C 能改善神經學預後嗎？」</div><div class="back"><b>AI 常見回答：</b>「研究顯示能改善預後」。<br><b>Cochrane：</b>效果量存在但確定性不高；重點是「跟哪個溫度比」與「有沒有避免發燒」。要回去看 SoF 表每個 outcome 的 GRADE。</div></div>
+    <div class="card" tabindex="0"><div class="front">Q2：「某篇很有名的 RCT 說 X 藥有效。」</div><div class="back"><b>AI 常見回答：</b>照樣引用該試驗。<br><b>Cochrane：</b>在 CENTRAL 一查，標籤顯示 Retracted。2026 新功能讓這件事一眼看到，AI 的訓練資料未必知道。</div></div>
+    <div class="card" tabindex="0"><div class="front">Q3：「這個處置 Cochrane 說有效，可以直接寫進 protocol 嗎？」</div><div class="back"><b>AI 常見回答：</b>「是的，Cochrane 支持」。<br><b>Cochrane：</b>先看 search date。若最後搜尋是十年前，官方自己都會標註需要更新。證據有保存期限。</div></div>
+  </div>
+  <p class="speaker"><b>講者備註：</b>現場真的開 AI 問 Q1，投影出來，再對照 Cochrane。差距越明顯，印象越深。</p>
+</section>
+
+<!-- 16 Step4 Apply -->
+<section class="slide s4">
+  <span class="tag"><b></b>Step 4 · Apply 應用</span>
+  <h2>證據 + 病人 + 情境 = 決策</h2>
+  <div class="cols">
+    <div class="box"><h3>三個問題</h3><ul><li>我們的病人跟 Review 的 P 像不像？（年齡、嚴重度、場域）</li><li>我們做得到 I 嗎？（人力、設備、訓練、成本）</li><li>病人與家屬在意的 O 是什麼？</li></ul></div>
+    <div class="box ink"><h3>一篇 Review 可以變成三樣東西</h3><ul><li><b>單位 Protocol</b>：P → 適用對象；I → 步驟；O → 監測指標；註記 GRADE 與 search date</li><li><b>QCC / 醫品圈題目</b>：「證據強但院內執行率低」是最好的題目</li><li><b>研究 / 醫品獎</b>：GRADE low 的 outcome、Gap Map 的空格</li></ul></div>
+    <div class="box acc"><h3>AI 工具第 4 步</h3><p>把步驟 3 的結果一鍵帶過去，草擬：證據依據、適用對象（P）、步驟（I）、3 個 QI 指標（O）、證據強度註記。它是起點，不是定稿，由單位主管與品管會審。</p></div>
+  </div>
+</section>
+
+<!-- 18 Step5 Assess -->
+<section class="slide s5">
+  <span class="tag"><b></b>Step 5 · Assess 評值</span>
+  <h2>做了之後，兩件事要追</h2>
+  <div class="cols">
+    <div class="box ink"><h3>追自己：QI 指標</h3><ul><li>步驟 4 草稿裡的 3 個指標，每月一次</li><li>現況值用院內資料，目標值引用 Review 的效果量</li><li>沒達標 → 回到步驟 4 看是「證據不適用」還是「執行不到位」</li></ul></div>
+    <div class="box ink"><h3>追證據：Review 有沒有更新</h3><ul><li>protocol 註明「依據 Cochrane CD00xxxx，search date YYYY-MM」</li><li>訂 CDSR / CCA 的 RSS，或 Save search 設通知</li><li>每年品管會檢核一次版本；Cochrane 今年就有被引用多年的 Review，文獻只到 2012 年，官方公告需更新</li></ul></div>
+  </div>
+  <div class="box"><h3>Living systematic review</h3><p>新證據出來就滾動更新。Cochrane Interactive Learning 2026 年新增 living review 與 rapid review 模組，可自學。</p></div>
+</section>
+
+<!-- 19 AI rules + Cochrane AI -->
+<section class="slide s4">
+  <span class="tag"><b></b>貫穿五步驟 · AI 守則</span>
+  <h2>Cochrane 自己怎麼用 AI，我們就怎麼用</h2>
+  <div class="cols">
+    <div class="tl">
+      <div><time>2026-01</time><p><b>RAISE 聯合聲明</b>：Cochrane、Campbell、JBI、CEE 共同發布，人負最終責任、AI 參與的判斷必須透明揭露。</p></div>
+      <div><time>2026-02</time><p><b>AI 平台試驗啟動</b>：AI 工具 vs 傳統雙人人工法，在約 15 篇 Review 更新上對打。</p></div>
+      <div><time>2026-03</time><p>選定 2 個 AI 工具；Wiley 與 OpenEvidence 合作，Cochrane 證據開始餵給醫療 AI。</p></div>
+      <div><time>2026-12</time><p><b>Kraków Colloquium</b>：Living, Trusted, Transformed。</p></div>
+    </div>
+    <div>
+      <div class="box acc"><h3>院內四條</h3><ol><li><b>人負責</b>：署名者看過原文</li><li><b>回到原始證據</b>：附 DOI 與 GRADE</li><li><b>揭露</b>：文件註明用了什麼 AI</li><li><b>不餵病人資料</b></li></ol></div>
+      <div class="q" id="rq" style="margin-top:10px">
+        <p>小測：同仁用 AI 寫好文獻回顧，引用三篇。你最先檢查什麼？</p>
+        <div class="opts"><button data-ok="0">文字通不通順</button><button data-ok="1">三篇是否真的存在、是否撤稿、結論是否被正確轉述</button><button data-ok="0">有沒有標 AI 生成</button></div>
+        <div class="exp">AI 捏造引用與誤引結論是最常見的錯。先驗證來源，再談格式與揭露。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 20 workshop -->
+<section class="slide s4">
+  <span class="tag"><b></b>分組實作</span>
+  <h2>10 分鐘：用自己的問題走完 1→4</h2>
+  <div class="cols">
+    <div class="box" style="text-align:center"><div class="timer" id="timer">10:00</div><div class="nav" style="justify-content:center;margin-top:10px"><button class="btn primary" id="tStart">開始</button><button class="btn" id="tReset">重設</button></div></div>
+    <div class="box"><h3>任務單</h3><ol><li><b>Ask</b>：便利貼上的問題貼進工具第 1 步 → 四張 PICO 卡</li><li><b>Acquire</b>：按「開 Cochrane」，找到一篇 Review 或 Clinical Answer</li><li><b>Appraise</b>：寫下 search date、主要 outcome 的 GRADE、一句結論</li><li><b>Apply</b>：決定：protocol、QCC，還是研究題目？</li></ol></div>
+  </div>
+  <p class="speaker"><b>講者備註：</b>結束後 2–3 組上台 90 秒；重點聽他們有沒有講出「確定性」而不只是「有效/無效」。</p>
+</section>
+
+<!-- 21 quiz -->
+<section class="slide s5">
+  <span class="tag"><b></b>課後測驗</span>
+  <h2>五題，答完看分數</h2>
+  <div class="cols" id="quiz">
+    <div class="q"><p>1. 實證五步驟中，Cochrane Review 已經替你做好的是？</p><div class="opts"><button data-ok="0">Step 1 Ask</button><button data-ok="1">Step 3 Appraise</button><button data-ok="0">Step 5 Assess</button></div><div class="exp">RoB、GRADE、SoF 表都已內建。</div></div>
+    <div class="q"><p>2. 想一次找對 Review，Cochrane 2026 最適合的搜尋方式？</p><div class="opts"><button data-ok="0">只用搜尋列</button><button data-ok="1">PICO Search</button><button data-ok="0">Google</button></div><div class="exp">每篇 Review 的 P/I/C/O 都已人工標註。</div></div>
+    <div class="q"><p>3. 「RR 0.9 (0.75–1.08), low certainty」最適當的說法？</p><div class="opts"><button data-ok="0">有效</button><button data-ok="1">不確定，建議小規模試行並監測</button><button data-ok="0">無效</button></div><div class="exp">跨 1 = 不確定；low = 真實效果可能差很多。</div></div>
+    <div class="q"><p>4. AI 在步驟 2 幫你做的是？</p><div class="opts"><button data-ok="1">拆 PICO、組搜尋式、開連結</button><button data-ok="0">告訴你 Cochrane 這個月新增了什麼</button><button data-ok="0">替你確認文獻沒被撤稿</button></div><div class="exp">AI 不上網；撤稿要在 CENTRAL 看標籤。</div></div>
+    <div class="q"><p>5. protocol 寫上「search date」是為了哪個步驟？</p><div class="opts"><button data-ok="0">Step 1</button><button data-ok="0">Step 3</button><button data-ok="1">Step 5 評值：追蹤證據有沒有更新</button></div><div class="exp">證據有保存期限。</div></div>
+    <div class="box acc"><h3>你的分數</h3><div class="timer" id="score" style="font-size:48px">0 / 5</div><p class="note">答對 4 題以上，可以當單位的 EBM 種子。</p></div>
+  </div>
+</section>
+
+<!-- QR survey -->
+<section class="slide end">
+  <span class="tag"><b></b>課程回饋</span>
+  <h2>掃一下，1 分鐘滿意度調查</h2>
+  <div class="cols" style="align-items:center">
+    <div class="box" style="display:grid;place-items:center;background:#fff;padding:18px"><div style="width:min(60vw,320px)"><svg xmlns="http://www.w3.org/2000/svg" width="270" height="270" class="segno"><path transform="scale(6)" class="qrline" stroke="#161b2e" d="M2 2.5h7m2 0h1m2 0h1m1 0h2m2 0h1m1 0h1m6 0h4m1 0h1m1 0h7m-41 1h1m5 0h1m4 0h3m2 0h1m1 0h1m2 0h2m3 0h2m1 0h2m3 0h1m5 0h1m-41 1h1m1 0h3m1 0h1m1 0h1m5 0h1m1 0h1m2 0h5m2 0h2m2 0h1m3 0h1m1 0h3m1 0h1m-41 1h1m1 0h3m1 0h1m1 0h1m1 0h5m1 0h1m1 0h1m2 0h1m1 0h1m1 0h2m2 0h1m4 0h1m1 0h3m1 0h1m-41 1h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h1m3 0h1m2 0h2m1 0h2m1 0h3m3 0h1m1 0h1m1 0h3m1 0h1m-41 1h1m5 0h1m1 0h4m2 0h4m3 0h2m2 0h4m3 0h1m1 0h1m5 0h1m-41 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-33 1h2m1 0h1m1 0h4m2 0h1m1 0h2m1 0h1m1 0h2m2 0h1m-31 1h1m1 0h5m5 0h1m1 0h1m2 0h1m5 0h5m1 0h1m4 0h5m-36 1h3m1 0h2m1 0h2m1 0h3m2 0h2m1 0h1m1 0h1m1 0h1m2 0h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h1m-41 1h1m1 0h1m1 0h3m1 0h2m1 0h4m2 0h1m2 0h3m1 0h1m1 0h2m1 0h1m2 0h3m-32 1h2m2 0h2m2 0h2m1 0h2m2 0h1m1 0h3m5 0h1m1 0h3m3 0h2m-38 1h1m1 0h7m3 0h1m2 0h5m1 0h4m1 0h1m4 0h2m4 0h3m-40 1h1m3 0h2m4 0h1m1 0h1m1 0h2m4 0h1m2 0h1m1 0h2m1 0h3m1 0h2m2 0h5m-41 1h8m1 0h2m1 0h1m3 0h4m2 0h1m1 0h1m1 0h3m1 0h1m2 0h1m2 0h2m-36 1h1m2 0h1m2 0h4m1 0h2m4 0h3m1 0h2m1 0h2m6 0h4m1 0h1m-40 1h1m1 0h1m3 0h1m2 0h1m4 0h1m4 0h1m2 0h1m1 0h3m2 0h1m1 0h3m1 0h1m1 0h4m-40 1h3m3 0h1m1 0h2m1 0h10m1 0h1m3 0h2m1 0h3m1 0h3m2 0h2m-41 1h1m2 0h6m3 0h2m2 0h2m2 0h2m2 0h6m4 0h1m1 0h2m-38 1h1m1 0h1m2 0h1m2 0h2m2 0h1m1 0h2m1 0h2m2 0h1m1 0h2m1 0h1m1 0h1m5 0h1m1 0h2m1 0h2m-39 1h1m1 0h1m1 0h1m1 0h1m3 0h1m2 0h2m3 0h2m1 0h1m1 0h8m2 0h1m1 0h1m1 0h1m-39 1h1m1 0h3m6 0h1m2 0h1m2 0h2m3 0h3m1 0h5m1 0h2m1 0h1m1 0h3m-41 1h2m3 0h3m1 0h1m1 0h1m1 0h1m1 0h3m2 0h1m1 0h1m1 0h4m1 0h1m2 0h2m1 0h2m1 0h1m-39 1h2m3 0h1m1 0h1m2 0h2m1 0h1m1 0h2m1 0h4m4 0h2m3 0h4m1 0h2m2 0h1m-41 1h1m1 0h2m2 0h1m1 0h1m1 0h1m6 0h1m4 0h6m1 0h1m1 0h1m3 0h2m1 0h2m-39 1h1m1 0h1m1 0h1m1 0h3m3 0h1m2 0h1m1 0h4m1 0h1m6 0h2m1 0h1m1 0h3m1 0h2m-41 1h3m1 0h3m3 0h3m2 0h2m3 0h1m1 0h1m2 0h1m1 0h2m1 0h1m1 0h5m-37 1h1m1 0h1m1 0h1m2 0h1m1 0h1m1 0h1m3 0h2m1 0h6m2 0h1m4 0h4m2 0h1m1 0h2m-41 1h1m2 0h1m2 0h2m2 0h1m2 0h3m3 0h4m2 0h3m3 0h3m3 0h2m1 0h1m-41 1h1m2 0h2m2 0h1m1 0h2m1 0h2m4 0h1m2 0h1m1 0h1m1 0h1m2 0h1m1 0h1m1 0h1m1 0h3m2 0h2m-41 1h1m1 0h1m3 0h1m3 0h3m3 0h3m1 0h3m4 0h1m1 0h1m2 0h4m1 0h2m-39 1h1m1 0h1m2 0h1m2 0h3m4 0h1m5 0h1m1 0h1m4 0h1m1 0h2m1 0h3m-36 1h1m1 0h2m1 0h3m1 0h1m4 0h1m1 0h2m2 0h1m1 0h2m1 0h1m1 0h2m3 0h5m1 0h1m1 0h1m-33 1h1m1 0h1m2 0h1m1 0h2m1 0h2m2 0h2m2 0h1m2 0h2m1 0h1m3 0h1m3 0h1m-41 1h7m4 0h1m2 0h1m3 0h1m1 0h1m1 0h1m1 0h4m1 0h1m2 0h1m1 0h1m1 0h3m-39 1h1m5 0h1m1 0h2m2 0h2m1 0h1m4 0h1m3 0h1m6 0h2m3 0h2m2 0h1m-41 1h1m1 0h3m1 0h1m1 0h2m2 0h1m2 0h2m1 0h1m1 0h3m1 0h3m1 0h2m2 0h5m1 0h1m1 0h1m-41 1h1m1 0h3m1 0h1m1 0h1m2 0h3m2 0h2m2 0h2m3 0h1m2 0h1m2 0h3m1 0h1m1 0h1m1 0h2m-41 1h1m1 0h3m1 0h1m1 0h4m1 0h2m1 0h1m3 0h1m3 0h15m-39 1h1m5 0h1m3 0h2m2 0h1m2 0h2m2 0h3m2 0h2m4 0h1m3 0h2m1 0h1m-40 1h7m1 0h1m1 0h1m7 0h2m2 0h1m1 0h3m1 0h2m5 0h2"/></svg>
+</div></div>
+    <div>
+      <p class="lead" style="font-size:clamp(17px,1.8vw,24px);color:var(--fg)"><b>Cochrane Library × AI</b><br>2026 年 10 月 28 日 課程回饋滿意度</p>
+      <p class="note" style="margin-top:10px">掃不到可直接點：<a class="lnk" href="https://docs.google.com/forms/d/e/1FAIpQLSfL95GIW2F4MhaSiR2OHpIfJ7HMh0zoNdu1fCCnazgA9J3XZw/viewform" target="_blank" rel="noopener">課程回饋表單 ↗</a></p>
+      <div class="box ink" style="margin-top:14px"><h3>帶走的三樣東西</h3><ul><li>這份投影片（下一頁是速查卡）</li><li>EBM 證據助理工具</li><li>一句話：證據不確定 ≠ 無效</li></ul></div>
+      <p style="margin-top:14px;font-size:20px;font-weight:700">感謝您的參與 ~</p>
+    </div>
+  </div>
+</section>
+
+<!-- 22 cheat sheet -->
+<section class="slide end">
+  <span class="tag"><b></b>速查卡 · 帶走這一頁</span>
+  <h2>實證五步驟 × Cochrane × AI 一頁速查</h2>
+  <div class="cols">
+    <div class="box" style="border-left:4px solid var(--s1)"><h3>1 Ask</h3><p class="note">P 誰 · I 做什麼 · C 跟什麼比 · O 病人在意的結果<br>AI 工具第 1 步</p></div>
+    <div class="box" style="border-left:4px solid var(--s2)"><h3>2 Acquire</h3><div class="mono" style="font-size:12px">#1 MeSH descriptor: [Heart Arrest] explode all trees
+#2 (cardiac arrest):ti,ab,kw
+#3 #1 OR #2
+#4 (extracorporeal*):ti,ab,kw
+#5 #3 AND #4</div><p class="note">探路 Search · 報告 Search manager · 確認詞 MeSH · 一次找對 PICO search<br>先 Cochrane，再 PubMed / Embase，別人的 SR 找 Epistemonikos</p></div>
+    <div class="box" style="border-left:4px solid var(--s3)"><h3>3 Appraise</h3><p class="note">Cochrane：看 SoF 表，search date · GRADE · CI 跨不跨 1<br>單篇：分級 Oxford CEBM；評讀 JBI / CASP / CEBM，或專用 RoB 2 · NOS · AMSTAR 2 · QUIPS · QUADAS-2 · AGREE II<br>AI 翻譯與定位，判斷自己填</p></div>
+    <div class="box" style="border-left:4px solid var(--s4)"><h3>4 Apply</h3><p class="note">P → 適用對象 · I → 步驟 · O → 指標 · 註記 GRADE<br>AI 工具第 3 步起草</p></div>
+    <div class="box" style="border-left:4px solid var(--s5)"><h3>5 Assess</h3><p class="note">每月看指標 · 每年查 Review 版本 · 訂 RSS</p></div>
+    <div class="box acc"><h3>AI 四條</h3><p class="note">人負責 · 回到原始證據 · 揭露 · 不餵病人資料</p></div>
+  </div>
+</section>
+
+</div>
+
+<div class="bottom">
+  <span class="hint">鍵盤 ← → 或空白鍵翻頁 · 投票、測驗、計時器可直接操作</span>
+  <div class="nav"><button class="btn" id="prev">上一頁</button><button class="btn primary" id="next">下一頁</button></div>
+</div>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const N=slides.length; let cur=0;
+  const stepOf=s=>{for(let k=1;k<=5;k++)if(s.classList.contains('s'+k))return k;return 0};
+  const counts={1:0,2:0,3:0,4:0,5:0}; slides.forEach(s=>{const l=stepOf(s); if(l)counts[l]++});
+  function show(i){
+    cur=(i+N)%N; slides.forEach((s,k)=>s.classList.toggle('on',k===cur));
+    document.getElementById('counter').textContent=(cur+1)+' / '+N;
+    const done={1:0,2:0,3:0,4:0,5:0}; slides.slice(0,cur+1).forEach(s=>{const l=stepOf(s); if(l)done[l]++});
+    for(const l of [1,2,3,4,5]) document.getElementById('r'+l).style.width=(counts[l]?100*done[l]/counts[l]:0)+'%';
+    try{localStorage.setItem('cochraneSlide',cur)}catch(e){}
+  }
+  document.getElementById('next').onclick=()=>show(cur+1);
+  document.getElementById('prev').onclick=()=>show(cur-1);
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT')return;
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();show(cur+1)}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(cur-1)}
+    if(e.key==='Home')show(0); if(e.key==='End')show(N-1);
+  });
+  let s=0; try{s=parseInt(localStorage.getItem('cochraneSlide'))||0}catch(e){}
+  if(location.hash&&/^#s\d+$/.test(location.hash)) s=parseInt(location.hash.slice(2))-1;
+  show(isNaN(s)||s>=N?0:s);
+
+  // poll
+  const tally={};
+  document.querySelectorAll('#poll button').forEach(b=>b.onclick=()=>{
+    tally[b.dataset.k]=(tally[b.dataset.k]||0)+1; const tot=Object.values(tally).reduce((a,c)=>a+c,0);
+    document.querySelectorAll('#poll button').forEach(x=>{const v=tally[x.dataset.k]||0; x.querySelector('em').textContent=v; x.querySelector('i').style.width=(100*v/tot)+'%'});
+  });
+
+  // pyramid
+  const info=[
+    ['系統性文獻回顧','把全世界符合條件的試驗找齊、評估品質、合併結果。Cochrane Review 是其中最嚴格的一種：預先註冊 protocol、固定方法、定期更新，而且每篇都附 GRADE 評等。'],
+    ['隨機對照試驗 RCT','隨機分組消除選擇偏差，是評估「介入有沒有效」的基本單位。CENTRAL 收的就是這一層。'],
+    ['世代 / 病例對照','觀察性研究，適合看危險因子與長期結果，但容易受干擾因子影響。'],
+    ['個案報告 / 系列','提出假說、描述罕見現象；不能推論因果。'],
+    ['專家意見','有價值，但主觀。EBM 的起點就是：把專家意見往上提升成可驗證的證據。']];
+  document.querySelectorAll('#pyr button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#pyr button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    const d=info[+b.dataset.i]; document.getElementById('pyrInfo').innerHTML='<h3>'+d[0]+'</h3><p>'+d[1]+'</p>';
+  });
+
+  // tabs
+  [['tabs','tabpane'],['asTabs','asPane']].forEach(([t,p])=>{
+    document.querySelectorAll('#'+t+' button').forEach(b=>b.onclick=()=>{
+      document.querySelectorAll('#'+t+' button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+      [...document.getElementById(p).children].forEach((c,i)=>c.classList.toggle('on',i==b.dataset.t));
+    });
+  });
+
+  // SoF reader
+  const sofQ=[
+    ['Outcome','問自己：這是病人會感覺到的結果（死亡、出院、疼痛）還是替代指標（檢驗值）？報告時優先講硬指標。'],
+    ['假設風險 vs 對應風險','問自己：每 1000 人差幾人？「每千人少 30 人死亡」比「RR 0.85」更能讓主管與家屬理解。'],
+    ['相對效果 (95% CI)','問自己：區間有沒有跨過 1（比值）或 0（差值）？跨過 = 不確定，不等於無效。區間越寬越不精確。'],
+    ['參與者 / 研究數','問自己：總人數夠不夠？少於 300–400 人的合併結果常被以「不精確」降級。'],
+    ['GRADE','問自己：被降級的理由是什麼？腳註會寫：risk of bias、inconsistency、imprecision、indirectness。理由決定你怎麼說。'],
+    ['Comments','問自己：作者有沒有說「只在某族群看到」「大多在高收入國家」？這決定步驟 4 能不能套用到我們的病人。']];
+  document.querySelectorAll('#sof button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#sof button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    const d=sofQ[+b.dataset.i]; document.getElementById('sofInfo').innerHTML='<h3>'+d[0]+'</h3><p>'+d[1]+'</p>';
+  });
+
+  // pico
+  const pf=['pP','pI','pC','pO'].map(id=>document.getElementById(id));
+  function simpleTerms(){return [pf[0].value,pf[1].value].map(x=>x.trim()).filter(Boolean).join(' ')}
+  function pico(){
+    const [P,I,C,O]=pf.map(x=>x.value.trim());
+    const q=(t)=>t?'('+t.split(/\s+or\s+|,/i).map(w=>w.trim()).filter(Boolean).map(w=>'"'+w+'"').join(' OR ')+'):ti,ab,kw':'';
+    const lines=[]; let n=1; const refs=[];
+    [['P',P],['I',I],['C',C]].forEach(([k,v])=>{ if(v){lines.push('#'+n+'  '+q(v)+'   // '+k); refs.push('#'+n); n++} });
+    if(refs.length) lines.push('#'+n+'  '+refs.join(' AND '));
+    if(O) lines.push('// Outcome 不放進搜尋式，留給 Summary of Findings 表篩選：'+O);
+    lines.push('// 提示：PICO Search 可以直接標記每個詞是 P / I / C / O，命中率更高');
+    // single-line version: Cochrane 搜尋列接受完整語法，[mh "詞"] = MeSH explode
+    const one=[['P',P],['I',I],['C',C]].filter(([,v])=>v).map(([,v])=>{
+      const ws=v.split(/\s+or\s+|,/i).map(w=>w.trim()).filter(Boolean);
+      return '('+ws.map(w=>'"'+w+'"').join(' OR ')+'):ti,ab,kw';
+    }).join(' AND ');
+    window.__oneLine=one;
+    lines.push('','// 一行版（可直接貼進 Cochrane 搜尋列，MeSH 可改寫成 [mh "Heart Arrest"]）：',one);
+    document.getElementById('picoOut').textContent=lines.join('\n');
+  }
+  pf.forEach(x=>x.addEventListener('input',pico)); pico();
+  document.getElementById('openCL').onclick=()=>{
+    const a=document.createElement('a'); a.href='https://www.cochranelibrary.com/search?searchBy=1&searchType=basic&searchText='+encodeURIComponent(window.__oneLine||simpleTerms()); a.target='_blank'; a.rel='noopener'; document.body.appendChild(a); a.click(); a.remove();
+  };
+  function copyText(t,btn){
+    const done=()=>{const o=btn.textContent; btn.textContent='已複製'; setTimeout(()=>btn.textContent=o,1200)};
+    try{ navigator.clipboard.writeText(t).then(done).catch(()=>fallback()) }catch(e){fallback()}
+    function fallback(){ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy')}catch(e){} ta.remove(); done(); }
+  }
+  document.getElementById('copyPico').onclick=e=>copyText(document.getElementById('picoOut').textContent,e.target);
+  document.getElementById('copyPrompt').onclick=e=>copyText('你是一位急重症實證護理專家。請把下面這個臨床問題拆成 PICO 四格，每格給英文關鍵字與 2 個同義詞，並建議 MeSH 詞：\n「'+pf.map(x=>x.value).join(' / ')+'」',e.target);
+
+  // steps
+  document.querySelectorAll('#steps div').forEach(d=>d.onclick=()=>d.classList.toggle('done'));
+
+  // quizzes
+  let score=0;
+  document.querySelectorAll('.q .opts').forEach(opts=>{
+    const q=opts.closest('.q');
+    opts.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      if(q.dataset.done)return; q.dataset.done=1;
+      opts.querySelectorAll('button').forEach(x=>x.classList.add(x.dataset.ok==='1'?'ok':(x===b?'no':'')));
+      q.querySelector('.exp').classList.add('on');
+      if(q.closest('#quiz')&&b.dataset.ok==='1'){score++; document.getElementById('score').textContent=score+' / 5'}
+    });
+  });
+
+  // flip
+  document.querySelectorAll('#flip .card').forEach(c=>{c.onclick=()=>c.classList.toggle('open'); c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();c.classList.toggle('open')}}});
+
+  // timer
+  let left=600,tick=null; const tEl=document.getElementById('timer');
+  const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  document.getElementById('tStart').onclick=e=>{
+    if(tick){clearInterval(tick);tick=null;e.target.textContent='繼續';return}
+    e.target.textContent='暫停';
+    tick=setInterval(()=>{left--; tEl.textContent=fmt(left); if(left<=0){clearInterval(tick);tick=null;tEl.textContent='時間到';e.target.textContent='開始'}},1000);
+  };
+  document.getElementById('tReset').onclick=()=>{clearInterval(tick);tick=null;left=600;tEl.textContent=fmt(left);document.getElementById('tStart').textContent='開始'};
+})();
+</script>
+
+</body></html>
