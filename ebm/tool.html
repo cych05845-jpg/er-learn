@@ -81,7 +81,19 @@ textarea{width:100%;min-height:150px;padding:10px 12px;border:1px solid var(--li
 .box h3{margin-bottom:6px}
 .links{display:flex;gap:8px;flex-wrap:wrap}
 .links a{text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:7px 12px;background:var(--paper);color:var(--ink);font-weight:500;font-size:14px}
-.stream{white-space:pre-wrap;line-height:1.7;font-size:15px}
+.stream{white-space:pre-wrap;line-height:1.75;font-size:16px}
+.sec{border-radius:12px;padding:14px 16px;border-left:6px solid var(--t,var(--ink));background:var(--ts,var(--ink-soft));font-size:15.5px;line-height:1.7;white-space:pre-wrap}
+.sec h4{margin:0 0 6px;font-size:16px;color:var(--t,var(--ink))}
+.sec.c1{--t:var(--t0);--ts:var(--t0-soft)} .sec.c2{--t:var(--t1);--ts:var(--t1-soft)} .sec.c3{--t:var(--t2);--ts:var(--t2-soft)} .sec.c4{--t:var(--accent);--ts:var(--accent-soft)} .sec.c5{--t:var(--ink);--ts:var(--ink-soft)}
+.chips2{display:flex;gap:8px;flex-wrap:wrap}
+.chips2 button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:8px 14px;font-weight:600}
+.chips2 button.best{border-color:var(--t1);color:var(--t1)}
+.ck{width:100%;border-collapse:collapse;font-size:14.5px} .ck th{background:var(--ink-soft);font-size:13px} .ck td,.ck th{border:1px solid var(--line);padding:8px;vertical-align:top}
+.ck td.q{min-width:180px;font-weight:600} .ck td.quote{color:var(--muted);font-size:13.5px;min-width:200px}
+.ck .f-yes{color:var(--t0);font-weight:700} .ck .f-no{color:var(--warn);font-weight:700} .ck .f-part{color:var(--t1);font-weight:700}
+.ck select,.ck input{font:inherit;padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--fg);width:100%}
+.ev{width:100%;border-collapse:collapse;font-size:13.5px} .ev td,.ev th{border:1px solid var(--line);padding:6px 8px;vertical-align:top} .ev th{background:var(--t2-soft)}
+.ev select{font:inherit;padding:4px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--fg)}
 .stream.thinking{color:var(--muted)}
 ul{margin:0;padding-left:1.2em} li{margin:3px 0}
 footer{margin-top:24px;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));font-size:13px;color:var(--muted)}
@@ -236,7 +248,7 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
     <label class="chk"><input type="checkbox" id="c2"><span>我確認內容不含病人可識別資料。</span></label>
     <div class="row"><button class="btn primary" id="go2">翻成白話並標示確定性</button><button class="btn" id="stop2" hidden>停止</button><button class="btn" id="copy2" hidden>複製結果</button><button class="btn" id="to4" hidden>帶結果去步驟 4 →</button><span class="note" id="n2"></span></div>
     <details class="box" style="margin-top:14px" id="rulesGrade"><summary><h3 style="display:inline">標準 GRADE：AI 被要求遵守的規則</h3></summary><div style="margin-top:8px"><ul><li>每個 outcome 一句話：方向、大小、GRADE 代表的可信程度</li><li>信賴區間跨過 1（或 0）要寫「不確定」，不能寫「無效」</li><li>不得補充表中沒有的數字；缺的就說缺</li><li>最後給一段 60 字內的「跟部長報告版」</li></ul></div></details>
-    <details class="box" style="margin-top:14px" id="rulesSingle" hidden><summary><h3 style="display:inline">單篇文章：AI 做的與不做的</h3></summary><div style="margin-top:8px"><ul><li>先判斷研究設計（RCT／世代／病例對照／橫斷／質性／SR／診斷），並說明依據</li><li>依你選的等級系統（Oxford 2011 / 2009、Melnyk、JBI）判定證據等級並給理由；不混用</li><li>依你選的工具偏好（自動 / JBI / CASP / CEBM）指定清單；該系列沒有對應設計時才換專用工具（RoB 2、NOS、AMSTAR 2、QUIPS、QUADAS-2、AGREE II…）</li><li>逐條列出該工具的題目，標「文中有寫／沒寫」並引用段落</li><li><b>判斷欄留白給你填</b>：AI 定位與整理，不替你打勾</li><li>最後提醒這類設計在 GRADE 起始等級（RCT 高、觀察性低）</li></ul></div></details>
+    <details class="box" style="margin-top:14px" id="rulesSingle" hidden><summary><h3 style="display:inline">單篇文章：AI 做的與不做的</h3></summary><div style="margin-top:8px"><ul><li>先判斷研究設計（RCT／世代／病例對照／橫斷／質性／SR／診斷），並說明依據</li><li>依你選的等級系統（Oxford 2011 / 2009、Melnyk、JBI）判定證據等級並給理由；不混用</li><li>依你選的工具偏好（自動 / JBI / CASP / CEBM）指定清單；該系列沒有對應設計時才換專用工具（RoB 2、NOS、AMSTAR 2、QUIPS、QUADAS-2、AGREE II…）</li><li>第一階段：辨認設計、判等級，列出 2–4 個候選工具（敘述性回顧會有 SANRA、指引會有 AGREE II），<b>由你點選要用哪一個</b>，或從「其他工具」挑</li><li>第二階段：用你選的工具逐條定位成表格，標「有／無／部分」並引句；<b>判斷欄由你填</b>，自動計分</li><li>每篇評完按「加入證據表」，多篇累積成一張表，可複製進 Excel 或整張帶去步驟 4</li></ul></div></details>
     <details class="box" style="margin-top:14px" id="rulesCore" hidden><summary><h3 style="display:inline">Core GRADE：AI 被要求遵守的規則</h3></summary><div style="margin-top:8px"><ul><li>先定「評讀目標」：是問「有沒有效果」（null 門檻）還是「效果夠不夠重要」（MID 門檻）</li><li>把相對效果換成每 1000 人的絕對效果，再和 MID 比</li><li>不精確：信賴區間跨過 MID（而不只是跨過 1）才降級</li><li>五個降級面向仍要逐項點名：偏差、不一致、不精確、間接、發表偏差</li><li>結論用 Core GRADE 的說法：「很可能有重要效果 / 很可能效果不重要 / 不確定」</li><li>MID 若是假設，必須標示「假設值，請與臨床團隊確認」</li></ul></div></details>
   </div>
   <div class="out" id="o2"><div class="ph">白話版會逐字顯示在這裡。請複製後對照原表再使用。</div></div>
@@ -428,27 +440,130 @@ G. 最終確定性（高／中／低／極低）與 Core GRADE 式結論句：�
     cebm:`優先用 Oxford CEBM Critical Appraisal Worksheets（RCT／治療、系統性回顧、診斷、預後，各約 3 大段：結果是否有效 Validity、結果是什麼 Results、能否用在我的病人 Applicability）；CEBM 沒有對應單的設計（質性 → CASP、世代／病例對照 → NOS、臨床指引 → AGREE II、橫斷 → JBI）才改用專用工具`};
   const toolName={auto:'依設計自動選',jbi:'JBI 清單優先',casp:'CASP 清單優先',cebm:'CEBM 評讀單優先'};
   const tool=()=>document.querySelector('input[name=tool]:checked').value;
-  const P_SINGLE=()=>`你是實證護理方法學者。以下是一篇研究文章的摘要或全文節錄（非 Cochrane Review）。請用繁體中文，依序完成：
-一、研究設計：判斷是 RCT／世代／病例對照／橫斷／質性／系統性回顧／診斷準確性 之中的哪一種，引用文中依據（一句）。不確定就寫「無法判斷，需看方法段」。
-一之二、證據等級：依「${lvName[lv()]}」判定等級並說明理由。等級定義如下，只能用這個系統，不要混用：${LV[lv()]}。若設計介於兩級之間，寫出兩個候選等級與判斷關鍵。
-二、應使用的評讀工具：使用者偏好為「${toolName[tool()]}」。規則：${TOOLS[tool()]}。寫出最後選用的工具名稱、題數或 domain 數、為何選它，並列出 1–2 個可替代的工具。
-三、逐條定位：把該工具的每一條題目列出，每條標示「文中有寫：（引用該段關鍵句）」或「文中沒寫」。不要做判斷，判斷欄一律寫「□ 由評讀者填寫」。
-四、提醒：這種設計在 GRADE 的起始等級（RCT 起始高、觀察性起始低），以及這篇最值得注意的 1–2 個可能偏差來源（只指出線索，不下結論）。
-嚴禁補充文中沒有的資訊；文章未提供的就寫「文中未提供」。用條列，不要用表格。`;
   const mode=()=>document.querySelector('input[name=mode]:checked').value;
   document.querySelectorAll('input[name=mode]').forEach(r=>r.onchange=()=>{
     const s=mode()==='single'; $('fwRow').hidden=s; $('lvRow').hidden=!s; $('toolRow').hidden=!s; $('midWrap').hidden=s||fw()!=='core'; $('rulesSingle').hidden=!s;
     $('rulesGrade').hidden=s||fw()==='core'; $('rulesCore').hidden=s||fw()!=='core';
     $('q2label').firstChild.textContent=s?'貼上文章摘要或方法／結果段（或由上方 PDF 帶入全文）':'貼上 Cochrane Review 的 Summary of Findings 表（從 Review 頁面複製文字，或由上方 PDF 帶入）';
     $('q2').placeholder=s?'例：Background… Methods: We conducted a multicentre randomised trial… Results…':'例：Outcome: Survival to hospital discharge. RR 1.12 (95% CI 0.86 to 1.47)…';
-    $('go2').textContent=s?'辨認設計並列出評讀清單':(fw()==='core'?'以 Core GRADE 判讀並翻成白話':'翻成白話並標示確定性');
+    $('go2').textContent=s?'辨認設計、分級，並列出可用的評讀工具':(fw()==='core'?'以 Core GRADE 判讀並翻成白話':'翻成白話並標示確定性');
   });
-  const buildPrompt=()=>mode()==='single'?P_SINGLE():(fw()==='core'?P_CORE():P_GRADE());
-  streamer(2,()=>buildPrompt()+`
+  // ---- SoF mode: stream, then split into colored sections
+  const HEAD=/^(?:[一二三四五六七八九十]+[、.．]|[A-G][.．、]|\d+[.．、]|跟主管報告版|跟部長報告版|結論|總結)/;
+  function renderBlocks(el,text){
+    const lines=text.split('\n'); const secs=[]; let cur=null;
+    for(const ln of lines){ if(HEAD.test(ln.trim())){cur={h:ln.trim(),b:[]};secs.push(cur)} else if(cur)cur.b.push(ln); else {cur={h:'',b:[ln]};secs.push(cur)} }
+    if(secs.length<2){el.className='stream';el.textContent=text;return}
+    el.className='out'; el.innerHTML=secs.map((s,i)=>`<div class="sec c${(i%5)+1}">${s.h?'<h4>'+esc(s.h)+'</h4>':''}${esc(s.b.join('\n').trim())}</div>`).join('');
+  }
+  const SOF_PROMPT=()=>(fw()==='core'?P_CORE():P_GRADE())+`
 
-${mode()==='single'?'文章內容':'Summary of Findings'}：
-${$('q2').value.trim().slice(0,mode()==='single'?40000:12000)}`,'copy2');
+Summary of Findings：
+${$('q2').value.trim().slice(0,12000)}`;
+  let ctl2=null; $('stop2').onclick=()=>ctl2?.abort();
+  async function runSof(images){
+    ctl2=new AbortController(); $('go2').disabled=true;$('stop2').hidden=false;$('copy2').hidden=true;
+    const out=$('o2'); out.innerHTML='<div class="stream thinking">思考中…</div>'; const el=out.firstChild; showOut(2);
+    const prompt=SOF_PROMPT()+(images?'\n\n附圖是 Cochrane Review PDF 中含 Summary of Findings 表的頁面，請只依據影像中的表格內容判讀；影像中看不清的數字請寫「影像不清」。':'');
+    try{
+      const o={signal:ctl2.signal,modelTier:'default',onText:({text})=>{el.classList.remove('thinking');el.textContent=text}}; if(images)o.images=images;
+      const {text,truncated}=await sample(prompt,o);
+      renderBlocks(el,text); if(truncated)$('n2').textContent='內容被截斷，請分段貼上。';
+      $('copy2').hidden=false; $('copy2').onclick=e=>copy(text,e.target); flow.appraisal=text; saveFlow(); $('to4').hidden=false;
+    }catch(e){ el.classList.remove('thinking'); el.textContent=e.text||(e.code==='cancelled'?'已停止。':''); fail(e,$('n2')); }
+    finally{$('go2').disabled=false;$('stop2').hidden=true}
+  }
+  // ---- single-article mode: A) classify + offer tools  B) run the chosen checklist as a table
+  const COMMON_TOOLS=['SANRA（敘述性回顧，6 向度）','JBI Text and Opinion（專家意見，6 題）','AGREE II（臨床指引，23 題）','AMSTAR 2（系統性回顧，16 題）','CASP Systematic Review（10 題）','RoB 2（RCT，5 domain）','CASP RCT（11 題）','JBI RCT（13 題）','Newcastle-Ottawa Scale（世代／病例對照）','JBI Cohort（11 題）','CASP Cohort（12 題）','JBI Analytical Cross-sectional（8 題）','QUIPS（預後因子，6 domain）','QUADAS-2（診斷，4 domain）','CASP Qualitative（10 題）','JBI Qualitative（10 題）','MMAT（混合方法）','CEBM Worksheet（治療／SR／診斷／預後）'];
+  const P_CLASSIFY=()=>`你是實證護理方法學者。以下是一篇文章的摘要或全文節錄。只回覆一個 JSON 物件：
+{"title":"文章題目（原文）","cite":"第一作者 年份 期刊（簡短）",
+ "design":"研究設計：RCT／類實驗／世代／病例對照／橫斷／個案系列／質性／系統性回顧／統合分析／敘述性回顧／臨床指引／專家意見／診斷準確性／預後／其他",
+ "design_basis":"引用文中一句作為依據",
+ "question_type":"治療效益／預後／診斷／其他",
+ "level":"依「${lvName[lv()]}」判定的等級，例如 Level 2 或 Level 5",
+ "level_reason":"兩句以內的理由（只能用這一套：${LV[lv()]}）",
+ "candidates":[{"tool":"工具名稱（含題數或 domain 數）","fit":"best 或 alt","why":"一句為何適合"}],
+ "grade_start":"這種設計在 GRADE 的起始等級與一句說明",
+ "bias_hints":["最值得注意的偏差線索 1","線索 2"]}
+candidates 規則：使用者偏好「${toolName[tool()]}」：${TOOLS[tool()]}。敘述性回顧請一定列出 SANRA；臨床指引請一定列出 AGREE II；專家意見請列出 JBI Text and Opinion。至少 2 個、至多 4 個候選，最適合的標 best。嚴禁補充文中沒有的資訊。
 
+文章內容：
+${$('q2').value.trim().slice(0,40000)}`;
+  const P_CHECK=(toolN)=>`你是實證護理方法學者。請用「${toolN}」的每一條題目（或 domain）逐條定位以下文章。只回覆一個 JSON 物件：
+{"tool":"${toolN}","items":[{"n":1,"q":"題目（繁體中文，附簡短英文原題）","found":"有／無／部分","quote":"文中對應的關鍵句（原文，最多 60 字；沒有就空字串）","where":"段落或章節名（沒有就空字串）"}],
+ "summary":"三句以內：這篇對我們單位最可用的是什麼、最大的限制是什麼",
+ "grade_start":"GRADE 起始等級一句",
+ "bias_hints":["偏差線索 1","偏差線索 2"]}
+規則：items 必須涵蓋該工具的全部題目，不可省略；found 只標文中有沒有寫，不做好壞判斷（判斷留給評讀者）；嚴禁補充文中沒有的資訊。
+
+文章內容：
+${$('q2').value.trim().slice(0,40000)}`;
+  let lastA=null;
+  function esc2(s){return esc(String(s??''))}
+  function renderA(d){
+    lastA=d; const cands=(Array.isArray(d.candidates)?d.candidates:[]);
+    $('o2').innerHTML=`
+      <div class="sec c1"><h4>① 這是哪一種文章</h4><b>${esc2(d.title)}</b>${d.cite?'　<span class="note">'+esc2(d.cite)+'</span>':''}\n設計：<b>${esc2(d.design)}</b>（${esc2(d.question_type)}）\n依據：「${esc2(d.design_basis)}」</div>
+      <div class="sec c2"><h4>② 證據等級（${esc2(lvName[lv()])}）</h4><b style="font-size:20px">${esc2(d.level)}</b>\n${esc2(d.level_reason)}</div>
+      <div class="sec c3"><h4>③ 選一個評讀工具，再按下去逐條定位</h4><div class="chips2" id="toolChips">${cands.map(c=>`<button data-tool="${esc2(c.tool)}" class="${c.fit==='best'?'best':''}" title="${esc2(c.why)}">${c.fit==='best'?'★ ':''}${esc2(c.tool)}</button>`).join('')}</div>
+        <div class="row" style="margin-top:8px"><select id="toolOther" style="font:inherit;padding:7px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--fg);max-width:100%"><option value="">其他工具…</option>${COMMON_TOOLS.map(t=>'<option>'+esc2(t)+'</option>').join('')}</select><button class="btn" id="toolGo">用這個</button></div>
+        <p class="note" style="margin-top:6px">${cands.map(c=>'<b>'+esc2(c.tool)+'</b>：'+esc2(c.why)).join('　')}</p></div>
+      <div class="sec c4"><h4>④ 提醒</h4>GRADE 起始：${esc2(d.grade_start)}\n${(d.bias_hints||[]).map(x=>'• '+esc2(x)).join('\n')}</div>`;
+    document.querySelectorAll('#toolChips button').forEach(b=>b.onclick=()=>runB(b.dataset.tool));
+    $('toolGo').onclick=()=>{const v=$('toolOther').value; if(v)runB(v)};
+  }
+  function renderB(d){
+    const items=Array.isArray(d.items)?d.items:[];
+    const cls=f=>/^有/.test(f)?'f-yes':/^部分/.test(f)?'f-part':'f-no';
+    const rows=items.map((it,i)=>`<tr><td>${esc2(it.n??i+1)}</td><td class="q">${esc2(it.q)}</td><td class="${cls(String(it.found||''))}">${esc2(it.found)}</td><td class="quote">${it.quote?'「'+esc2(it.quote)+'」':''}${it.where?'<br><small>'+esc2(it.where)+'</small>':''}</td><td><select class="jg"><option value="">□ 請填</option><option>符合</option><option>部分符合</option><option>不符合</option><option>無法判斷</option></select></td><td><input class="nt" placeholder="備註"></td></tr>`).join('');
+    const holder=document.createElement('div'); holder.className='out'; holder.id='secB';
+    holder.innerHTML=`
+      <div class="sec c5"><h4>⑤ ${esc2(d.tool)}：逐條定位（判斷欄由你填）</h4>
+        <div class="tw"><table class="ck"><tr><th>#</th><th>題目</th><th>文中</th><th>對應段落</th><th style="min-width:120px">你的判斷</th><th style="min-width:140px">備註</th></tr>${rows}</table></div>
+        <div class="row" style="margin-top:10px"><span class="note" id="ckScore"></span></div></div>
+      <div class="sec c1"><h4>⑥ 小結</h4>${esc2(d.summary)}\nGRADE 起始：${esc2(d.grade_start)}\n${(d.bias_hints||[]).map(x=>'• '+esc2(x)).join('\n')}</div>
+      <div class="row"><select id="verdict" style="font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--fg)"><option value="">這篇的整體結論…</option><option>可採用</option><option>可參考</option><option>不採用</option><option>待補資料</option></select><button class="btn primary" id="addEv">加入證據表</button><button class="btn" id="copyCk">複製這張表（貼 Excel）</button></div>`;
+    const old=$('secB'); if(old)old.remove(); $('o2').appendChild(holder); holder.scrollIntoView({block:'start'});
+    const score=()=>{const js=[...holder.querySelectorAll('.jg')].map(s=>s.value);const ok=js.filter(v=>v==='符合').length,part=js.filter(v=>v==='部分符合').length;$('ckScore').textContent=`符合 ${ok}／部分 ${part}／共 ${js.length} 題`;return{ok,part,n:js.length}};
+    holder.querySelectorAll('.jg').forEach(s=>s.onchange=score); score();
+    const tsv=()=>['#\t題目\t文中\t對應段落\t判斷\t備註',...[...holder.querySelectorAll('.ck tr')].slice(1).map(tr=>{const td=tr.querySelectorAll('td');return [td[0].textContent,td[1].textContent,td[2].textContent,td[3].textContent.replace(/\s+/g,' '),td[4].querySelector('select').value,td[5].querySelector('input').value].join('\t')})].join('\n');
+    $('copyCk').onclick=e=>copy(tsv(),e.target);
+    $('addEv').onclick=()=>{const s=score(); flow.evidence=flow.evidence||[]; flow.evidence.push({title:lastA?.title||'',cite:lastA?.cite||'',design:lastA?.design||'',level:lastA?.level||'',tool:d.tool,score:`${s.ok}+${s.part}/${s.n}`,verdict:$('verdict').value,summary:d.summary||'',checklist:tsv()}); saveFlow(); renderEv(); $('evBox').scrollIntoView({block:'start'});};
+    flow.appraisal=`【${lastA?.title||''}】${lastA?.design||''}，${lastA?.level||''}，工具 ${d.tool}。${d.summary||''}`; saveFlow(); $('to4').hidden=false;
+  }
+  async function runA(images){
+    ctl2=new AbortController(); $('go2').disabled=true;$('stop2').hidden=false;$('copy2').hidden=true;
+    $('o2').innerHTML='<div class="stream thinking">思考中…（辨認設計與分級）</div>'; showOut(2);
+    try{ const o={signal:ctl2.signal,modelTier:'default'}; if(images)o.images=images;
+      const d=await sample.json(P_CLASSIFY()+(images?'\n\n附圖是這篇文章 PDF 的頁面，請依影像內容作答。':''),o); renderA(d); }
+    catch(e){ $('o2').innerHTML='<div class="ph">'+(e.code==='cancelled'?'已停止。':'沒有產生結果。')+(e.text?'<div class="mono" style="margin-top:8px">'+esc(e.text.slice(0,1500))+'</div>':'')+'</div>'; fail(e,$('n2')); }
+    finally{$('go2').disabled=false;$('stop2').hidden=true}
+  }
+  async function runB(toolN){
+    ctl2=new AbortController(); $('stop2').hidden=false;
+    const old=$('secB'); if(old)old.remove();
+    const ph=document.createElement('div'); ph.id='secB'; ph.className='stream thinking'; ph.textContent='思考中…（用 '+toolN+' 逐條定位，約 20–60 秒）'; $('o2').appendChild(ph); ph.scrollIntoView({block:'start'});
+    try{ const d=await sample.json(P_CHECK(toolN),{signal:ctl2.signal,modelTier:'default'}); renderB(d); }
+    catch(e){ ph.className='ph'; ph.textContent=(e.code==='cancelled'?'已停止。':'沒有產生清單，請再按一次工具。'); fail(e,$('n2')); }
+    finally{$('stop2').hidden=true}
+  }
+  // ---- evidence table (several articles for one guideline / report)
+  function renderEv(){
+    const ev=flow.evidence||[]; let box=$('evBox');
+    if(!box){box=document.createElement('div');box.id='evBox';box.className='box';box.style.marginTop='14px';box.style.gridColumn='1 / -1';$('p1').appendChild(box)}
+    if(!ev.length){box.innerHTML='<h3>證據表（0 篇）</h3><p class="note">每評讀完一篇按「加入證據表」，多篇會累積在這裡，寫指引或報告時一次帶走。</p>';return}
+    box.innerHTML=`<h3>證據表（${ev.length} 篇）</h3><div class="tw"><table class="ev"><tr><th>#</th><th>文章</th><th>設計</th><th>Level</th><th>工具</th><th>符合</th><th>結論</th><th></th></tr>
+      ${ev.map((r,i)=>`<tr><td>${i+1}</td><td><b>${esc2(r.title)}</b><br><small>${esc2(r.cite)}</small></td><td>${esc2(r.design)}</td><td>${esc2(r.level)}</td><td>${esc2(r.tool)}</td><td>${esc2(r.score)}</td><td><select data-i="${i}" class="evv"><option ${!r.verdict?'selected':''} value="">—</option>${['可採用','可參考','不採用','待補資料'].map(v=>`<option ${r.verdict===v?'selected':''}>${v}</option>`).join('')}</select></td><td><button class="btn" data-del="${i}">刪</button></td></tr>`).join('')}</table></div>
+      <div class="row"><button class="btn" id="evCopy">複製證據表（貼 Excel）</button><button class="btn primary" id="evTo4">帶整張證據表去步驟 4 →</button><button class="btn" id="evClear">清空</button></div>`;
+    box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{flow.evidence.splice(+b.dataset.del,1);saveFlow();renderEv()});
+    box.querySelectorAll('.evv').forEach(s=>s.onchange=()=>{flow.evidence[+s.dataset.i].verdict=s.value;saveFlow()});
+    const tsv=()=>['#\t文章\t出處\t設計\tLevel\t工具\t符合/題數\t結論\t小結',...ev.map((r,i)=>[i+1,r.title,r.cite,r.design,r.level,r.tool,r.score,r.verdict,r.summary].join('\t'))].join('\n');
+    $('evCopy').onclick=e=>copy(tsv(),e.target);
+    $('evClear').onclick=()=>{flow.evidence=[];saveFlow();renderEv()};
+    $('evTo4').onclick=()=>{$('q3').value=(flow.pico?'PICO：\n'+picoText()+'\n\n':'')+'證據表（'+ev.length+' 篇）：\n'+ev.map((r,i)=>`${i+1}. ${r.title}（${r.cite}）｜${r.design}｜${r.level}｜${r.tool} 符合 ${r.score}｜結論：${r.verdict||'未填'}｜${r.summary}`).join('\n')+'\n\n（請補上各篇 DOI）'; goTab(2); renderHandoff();};
+  }
+  renderEv();
+  $('go2').onclick=()=>{ if(!ready(2,$('q2'),$('c2'),$('w2')))return; mode()==='single'?runA(null):runSof(null); };
   // ---- PDF import (pdf.js, runs in the browser; nothing is uploaded)
   let pdfDoc=null, sofPages=[];
   const rangeOf=s=>{const m=String(s||'').match(/(\d+)\s*[-–~]\s*(\d+)/);if(m)return Array.from({length:Math.max(0,+m[2]-+m[1]+1)},(_,i)=>+m[1]+i);const n=parseInt(s);return isNaN(n)?[]:[n]};
@@ -488,18 +603,7 @@ ${$('q2').value.trim().slice(0,mode()==='single'?40000:12000)}`,'copy2');
   };
   // hook images into step-2 call
   const _go2=$('go2').onclick;
-  $('go2').onclick=async()=>{
-    if(!pendingImages)return _go2();
-    if(!ready(2,$('q2'),$('c2'),$('w2')))return;
-    const ctl=new AbortController(); const prevStop=$('stop2').onclick; $('stop2').onclick=()=>ctl.abort(); $('go2').disabled=true;$('stop2').hidden=false;$('copy2').hidden=true;
-    const out=$('o2'); out.innerHTML='<div class="stream thinking">思考中…（影像判讀需較久）</div>'; const el=out.firstChild; showOut(2);
-    const prompt=buildPrompt()+(mode()==='single'?'\n\n附圖是這篇文章 PDF 的頁面，請只依據影像內容作答；看不清的文字請寫「影像不清」。':'\n\n附圖是 Cochrane Review PDF 中含 Summary of Findings 表的頁面，請只依據影像中的表格內容判讀；影像中看不清的數字請寫「影像不清」。');
-    try{
-      const {text}=await sample(prompt,{signal:ctl.signal,images:pendingImages,modelTier:'default',onText:({text})=>{el.classList.remove('thinking');el.textContent=text}});
-      el.textContent=text; $('copy2').hidden=false; $('copy2').onclick=e=>copy(text,e.target); flow.appraisal=text; saveFlow(); $('to4').hidden=false;
-    }catch(e){el.classList.remove('thinking');el.textContent=e.text||(e.code==='cancelled'?'已停止。':'');fail(e,$('n2'))}
-    finally{$('go2').disabled=false;$('stop2').hidden=true;$('stop2').onclick=prevStop;pendingImages=null}
-  };
+  $('go2').onclick=()=>{ if(!pendingImages)return _go2(); if(!ready(2,$('q2'),$('c2'),$('w2')))return; const im=pendingImages; pendingImages=null; mode()==='single'?runA(im):runSof(im); };
   $('q2').addEventListener('input',()=>{pendingImages=null});
   $('to4').onclick=()=>{
     $('q3').value=(flow.pico?'PICO：\n'+picoText()+'\n\n':'')+'步驟 3 判讀結果：\n'+(flow.appraisal||'')+'\n\n（請補上 Review 編號 CD0xxxxx 與 search date）';
