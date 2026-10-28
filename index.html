@@ -1889,7 +1889,7 @@ function petCard(){
   const sp = PET_SP[S.P.sp], nx = S.gate ? S.gate.xp : S.xp;
   return `<a class="petcard" href="#pet" style="--pc:${sp.c}"><div class="pcart">${petArt(S.P.sp, S.stage)}</div>
     <div class="pcm"><div class="pch"><b>${esc(S.P.name || sp.n)}</b><span class="pclv">Lv.${S.lv}・${PET_SPstage(S.P.sp, S.stage)}</span></div>
-      <div class="pcbar"><i style="width:${S.gate ? Math.min(100, S.xp / nx * 100) : 100}%"></i></div><small>${S.gate ? `經驗 ${S.xp} / ${nx}・下一階段：${PET_STAGE[S.stage + 1]}` : `經驗 ${S.xp}・已是最終型態`}</small>
+      <div class="pcbar"><i style="width:${S.gate ? Math.min(100, S.xp / nx * 100) : 100}%"></i></div><small>${S.gate ? (S.xp >= nx ? `經驗 ${S.xp}・已達進化門檻 ${nx}，再完成闖關條件就能進化` : `經驗 ${S.xp} / ${nx}・下一階段：${PET_STAGE[S.stage + 1]}`) : `經驗 ${S.xp}・已是最終型態`}</small>
       <span class="pcsay">${S.total ? `🍖${S.have.food} 💧${S.have.water} 🍰${S.have.snack}　${esc(PET_HUNGRY[Math.floor(Date.now() / 36e5) % PET_HUNGRY.length])}` : esc(pickCheer(PET_SAY, 7))}</span></div>
     <span class="go">${S.can ? "可以進化！" : S.total ? "去餵牠 →" : "看看牠 →"}</span></a>`;
 }
@@ -1912,7 +1912,7 @@ function petPage(){
     <section class="pethero"><div class="petstage" id="petTap" role="button" tabindex="0" aria-label="摸摸牠">${petArt(S.P.sp, S.stage)}<div class="petbub" id="petBub" hidden></div></div>
       <div class="petinfo"><div class="pih"><h2>${esc(S.P.name || sp.n)}</h2><button class="mini" id="petRename">改名</button></div>
         <div class="pitag"><span class="pclv">Lv.${S.lv}</span><b>${PET_SPstage(S.P.sp, S.stage)}</b><small>${esc(sp.n)}・${esc(sp.st[S.stage])}</small></div>
-        <div class="pcbar big"><i style="width:${S.gate ? Math.min(100, S.xp / nx * 100) : 100}%"></i></div><small>${S.gate ? `經驗 ${S.xp} / ${nx}` : `經驗 ${S.xp}・最終型態`}</small>
+        <div class="pcbar big"><i style="width:${S.gate ? Math.min(100, S.xp / nx * 100) : 100}%"></i></div><small>${S.gate ? (S.xp >= nx ? `經驗 ${S.xp}・已達進化門檻 ${nx}，再完成闖關條件就能進化` : `經驗 ${S.xp} / ${nx}`) : `經驗 ${S.xp}・最終型態`}</small>
         <div class="paff" title="親密度">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= aff ? "on" : ""}">♥</i>`).join("")}<small>親密度（每天摸摸、餵食會增加）</small></div>
         <div class="pfeed">${[["food", "🍖", "飼料", "闖過一關"], ["water", "💧", "水", "達成每日目標"], ["snack", "🍰", "點心", "闖關拿 3 星"]].map(([k, ic, n, how]) => `<button class="pfb" data-feed="${k}" ${S.have[k] ? "" : "disabled"}><i>${ic}</i><b>${n} ×${S.have[k]}</b><small>${how}・+${PET_XP[k]} 經驗</small></button>`).join("")}</div>
         ${S.total > 1 ? `<button class="btn" id="feedAll">全部餵完（${S.total} 份）</button>` : ""}
@@ -1921,7 +1921,7 @@ function petPage(){
           <span class="${S.zoneOk ? "y" : ""}">${S.zoneOk ? "✓" : "○"} ${esc(S.gate.txt)}：${S.gz.map(x => `${x.n} ${x.q.n}/${x.q.tot}`).join("、")}</span>
           ${S.can ? `<button class="btn big" id="evolve">✨ 進化！</button>` : ""}</div>` : `<div class="pgate ok"><b>🎉 已經是最終型態：${esc(sp.st[3])}</b></div>`}
       </div></section>
-    <section class="panel"><h3 class="h3">成長路線</h3><div class="pevo">${[0, 1, 2, 3].map(i => `<div class="pev ${i <= S.stage ? "on" : ""} ${i === S.stage ? "now" : ""}"><span class="lvb">Lv.${i + 1}　${i === 3 && sp.last ? sp.last : PET_STAGE[i]}</span>${i <= S.stage ? petArt(S.P.sp, i) : `<div class="plock">${petSVG(S.P.sp, i)}</div>`}<small>${esc(sp.st[i])}</small>${i ? `<em>${esc(PET_GATE[i].txt)}</em>` : `<em>領養</em>`}</div>`).join("")}</div></section>
+    <section class="panel"><h3 class="h3">成長路線</h3><div class="pevo">${[0, 1, 2, 3].map(i => `<div class="pev ${i <= S.stage ? "on" : ""} ${i === S.stage ? "now" : ""}"><span class="lvb">第 ${i + 1} 階・${i === 3 && sp.last ? sp.last : PET_STAGE[i]}</span>${i <= S.stage ? petArt(S.P.sp, i) : `<div class="plock">${petSVG(S.P.sp, i)}</div>`}<small>${esc(sp.st[i])}</small>${i ? `<em>${esc(PET_GATE[i].txt)}</em>` : `<em>領養</em>`}</div>`).join("")}</div></section>
     <section class="panel"><h3 class="h3">寵物圖鑑 <small>${dex.size} / ${PET_ORDER.length}・每闖完一張闖關地圖解鎖一隻</small></h3>
       <div class="pdex">${PET_ORDER.map(k => { const on = dex.has(k), s = PET_SP[k]; return `<div class="pdc ${on ? "" : "lock"}" style="--pc:${s.c}"><div class="pda">${on ? petArt(k, k === S.P.sp ? S.stage : 1) : `<div class="plock">${petSVG(k, 1)}</div>`}</div><b>${on ? esc(s.n) : "？？？"}</b><small>${on ? esc(s.tag) : "闖完下一張地圖解鎖"}</small>${on ? `<p>${esc(s.lore)}</p>` : ""}</div>`; }).join("")}</div></section>
     <section class="panel"><h3 class="h3">怎麼養</h3><ul class="phow"><li>🍖 闖過一關（1 星以上）得 1 份飼料</li><li>🍰 闖關拿到 3 星再加 1 份點心</li><li>💧 達成每日目標（今天過 1 關）得 1 瓶水</li><li>✨ 經驗夠了、而且闖完指定的區，就能進化</li><li>💤 不會餓壞、不會生病：輪班忙的時候，牠會乖乖等你</li></ul>
