@@ -560,12 +560,49 @@ ${$('q2').value.trim().slice(0,40000)}`;
     if(!ev.length){box.innerHTML='<h3>證據表（0 篇）</h3><p class="note">每評讀完一篇按「加入證據表」，多篇會累積在這裡，寫指引或報告時一次帶走。</p>';return}
     box.innerHTML=`<h3>證據表（${ev.length} 篇）</h3><div class="tw"><table class="ev"><tr><th>#</th><th>文章</th><th>設計</th><th>Level</th><th>工具</th><th>符合</th><th>結論</th><th></th></tr>
       ${ev.map((r,i)=>`<tr><td>${i+1}</td><td><b>${esc2(r.title)}</b><br><small>${esc2(r.cite)}</small></td><td>${esc2(r.design)}</td><td>${esc2(r.level)}</td><td>${esc2(r.tool)}</td><td>${esc2(r.score)}</td><td><select data-i="${i}" class="evv"><option ${!r.verdict?'selected':''} value="">—</option>${['可採用','可參考','不採用','待補資料'].map(v=>`<option ${r.verdict===v?'selected':''}>${v}</option>`).join('')}</select></td><td><button class="btn" data-del="${i}">刪</button></td></tr>`).join('')}</table></div>
-      <div class="row"><button class="btn" id="evCopy">複製證據表（貼 Excel）</button><button class="btn primary" id="evTo4">帶整張證據表去步驟 4 →</button><button class="btn" id="evClear">清空</button></div>`;
+      <div class="row"><button class="btn" id="evCopy">複製證據表（貼 Excel）</button><button class="btn primary" id="evTo4">帶整張證據表去步驟 4 →</button><button class="btn" id="evClear">清空</button></div>
+      ${ev.length>=2?`<details class="box" style="margin-top:12px;border-left:4px solid var(--t2)"><summary style="cursor:pointer;font-weight:700">多篇研究：評估能不能做統合分析（Meta-analysis）</summary>
+        <label class="f" style="margin-top:8px">各篇的 PICO 與主要結果（選填；貼上效果量、人數、結果定義，評估會更準）<textarea id="maData" style="min-height:110px" placeholder="例：Yannopoulos 2020 ARREST：n=30，ECPR vs 標準 ACLS，存活出院 43% vs 7%…&#10;Belohlavek 2022 Prague OHCA：n=256，…&#10;Suverein 2023 INCEPTION：n=160，…"></textarea></label>
+        <div class="row"><button class="btn primary" id="maGo">評估是否適合做 MA</button><button class="btn" id="maStop" hidden>停止</button><span class="note" id="maNote"></span></div>
+        <div id="maOut"></div></details>`:''}`;
     box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{flow.evidence.splice(+b.dataset.del,1);saveFlow();renderEv()});
     box.querySelectorAll('.evv').forEach(s=>s.onchange=()=>{flow.evidence[+s.dataset.i].verdict=s.value;saveFlow()});
     const tsv=()=>['#\t文章\t出處\t設計\tLevel\t工具\t符合/題數\t結論\t小結',...ev.map((r,i)=>[i+1,r.title,r.cite,r.design,r.level,r.tool,r.score,r.verdict,r.summary].join('\t'))].join('\n');
     $('evCopy').onclick=e=>copy(tsv(),e.target);
     $('evClear').onclick=()=>{flow.evidence=[];saveFlow();renderEv()};
+    if($('maGo')){
+      let ctlM=null; $('maStop').onclick=()=>ctlM?.abort();
+      $('maGo').onclick=async()=>{
+        const rows=ev.map((r,i)=>`${i+1}. ${r.title}（${r.cite}）｜設計 ${r.design}｜${r.level}｜評讀 ${r.tool} 符合 ${r.score}｜${r.summary}`).join('\n');
+        const extra=$('maData').value.trim();
+        const prompt=`你是 Cochrane 方法學者。使用者評讀了下列多篇研究，想知道能不能把它們做成統合分析（meta-analysis），或只能做敘述性整合。只回覆一個 JSON 物件：
+{"verdict":"適合做 MA／有條件適合／不適合，建議敘述性整合／資料不足無法判斷",
+ "n_rct":"其中 RCT 的篇數（數字）","n_other":"非 RCT 篇數",
+ "homogeneity":{"clinical":"臨床同質性：P、I、C 是否相近（一句，指出最大差異）","methodological":"方法同質性：設計、偏差風險是否相近（一句）","outcome":"結果同質性：主要 outcome 定義與時間點是否可合併（一句）"},
+ "reasons":["判定的 2–4 個理由"],
+ "data_needed":["做 MA 前還要從每篇抽出的資料，例如：各組人數、事件數或平均值±SD、追蹤時間點"],
+ "plan":{"effect_measure":"建議效果量（RR／OR／MD／SMD）與理由","model":"固定效應或隨機效應，理由","heterogeneity":"用 I² 與 χ² 檢驗，預期異質性高低與原因","subgroup":"值得做的次群組或敏感度分析 1–2 個","tools":"RevMan Web 或 R（meta／metafor）"},
+ "alternative":"若不適合 MA，建議的整合方式（敘述性整合、依 SWiM 指引、或先做 scoping）",
+ "caveat":"一句：這個評估是依使用者提供的摘要做的，正式決定要回到各篇全文"}
+規則：RCT 少於 2 篇不建議 MA；RCT 與觀察性研究不要混合併；P、I、C 或 outcome 定義明顯不同時標「有條件」並說要怎麼拆；嚴禁捏造各篇的數字。
+
+證據表：
+${rows}
+${extra?'\n各篇補充資料：\n'+extra.slice(0,12000):''}`;
+        ctlM=new AbortController(); $('maGo').disabled=true; $('maStop').hidden=false; $('maOut').innerHTML='<div class="stream thinking">思考中…</div>';
+        try{
+          const d=await sample.json(prompt,{signal:ctlM.signal,modelTier:'default'}); const hm=d.homogeneity||{}, pl=d.plan||{};
+          const col=/^適合/.test(d.verdict||'')?'c1':/有條件/.test(d.verdict||'')?'c4':'c3';
+          $('maOut').innerHTML=`
+            <div class="sec ${col}"><h4>結論：${esc2(d.verdict)}</h4>RCT ${esc2(d.n_rct)} 篇、其他 ${esc2(d.n_other)} 篇\n${(d.reasons||[]).map(x=>'• '+esc2(x)).join('\n')}</div>
+            <div class="sec c2"><h4>三種同質性</h4>• 臨床：${esc2(hm.clinical)}\n• 方法：${esc2(hm.methodological)}\n• 結果：${esc2(hm.outcome)}</div>
+            <div class="sec c5"><h4>做 MA 前還要抽的資料</h4>${(d.data_needed||[]).map(x=>'• '+esc2(x)).join('\n')}</div>
+            <div class="sec c1"><h4>分析計畫</h4>• 效果量：${esc2(pl.effect_measure)}\n• 模型：${esc2(pl.model)}\n• 異質性：${esc2(pl.heterogeneity)}\n• 次群組／敏感度：${esc2(pl.subgroup)}\n• 工具：${esc2(pl.tools)}</div>
+            <div class="sec c4"><h4>若不做 MA</h4>${esc2(d.alternative)}\n<span class="note">${esc2(d.caveat)}</span></div>`;
+        }catch(e){ $('maOut').innerHTML='<div class="ph">'+(e.code==='cancelled'?'已停止。':'沒有產生結果，請再按一次。')+'</div>'; fail(e,$('maNote')); }
+        finally{$('maGo').disabled=false;$('maStop').hidden=true}
+      };
+    }
     $('evTo4').onclick=()=>{$('q3').value=(flow.pico?'PICO：\n'+picoText()+'\n\n':'')+'證據表（'+ev.length+' 篇）：\n'+ev.map((r,i)=>`${i+1}. ${r.title}（${r.cite}）｜${r.design}｜${r.level}｜${r.tool} 符合 ${r.score}｜結論：${r.verdict||'未填'}｜${r.summary}`).join('\n')+'\n\n（請補上各篇 DOI）'; goTab(2); renderHandoff();};
   }
   renderEv();

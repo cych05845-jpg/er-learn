@@ -150,6 +150,8 @@ table{border-collapse:collapse;width:100%;font-size:14px} th,td{border:1px solid
 .sof button{text-align:left;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--paper)}
 .sof button b{display:block;color:var(--seg);font-size:13px;margin-bottom:3px}
 .sof button.on{border-color:var(--seg);background:var(--soft)}
+.chips2 button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:8px 14px;font-weight:600;cursor:pointer}
+.chips2 button.best{border-color:var(--seg);background:var(--soft);color:var(--seg)}
 
 /* timeline */
 .tl{display:grid;gap:10px}
@@ -374,6 +376,19 @@ table{border-collapse:collapse;width:100%;font-size:14px} th,td{border:1px solid
     <div class="box ink"><h3>兩種路線</h3><p><b>專用工具</b>（RoB 2、NOS、AMSTAR 2、QUIPS、QUADAS-2、AGREE II）各管一種設計，國際期刊與 Cochrane 用這套；<b>通用系列</b>（JBI、CASP、CEBM 評讀單）一套涵蓋多種設計，台灣護理報告常用。一份報告選一條路線，別混。</p><p class="note" style="margin-top:6px">證據等級（Level）另外看設計分級，台灣常用 Oxford CEBM；一份報告只用一套。PRISMA、CONSORT、STROBE 是報告規範，不是評讀工具。</p></div>
     <div class="box acc"><h3>AI 工具第 3 步的「單篇文章」模式</h3><p>先選工具偏好（自動 / JBI / CASP / CEBM），AI 判斷設計、指定清單，把每一條題目標「文中有寫／沒寫」並引用段落；<b>判斷欄留白給你填</b>。AI 定位，你打勾。</p></div>
   </div>
+</section>
+
+<!-- 11d appraisal tools explained -->
+<section class="slide s3">
+  <span class="tag"><b></b>Step 3 · 這些工具各在評什麼</span>
+  <h2>點一個工具，看它評什麼、怎麼打分</h2>
+  <div class="chips2" id="toolEx" style="display:flex;gap:8px;flex-wrap:wrap"><button data-i="0">RoB 2</button><button data-i="1">ROBINS-I</button><button data-i="2">NOS（Newcastle-Ottawa）</button><button data-i="3">AMSTAR 2</button><button data-i="4">QUIPS</button><button data-i="5">QUADAS-2</button><button data-i="6">AGREE II</button><button data-i="7">SANRA</button><button data-i="8">CASP</button><button data-i="9">JBI 清單</button><button data-i="10">MMAT</button><button data-i="11">GRADE-CERQual</button><button data-i="12">CEBM 評讀單</button></div>
+  <div class="box ink" id="toolInfo"><h3>先點一個</h3><p>每個工具有三件事要知道：適用哪種文章、看哪幾個面向、輸出是分數還是判斷。</p></div>
+  <div class="cols">
+    <div class="box"><h3>兩種輸出</h3><p><b>打分數</b>：NOS 星數、SANRA 0–12、AGREE II 百分比，好比較但容易誤以為分數高就沒偏差。<b>給判斷</b>：RoB 2、ROBINS-I、QUADAS-2、AMSTAR 2 不算總分，每個面向判低／高，整篇取最差。Cochrane 與 GRADE 走第二種。</p></div>
+    <div class="box acc"><h3>記法</h3><p>RCT→RoB 2；觀察性→NOS 或 ROBINS-I；SR→AMSTAR 2；指引→AGREE II；敘述性回顧→SANRA；預後→QUIPS；診斷→QUADAS-2；不想記就用 JBI 或 CASP 一套到底。</p></div>
+  </div>
+  <p class="speaker"><b>講者備註：</b>不用全講，點 RoB 2、NOS、AMSTAR 2、SANRA 四個就好，其餘讓同仁課後自己點。</p>
 </section>
 
 <!-- 12 Step3 SoF reader -->
@@ -602,6 +617,13 @@ table{border-collapse:collapse;width:100%;font-size:14px} th,td{border:1px solid
     });
   });
 
+
+  // appraisal tools explainer
+  const TOOLEX=[["RoB 2", "RCT 偏差風險（Cochrane 官方）", "看 5 個 domain：① 隨機過程 ② 偏離預定介入 ③ 結果資料缺失 ④ 結果測量 ⑤ 選擇性報告。每個 domain 依訊號題判「低／有疑慮／高」，整篇取最差的那個。", "輸出是紅黃綠燈圖，不打分數。Cochrane Review 的 RoB 圖就是它。"], ["ROBINS-I", "非隨機介入研究（類實驗、沒有隨機的對照）", "7 個 domain：干擾、選樣、介入分類、偏離介入、資料缺失、結果測量、選擇性報告。先想像一個「理想 RCT」，再問這篇離它多遠。", "判「低／中／嚴重／危急」。觀察性介入研究想用 GRADE 升級時常要它。"], ["NOS（Newcastle-Ottawa）", "世代與病例對照研究", "三大類給星：選樣（最多 4 星）、可比性（最多 2 星）、結果或暴露（最多 3 星），滿分 9 星。", "簡單快速、台灣報告常見；缺點是星數跟實際偏差不一定對應，GRADE 工作小組不太推。"], ["AMSTAR 2", "系統性回顧（含／不含統合分析）", "16 題，其中 7 題是關鍵（protocol 預先登記、檢索夠全、排除清單、RoB 評估、統計方法、RoB 對結果的影響、發表偏差）。", "不算總分，依關鍵題缺幾項判「高／中／低／極低」可信度。用來決定要不要信一篇別人做的 SR。"], ["QUIPS", "預後因子研究（某因子能不能預測結果）", "6 個 domain：研究參與、失訪、預後因子測量、結果測量、干擾、統計與報告。", "每個 domain 判「低／中／高」偏差風險。ECPR 預後因子（低流時間、初始節律）的文章就用它。"], ["QUADAS-2", "診斷準確性研究（某檢查準不準）", "4 個 domain：病人選擇、待評估的檢查、參考標準、流程與時間；每個 domain 評偏差風險，前三個再評適用性。", "判「低／高／不清楚」。評估 ETCO₂ 預測 ROSC、評估工具準確度都用它。"], ["AGREE II", "臨床指引", "6 個領域 23 題：範圍與目的、利害關係人參與、制定嚴謹度、呈現清晰度、適用性、編輯獨立性；每題 1–7 分。", "各領域算百分比，制定嚴謹度最重要。評 AHA、ELSO 指引用它。"], ["SANRA", "敘述性回顧（非系統性的 review、實務指南）", "6 個向度各 0–2 分：主題重要性、目的明確、文獻檢索描述、引用、科學推理、資料呈現。滿分 12。", "專為「沒有方法段的 review」設計，上午那篇 ECPR program 指南就該用它，不該用 CASP SR。"], ["CASP", "系列清單：RCT、SR、世代、病例對照、質性、診斷、經濟、臨床預測規則", "每份 10–12 題，分三段：結果有效嗎（Validity）→ 結果是什麼（Results）→ 用得上嗎（Applicability）。答「是／否／不清楚」。", "英國 Oxford 系，問法白話，適合初學；不給分數，給判斷。"], ["JBI 清單", "系列清單 13 種：RCT、類實驗、世代、病例對照、橫斷、個案系列、個案報告、質性、SR、診斷、盛行率、經濟、專家意見", "每份 6–13 題，答「是／否／不清楚／不適用」，可自訂納入門檻（例如 ≥70% 是）。", "澳洲 JBI 系，護理界最常用，涵蓋最廣，連專家意見都有清單。"], ["MMAT", "混合方法研究", "5 類設計各 5 題（質性、RCT、非隨機、量性描述、混合），先 2 題篩選再評。", "混合方法要三部分都評：質性、量性、整合。"], ["GRADE-CERQual", "多篇質性研究合成後的「信心」", "4 個面向：方法限制、一致性、資料充分性、相關性。", "不是評單篇，是評質性合成的每一個發現有多可信，對應量性的 GRADE。"], ["CEBM 評讀單", "Oxford CEBM worksheets：治療、SR、診斷、預後、傷害", "每份分三段：Validity、Results（含 NNT、LR 等計算欄）、Applicability。", "醫師與 EBM 競賽常用，有計算欄是特色；護理報告較少用。"]];
+  document.querySelectorAll('#toolEx button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#toolEx button').forEach(x=>x.classList.remove('best')); b.classList.add('best');
+    const t=TOOLEX[+b.dataset.i]; document.getElementById('toolInfo').innerHTML='<h3>'+t[0]+'</h3><p><b>適用：</b>'+t[1]+'</p><p style="margin-top:6px"><b>看什麼：</b>'+t[2]+'</p><p style="margin-top:6px"><b>輸出：</b>'+t[3]+'</p>';
+  });
   // SoF reader
   const sofQ=[
     ['Outcome','問自己：這是病人會感覺到的結果（死亡、出院、疼痛）還是替代指標（檢驗值）？報告時優先講硬指標。'],
