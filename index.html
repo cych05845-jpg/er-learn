@@ -1335,6 +1335,8 @@ body.lcfull .wrap{zoom:1}
 .pevfrom{animation:pevout 1.6s ease forwards}.pevto{opacity:0;animation:pevin 1.6s ease .9s forwards}
 @keyframes pevout{0%{opacity:1;filter:brightness(1)}60%{opacity:1;filter:brightness(3) blur(1px)}100%{opacity:0;transform:scale(.8)}}
 @keyframes pevin{0%{opacity:0;transform:scale(.6);filter:brightness(3)}100%{opacity:1;transform:scale(1);filter:brightness(1)}}
+.petsync{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font-size:14px;margin-bottom:12px}
+.petsync span{flex:1;min-width:200px}.petsync.ok{border-left:5px solid var(--ok)}.petsync.bad{border-left:5px solid var(--bad);background:color-mix(in srgb,var(--bad) 8%,var(--surface));font-weight:700}
 </style>
 
 </head>
@@ -1362,6 +1364,7 @@ body.lcfull .wrap{zoom:1}
 <script src="https://cych05845-jpg.github.io/ed-account/account-sdk.js"></script>
 <script src="config.js"></script>
 <script src="ask.js"></script>
+<script src="site.js"></script>
 <script>
 /* ---------- visual components ---------- */
 const T = (l, txt) => `<span class="tag lvbg${l}">${txt || l + " 級"}</span>`;
@@ -1595,7 +1598,7 @@ function render(){
   v.onclick = v.oninput = v.onchange = null;
   const m = route.match(/^(lk|lc|lw|lq|ta|tqs|lqs|rqs|rt|cqs|oqs|pqs|sqs|wt|ws|tm|jt|drill|bk|bkm|bks|bkp)-(.+)$/);
   if (m) ({ lk: x => { const c = CPL[x]; if (c) { L.attr = c.attr; L.cpl = x; L.cat = null; L.q = ""; L.sel.clear(); } lookup(); if (c) setTimeout(() => { const el = $("lkCri"); if (el) el.scrollIntoView({ block: "start" }); }, 80); }, lc, lw: x => lw(+x), lq: x => lq(+x), ta: x => ta(+x), tqs: x => qstage("t", +x), lqs: x => qstage("l", +x), rqs: x => qstage("r", +x), rt: rtopic, cqs: x => qstage("c", +x), oqs: x => qstage("o", +x), pqs: x => qstage("p", +x), sqs: x => qstage("s", +x), wt: wtopic, ws: sortPage, tm: tmPage, jt: jtopic, drill: drillRoute, bk: bkMine, bkm: bkMentor, bks: bkSignPage, bkp: bkPrint })[m[1]](m[2]);
-  else ({ room, team, codes, special: () => wardHub("s"), squest: () => qmap("s"), vsign, treat: () => wardHub("c"), obs: () => wardHub("o"), peds: () => wardHub("p"), cquest: () => qmap("c"), oquest: () => qmap("o"), pquest: () => qmap("p"), otier, home, triage, lookup, practice: pHome, ref, handout, news, pgy, works, games, rush, flash, leader, lmap, lcourse, lbook, ldrill, tassess: () => assessHub("t"), lassess: () => assessHub("l"), tbook, taudit, texam: () => quiz("t"), lsjt: () => quiz("l"), tnote: () => noteView("t"), lnote: () => noteView("l"), llog, quest, tquest: () => qmap("t"), lquest: () => qmap("l"), rquest: () => qmap("r"), resus: resusHub, rbook, rdrug, acct, bmanage, badges, pet: petPage, drill: () => drillRoute(""), bkm: () => bkMentor("") }[route] || home)();
+  else ({ review: () => window.reviewPage && reviewPage(), room, team, codes, special: () => wardHub("s"), squest: () => qmap("s"), vsign, treat: () => wardHub("c"), obs: () => wardHub("o"), peds: () => wardHub("p"), cquest: () => qmap("c"), oquest: () => qmap("o"), pquest: () => qmap("p"), otier, home, triage, lookup, practice: pHome, ref, handout, news, pgy, works, games, rush, flash, leader, lmap, lcourse, lbook, ldrill, tassess: () => assessHub("t"), lassess: () => assessHub("l"), tbook, taudit, texam: () => quiz("t"), lsjt: () => quiz("l"), tnote: () => noteView("t"), lnote: () => noteView("l"), llog, quest, tquest: () => qmap("t"), lquest: () => qmap("l"), rquest: () => qmap("r"), resus: resusHub, rbook, rdrug, acct, bmanage, badges, pet: petPage, drill: () => drillRoute(""), bkm: () => bkMentor("") }[route] || home)();
   const y = RESTORING ? (SCROLL[route] || 0) : 0; window.scrollTo(0, y); if (y) requestAnimationFrame(() => window.scrollTo(0, y));
 }
 
@@ -1904,10 +1907,12 @@ function petGainHTML(stars){
 /* ---------- 寵物頁 ---------- */
 function petPage(){
   setBar("我的寵物", "陪你一起成長的急診夥伴", "home", "--z-leader");
+  if (BK_API() && syncUser() && !SYNC.busy && Date.now() - SYNC.at > 60000) syncPull();
   const S = petState(), v = $("view");
   if (!S) return petAdopt();
   const sp = PET_SP[S.P.sp], nx = S.gate ? S.gate.xp : S.xp, dex = petDex(S), today = dayKey(), aff = Math.min(5, S.P.aff || 0);
   v.innerHTML = `<div class="petwrap" style="--pc:${sp.c}">
+    ${petSyncHTML()}
     <a class="pethouse" href="${PET_URL}"><span aria-hidden="true">🏠</span><span><b>進入寵物小屋</b><small>換裝、任務、圖鑑、紀錄都在這裡・和這裡的寵物是同一隻</small></span><em>前往 ›</em></a>
     <section class="pethero"><div class="petstage" id="petTap" role="button" tabindex="0" aria-label="摸摸牠">${petArt(S.P.sp, S.stage)}<div class="petbub" id="petBub" hidden></div></div>
       <div class="petinfo"><div class="pih"><h2>${esc(S.P.name || sp.n)}</h2><button class="mini" id="petRename">改名</button></div>
@@ -1957,7 +1962,7 @@ function petEvolve(){
 }
 
 /* ================= 學習進度雲端同步：用員編登入時，闖關、每日紀錄、勳章、寵物存到「er-learn 紀錄」 ================= */
-const SYNC = { tm: 0, busy: 0, pulled: 0, skip: 0 };
+const SYNC = { tm: 0, busy: 0, pulled: 0, skip: 0, at: 0, err: "", pushAt: 0 };
 const syncUser = () => ME || (ACC && ACC.cachedUser && ACC.cachedUser());
 function hubAll(){ const o = {}; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith("ed-hub:")) { try { o[k.slice(7)] = JSON.parse(localStorage.getItem(k)); } catch (e) {} } } } catch (e) {} return o; }
 /* 上傳時附上各區闖關進度摘要（寵物網站用來判斷進化條件） */
@@ -1973,10 +1978,24 @@ function hubMerge(k, a, b){
     w.wd = [...new Set([...(a.wd || []), ...(b.wd || [])])].sort(); w.aff = Math.max(a.aff || 0, b.aff || 0); return w; }
   return a;
 }
+/* 同步狀態（寵物頁顯示）：避免「在醫院和在家看到的不一樣」卻不知道原因 */
+const hhmm = t => { const d = new Date(t), p = x => String(x).padStart(2, "0"); return `${p(d.getHours())}:${p(d.getMinutes())}`; };
+function petSyncHTML(){
+  const u = syncUser();
+  const [c, x] = !BK_API() ? ["bad", "學習站還沒設定後端，寵物只存在這台裝置"] : !u ? ["bad", "還沒登入：寵物只存在這台裝置。登入後會和其他裝置合併成同一隻"]
+    : SYNC.err ? ["bad", "同步失敗：" + SYNC.err] : SYNC.at ? ["ok", `已和雲端同步（${hhmm(Math.max(SYNC.at, SYNC.pushAt))}）・醫院和家裡會是同一隻`] : ["", "同步中…"];
+  return `<div class="petsync ${c}" id="petSync"><span>${c === "ok" ? "☁" : c === "bad" ? "⚠" : "⏳"} ${esc(x)}</span>${u && BK_API() ? `<button class="btn ghost" data-psync="1">🔄 立即同步</button>` : ACC ? `<button class="btn ghost" data-plogin="1">用員編登入</button>` : ""}</div>`;
+}
+/* 回到頁面、或打開寵物頁時，超過 1 分鐘就重新拉一次雲端 */
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-psync]"); if (b) { b.disabled = true; b.textContent = "同步中…"; SYNC.at = 0; await syncPull(); const el = $("petSync"); if (el) el.outerHTML = petSyncHTML(); toast(SYNC.err ? "同步失敗：" + SYNC.err : "已和雲端同步", !!SYNC.err); return; }
+  if (e.target.closest("[data-plogin]") && ACC) ACC.goLogin(); });
+addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && Date.now() - SYNC.at > 60000) syncPull(); });
 async function syncPull(){
   if (!BK_API() || !syncUser() || SYNC.busy) return; SYNC.busy = 1;
   try {
-    const r = await bkApi("progGet", {}); if (!r || !r.ok) return;
+    const r = await bkApi("progGet", {}); if (!r || !r.ok) { SYNC.err = (r && r.error) || "連不上伺服器"; return; }
+    SYNC.err = ""; SYNC.at = Date.now();
     const cloud = r.data ? JSON.parse(r.data) : {}, local = hubAll(), keys = new Set([...Object.keys(cloud), ...Object.keys(local)]);
     let changed = false; SYNC.skip = 1;
     keys.forEach(k => { if (k.startsWith("__")) return; const m = hubMerge(k, local[k], cloud[k]); if (JSON.stringify(m) !== JSON.stringify(local[k])) { store.set(k, m); changed = true; } });
@@ -1987,7 +2006,7 @@ async function syncPull(){
 }
 function syncPush(now){
   if (!BK_API() || !syncUser() || !SYNC.pulled) return;
-  clearTimeout(SYNC.tm); SYNC.tm = setTimeout(async () => { const r = await bkApi("progPut", { data: JSON.stringify(hubPack()) }); if (r && !r.ok && r.error) console.warn("進度同步失敗", r.error); }, now ? 50 : 6000);
+  clearTimeout(SYNC.tm); SYNC.tm = setTimeout(async () => { const r = await bkApi("progPut", { data: JSON.stringify(hubPack()) }); if (r && r.ok) { SYNC.pushAt = Date.now(); SYNC.err = ""; } else { SYNC.err = (r && r.error) || "上傳失敗"; console.warn("進度同步失敗", SYNC.err); } if (route === "pet") { const el = $("petSync"); if (el) el.outerHTML = petSyncHTML(); } }, now ? 50 : 6000);
 }
 (() => { const set0 = store.set; store.set = (k, v) => { set0.call(store, k, v); if (!SYNC.skip) syncPush(); }; })();
 addEventListener("pagehide", () => { if (SYNC.tm && navigator.sendBeacon && BK_API() && syncUser() && SYNC.pulled) { clearTimeout(SYNC.tm); const t = ACC && ACC.token && ACC.token(); try { navigator.sendBeacon(BK_API(), new Blob([JSON.stringify({ action: "progPut", token: t, data: JSON.stringify(hubPack()) })], { type: "text/plain" })); } catch (e) {} } });
@@ -4007,7 +4026,7 @@ const NAV = [
   ["", [["home", "首頁", "hospital"], ["quest", "成長地圖", "map"], ["news", "公告", "record"]]],
   ["學習區", [["treat", "治療區", "zTreat", "--z-treat"], ["obs", "留觀區", "zObs", "--z-obs"], ["peds", "兒科", "baby", "--z-peds"], ["resus", "急救區", "zResus", "--z-resus"], ["triage", "檢傷區", "zTriage", "--z-triage"], ["leader", "Leader", "zLeader", "--z-leader"]]],
   ["教學與演練", [["special", "特殊教學", "police", "--z-spec"], ["team", "團體演練", "fireext", "--z-spec"], ["pgy", "PGY 新人專區", "pgy"]]],
-  ["其他", [["pet", "我的寵物", "teddy"], ["badges", "我的勳章", "works"], ["works", "作品發表", "works"], ["games", "遊戲區", "games"]]],
+  ["其他", [["pet", "我的寵物", "teddy"], ["badges", "我的勳章", "works"], ["works", "作品發表", "works"], ["games", "遊戲區", "games"], ["review", "內容審核", "record"]]],
 ];
 function navKey(r){
   const m = r.match(/^([a-z]+)-(.+)$/), p = m ? m[1] : r;
@@ -4565,6 +4584,7 @@ function checkMedals(){
 }
 function badges(){
   setBar("我的勳章", "闖關與每日學習的紀錄", "home", "--z-leader");
+  if (BK_API() && syncUser() && !SYNC.busy && Date.now() - SYNC.at > 60000) syncPull();
   checkMedals();
   const got = store.get("medals", {}), now = medalState();
   const zoneCard = q => { const t = now["z-" + q[0]], { n, tot, stars } = qProg(q[0]);
@@ -4574,6 +4594,7 @@ function badges(){
     return `<div class="mcard ${ok ? "" : "lock"}">${medalArt(ok ? 3 : 0, a[3], 60)}<b>${esc(a[1])}</b><small>${esc(a[2])}</small>${got["a-" + a[0]] ? `<em>${esc(got["a-" + a[0]].at.slice(5).replace("-", "/"))}</em>` : ""}</div>`; };
   const nGot = Object.values(now).filter(Boolean).length, nAll = Object.keys(now).length;
   $("view").innerHTML = `
+    ${petSyncHTML()}
     <section class="hello" style="--zz:var(--z-leader)"><div><h2>已收集 ${nGot} / ${nAll} 面勳章</h2><p>每個闖關地圖全部過關得銅牌，星星八成以上升銀牌，全部 3 顆星就是金牌。勳章存在這台裝置。</p></div>${medalArt(nGot ? 3 : 0, "works", 84)}</section>
     <div class="sec-h"><h2>闖關地圖勳章</h2></div><div class="mgrid">${MEDAL_Q.map(zoneCard).join("")}</div>
     <div class="sec-h"><h2>每日學習成就</h2></div><div class="mgrid small">${ACHV.map(achCard).join("")}</div>`;
