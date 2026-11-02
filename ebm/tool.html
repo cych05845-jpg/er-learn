@@ -181,6 +181,14 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
 })();
 </script>
 
+
+<div class="box" style="margin:-4px 0 14px;padding:10px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+  <b>專案</b><input id="projName" placeholder="專案名稱（例：ECPR 存活率 2026）" style="flex:1;min-width:200px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)">
+  <button class="btn" id="projExport">匯出（.json）</button>
+  <label class="btn" style="cursor:pointer">匯入<input id="projImport" type="file" accept=".json,application/json" hidden></label>
+  <button class="btn" id="projNew">新專案（清空）</button>
+  <span class="note" id="projNote">資料只存在這台裝置；換裝置或交給同事請先匯出。</span>
+</div>
 <div class="tabs" id="tabs">
   <button class="on" data-t="0"><i>1·2</i>Ask + Acquire：拆 PICO、檢索</button>
   <button data-t="1"><i>3</i>Appraise：讀懂 SoF 表</button>
@@ -250,7 +258,8 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
     <label class="chk"><input type="checkbox" id="c2"><span>我確認內容不含病人可識別資料。</span></label>
     <details class="box" style="margin-top:10px;border-left:4px solid var(--t1)"><summary style="cursor:pointer;font-weight:700">批次萃取：一次丟多篇 PDF，逐篇萃取並加入證據表</summary>
       <p class="note" style="margin-top:6px">每篇會自動：辨認設計與等級 → 萃取標準欄位 → 加入證據表（含萃取總表）。評讀工具的逐條定位不在批次內，需要時再對單篇做。每篇約 1–2 分鐘，請勿關閉頁面。</p>
-      <div class="row" style="margin-top:6px"><input type="file" id="pdfBatch" accept="application/pdf" multiple style="max-width:100%"><button class="btn primary" id="batchGo">開始批次萃取</button><button class="btn" id="batchStop" hidden>停止</button></div>
+      <label class="chk" style="margin-top:4px"><input type="checkbox" id="batchCk" checked><span>同時用 AI 建議的工具逐條評讀，並預填 AI 建議判斷（證據表「細項」可逐條修改；品質調整後 Level 由你的判斷計算）</span></label>
+      <div class="row" style="margin-top:6px"><input type="file" id="pdfBatch" accept="application/pdf" multiple style="max-width:100%"><button class="btn primary" id="batchGo">開始批次</button><button class="btn" id="batchStop" hidden>停止</button></div>
       <div id="batchOut" class="note" style="margin-top:6px"></div>
     </details>
     <div class="row"><button class="btn primary" id="go2">翻成白話並標示確定性</button><button class="btn" id="stop2" hidden>停止</button><button class="btn" id="copy2" hidden>複製結果</button><button class="btn" id="to4" hidden>帶結果去步驟 4 →</button><span class="note" id="n2"></span></div>
@@ -352,6 +361,18 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
       <div class="row"><button class="btn primary" id="rvGo">① 主編審稿</button><button class="btn" id="rwGo" disabled>② 依意見改寫</button><button class="btn" id="rlGo" disabled>③ 產生回覆審稿信</button><button class="btn" id="rvStop" hidden>停止</button><span class="note" id="n5"></span></div>
       <div id="rvOut"></div>
     </div>
+    <div class="box ink" style="margin-top:12px;border-left:4px solid var(--accent)"><h3>E. 競賽／教學簡報（PPTX）</h3>
+      <p class="note">把整個專案（PICO、檢索、評讀、證據表、EtD、流程）整理成一份簡報，直接下載 .pptx（微軟正黑體），也可預覽。</p>
+      <div class="row" style="margin-top:6px"><span class="note" style="font-weight:700">簡報類型</span>
+        <label class="note"><input type="radio" name="deck" value="contest" checked> 實證競賽（8–12 分鐘，依 5A 評分項目）</label>
+        <label class="note"><input type="radio" name="deck" value="teach"> 教學（15–20 分鐘，含提問與重點）</label>
+        <label class="note"><input type="radio" name="deck" value="brief"> 主管簡報（5 分鐘，決策導向）</label>
+      </div>
+      <div class="row" style="margin-top:6px"><label class="note" style="display:inline-flex;align-items:center;gap:6px">題目<input id="deckTitle" placeholder="例：ECPR 病人篩選：哪些預測因子決定良好神經學預後？" style="width:360px;max-width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></label>
+        <label class="note" style="display:inline-flex;align-items:center;gap:6px">報告者／單位<input id="deckBy" placeholder="急診部 翁秀霞" style="width:200px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></label></div>
+      <div class="row"><button class="btn primary" id="deckGo">產生簡報大綱</button><button class="btn" id="deckStop" hidden>停止</button><button class="btn" id="deckPptx" hidden>下載 PPTX</button><button class="btn" id="deckCopy" hidden>複製大綱</button><span class="note" id="n6"></span></div>
+      <div id="deckOut"></div>
+    </div>
   </div>
   <div class="out" id="o4"><div class="ph">稿件骨架會逐字顯示在這裡，依投稿類型分段，並把前面步驟的資料填進對應段落。</div></div>
 </section>
@@ -366,6 +387,7 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.12.0/pptxgen.bundle.js"></script>
 <script>
 (function(){
   const $=id=>document.getElementById(id);
@@ -577,29 +599,62 @@ ${$('q2').value.trim().slice(0,12000)}`;
   }
   // ---- single-article mode: A) classify + offer tools  B) run the chosen checklist as a table
   const COMMON_TOOLS=['SANRA（敘述性回顧，6 向度）','JBI Text and Opinion（專家意見，6 題）','AGREE II（臨床指引，23 題）','AMSTAR 2（系統性回顧，16 題）','CASP Systematic Review（10 題）','RoB 2（RCT，5 domain）','CASP RCT（11 題）','JBI RCT（13 題）','Newcastle-Ottawa Scale（世代／病例對照）','JBI Cohort（11 題）','CASP Cohort（12 題）','JBI Analytical Cross-sectional（8 題）','QUIPS（預後因子，6 domain）','QUADAS-2（診斷，4 domain）','CASP Qualitative（10 題）','JBI Qualitative（10 題）','MMAT（混合方法）','CEBM Worksheet（治療／SR／診斷／預後）'];
-  const P_CLASSIFY=()=>`你是實證護理方法學者。以下是一篇文章的摘要或全文節錄。只回覆一個 JSON 物件：
+  const P_CLASSIFY=(txt)=>`你是實證護理方法學者。以下是一篇文章的摘要或全文節錄。只回覆一個 JSON 物件：
 {"title":"文章題目（原文）","cite":"第一作者 年份 期刊（簡短）",
  "design":"研究設計：RCT／類實驗／世代／病例對照／橫斷／個案系列／質性／系統性回顧／統合分析／敘述性回顧／臨床指引／專家意見／診斷準確性／預後／其他",
  "design_basis":"引用文中一句作為依據",
  "question_type":"治療效益／預後／診斷／其他",
- "level":"依「${lvName[lv()]}」判定的等級，例如 Level 2 或 Level 5",
- "level_reason":"兩句以內的理由（只能用這一套：${LV[lv()]}）",
+ "level":"依「${lvName[lv()]}」只依研究設計判定的起始等級（例如 Level 1、Level 2），不要因品質好壞升降級；品質造成的調整由評讀工具另外處理",
+ "level_reason":"兩句以內的理由（只能用這一套：${LV[lv()]}；系統性回顧依其納入研究的設計判：納入 RCT 為 1，納入世代／觀察性為 2 或 3）",
  "candidates":[{"tool":"工具名稱（含題數或 domain 數）","fit":"best 或 alt","why":"一句為何適合"}],
  "grade_start":"這種設計在 GRADE 的起始等級與一句說明",
  "bias_hints":["最值得注意的偏差線索 1","線索 2"]}
 candidates 規則：使用者偏好「${toolName[tool()]}」：${TOOLS[tool()]}。敘述性回顧請一定列出 SANRA；臨床指引請一定列出 AGREE II；專家意見請列出 JBI Text and Opinion。至少 2 個、至多 4 個候選，最適合的標 best。嚴禁補充文中沒有的資訊。
 
 文章內容：
-${$('q2').value.trim().slice(0,40000)}`;
-  const P_CHECK=(toolN)=>`你是實證護理方法學者。請用「${toolN}」的每一條題目（或 domain）逐條定位以下文章。只回覆一個 JSON 物件：
-{"tool":"${toolN}","items":[{"n":1,"q":"題目（繁體中文，附簡短英文原題）","found":"有／無／部分","quote":"文中對應的關鍵句（原文，最多 60 字；沒有就空字串）","where":"段落或章節名（沒有就空字串）"}],
+${(txt??$('q2').value).trim().slice(0,40000)}`;
+  const P_CHECK=(toolN,txt)=>`你是實證護理方法學者。請用「${toolN}」的每一條題目（或 domain）逐條定位以下文章。只回覆一個 JSON 物件：
+{"tool":"${toolN}","items":[{"n":1,"q":"題目（繁體中文，附簡短英文原題）","found":"有／無／部分","quote":"文中對應的關鍵句（原文，最多 60 字；沒有就空字串）","where":"段落或章節名（沒有就空字串）","suggest":"AI 建議判斷：符合／部分符合／不符合／無法判斷","critical":"若此工具有關鍵題（如 AMSTAR 2 的第 2、4、7、9、11、13、15 題；RoB 2 的各 domain）則 true，否則 false"}],
+ "overall":"依此工具的規則給整體判定：AMSTAR 2 用 高／中／低／極低 可信度；RoB 2／ROBINS-I／QUADAS-2 用 低／有疑慮／高 偏差風險；NOS 用星數；SANRA／AGREE II 用分數；CASP／JBI 用 納入／有保留納入／排除",
+ "overall_reason":"一句：整體判定的依據（哪幾題決定了結果）",
  "summary":"三句以內：這篇對我們單位最可用的是什麼、最大的限制是什麼",
  "grade_start":"GRADE 起始等級一句",
  "bias_hints":["偏差線索 1","偏差線索 2"]}
-規則：items 必須涵蓋該工具的全部題目，不可省略；found 只標文中有沒有寫，不做好壞判斷（判斷留給評讀者）；嚴禁補充文中沒有的資訊。
+規則：items 必須涵蓋該工具的全部題目，不可省略；found 只標文中有沒有寫；suggest 是給評讀者參考的初步判斷，依「文中有無報告」與「報告得是否充分」給，拿不準就寫無法判斷；嚴禁補充文中沒有的資訊。
 
 文章內容：
-${$('q2').value.trim().slice(0,40000)}`;
+${(txt??$('q2').value).trim().slice(0,40000)}`;
+  const P_EXTRACT=(txt)=>`你是系統性回顧的資料萃取員。請從以下文章萃取標準化資料，只回覆一個 JSON 物件；文中沒有的欄位一律寫 "未報告"，嚴禁推測或補數字：
+{"study":"第一作者 年份","country_setting":"國家與場域","design":"設計（系統性回顧請註明納入研究的設計與篇數）","period":"收案或檢索期間",
+ "population":{"n_total":"總人數","inclusion":"納入條件（一句）","exclusion":"排除條件（一句）","age":"年齡","male_pct":"男性比例"},
+ "intervention":{"what":"介入內容","details":"執行細節：藥物與劑量、設備、啟動時機或門檻（如低流時間 <60 分）、誰執行、頻率；儘量照文中原句","n":"介入組人數"},
+ "comparator":{"what":"對照內容","n":"對照組人數"},
+ "primary_outcomes":[{"name":"主要 outcome","definition":"定義","timepoint":"時間點","int_result":"介入組原始數據（事件數/人數 或 平均±SD 或 合併率）","ctrl_result":"對照組原始數據","effect":"效果量與 95% CI（照文中）","p":"p 值"}],
+ "secondary_outcomes":[{"name":"次要 outcome","definition":"","timepoint":"","int_result":"","ctrl_result":"","effect":"","p":""}],
+ "predictors":[{"factor":"預後／預測因子（預後型研究才填，否則空陣列）","effect":"aOR／HR 與 95% CI","direction":"有利／不利","note":"定義或切點"}],
+ "subgroups":"重要次群組或敏感度分析結果（一句，沒有寫未報告）",
+ "follow_up":"追蹤時間與失訪","funding_coi":"資助來源與利益衝突","notes":"對合併或應用重要的備註（提早停止、異質性 I²、非預期分析）"}
+primary_outcomes 至少一筆；所有報告了效果量的次要 outcome 都列入 secondary_outcomes。
+
+文章內容：
+${(txt??$('q2').value).trim().slice(0,40000)}`;
+  const outcomesOf=x=>[...(x?.primary_outcomes||[]).map(o=>({...o,primary:'主要'})),...(x?.secondary_outcomes||[]).map(o=>({...o,primary:'次要'})),...((x?.outcomes)||[])];
+  // quality-adjusted level from a stored checklist
+  const CRIT_AMSTAR=new Set([2,4,7,9,11,13,15]);
+  function adjLevel(r){
+    const ck=r.ck||[]; const base=String(r.level||''); const m=base.match(/(\d)[a-c]?/); if(!ck.length||!m)return {adj:'',why:ck.length?'':'未逐條評讀'};
+    const js=ck.map(c=>c.judg||''); const bad=c=>/不符合/.test(c.judg||''), part=c=>/部分/.test(c.judg||'');
+    let down=0, why='';
+    if(/AMSTAR/i.test(r.tool||'')){const cb=ck.filter(c=>(c.critical===true||CRIT_AMSTAR.has(+c.n))&&bad(c)).length; const nb=ck.filter(c=>!(c.critical===true||CRIT_AMSTAR.has(+c.n))&&bad(c)).length;
+      const conf=cb>1?'極低':cb===1?'低':nb>1?'中':'高'; down=conf==='極低'?2:conf==='低'?1:0; why=`AMSTAR 2 可信度${conf}（關鍵題不符 ${cb}、非關鍵不符 ${nb}）`;}
+    else{const n=js.filter(Boolean).length; if(!n)return {adj:'',why:'判斷欄未填'}; const ok=js.filter(v=>v==='符合').length+0.5*js.filter(v=>/部分/.test(v)).length; const ratio=ok/n; down=ratio>=0.8?0:ratio>=0.5?1:2; why=`${r.tool}：符合率 ${Math.round(ratio*100)}%`;}
+    const lvl=Math.min(5,+m[1]+down); return {adj:down?`Level ${lvl}`:base,why:why+(down?`，降 ${down} 級`:'，不降級')};
+  }
+  // add or merge a row by title (batch and manual runs on the same paper must not duplicate)
+  const keyOf=t=>norm(t).replace(/\b(a|an|the|and|of|in|for|with|on|to)\b/g,'').replace(/\s+/g,' ').trim().slice(0,80);
+  function addRow(row){flow.evidence=flow.evidence||[]; const k=keyOf(row.title); const i=flow.evidence.findIndex(r=>keyOf(r.title)===k&&k.length>10);
+    if(i>=0){const old=flow.evidence[i]; const merged={...old}; for(const [kk,v] of Object.entries(row)){ if(v===undefined||v===null||v===''||v==='—'||/批次：未逐條/.test(String(v)))continue; if(kk==='ck'&&old.ck&&old.ck.some(c=>c.judg)&&!(row.ck||[]).some(c=>c.judg))continue; merged[kk]=v;} flow.evidence[i]=merged; saveFlow(); return i;}
+    flow.evidence.push(row); saveFlow(); return flow.evidence.length-1;}
   let lastA=null;
   function esc2(s){return esc(String(s??''))}
   function renderA(d){
@@ -617,10 +672,11 @@ ${$('q2').value.trim().slice(0,40000)}`;
   function renderB(d){
     const items=Array.isArray(d.items)?d.items:[];
     const cls=f=>/^有/.test(f)?'f-yes':/^部分/.test(f)?'f-part':'f-no';
-    const rows=items.map((it,i)=>`<tr><td>${esc2(it.n??i+1)}</td><td class="q">${esc2(it.q)}</td><td class="${cls(String(it.found||''))}">${esc2(it.found)}</td><td class="quote">${it.quote?'「'+esc2(it.quote)+'」':''}${it.where?'<br><small>'+esc2(it.where)+'</small>':''}</td><td><select class="jg"><option value="">□ 請填</option><option>符合</option><option>部分符合</option><option>不符合</option><option>無法判斷</option></select></td><td><input class="nt" placeholder="備註"></td></tr>`).join('');
+    const JG=['符合','部分符合','不符合','無法判斷']; const sug=s=>['部分符合','不符合','無法判斷','符合'].find(j=>String(s||'').includes(j))||'';
+    const rows=items.map((it,i)=>`<tr><td>${esc2(it.n??i+1)}${it.critical===true?' <span title="關鍵題" style="color:var(--warn)">★</span>':''}</td><td class="q">${esc2(it.q)}</td><td class="${cls(String(it.found||''))}">${esc2(it.found)}</td><td class="quote">${it.quote?'「'+esc2(it.quote)+'」':''}${it.where?'<br><small>'+esc2(it.where)+'</small>':''}</td><td><select class="jg"><option value="">□ 請填</option>${JG.map(j=>`<option ${sug(it.suggest)===j?'selected':''}>${j}</option>`).join('')}</select>${it.suggest?'<br><small class="note">AI 建議：'+esc2(sug(it.suggest)||it.suggest)+'</small>':''}</td><td><input class="nt" placeholder="備註"></td></tr>`).join('');
     const holder=document.createElement('div'); holder.className='out'; holder.id='secB';
     holder.innerHTML=`
-      <div class="sec c5"><h4>⑤ ${esc2(d.tool)}：逐條定位（判斷欄由你填）</h4>
+      <div class="sec c5"><h4>⑤ ${esc2(d.tool)}：逐條定位（判斷欄已預填 AI 建議，請逐條確認或修改）</h4>${d.overall?'<p><b>AI 整體判定：</b>'+esc2(d.overall)+'　<span class="note">'+esc2(d.overall_reason)+'</span></p>':''}
         <div class="tw"><table class="ck"><tr><th>#</th><th>題目</th><th>文中</th><th>對應段落</th><th style="min-width:120px">你的判斷</th><th style="min-width:140px">備註</th></tr>${rows}</table></div>
         <div class="row" style="margin-top:10px"><span class="note" id="ckScore"></span></div></div>
       <div class="sec c1"><h4>⑥ 小結</h4>${esc2(d.summary)}\nGRADE 起始：${esc2(d.grade_start)}\n${(d.bias_hints||[]).map(x=>'• '+esc2(x)).join('\n')}</div>
@@ -631,39 +687,30 @@ ${$('q2').value.trim().slice(0,40000)}`;
     holder.querySelectorAll('.jg').forEach(s=>s.onchange=score); score();
     const tsv=()=>['#\t題目\t文中\t對應段落\t判斷\t備註',...[...holder.querySelector('table.ck').querySelectorAll('tr')].slice(1).map(tr=>{const td=tr.querySelectorAll('td');return [td[0].textContent,td[1].textContent,td[2].textContent,td[3].textContent.replace(/\s+/g,' '),td[4].querySelector('select').value,td[5].querySelector('input').value].join('\t')})].join('\n');
     $('copyCk').onclick=e=>copy(tsv(),e.target);
-    $('addEv').onclick=()=>{const s=score(); flow.evidence=flow.evidence||[]; flow.evidence.push({title:lastA?.title||'',cite:lastA?.cite||'',design:lastA?.design||'',level:lastA?.level||'',tool:d.tool,score:`${s.ok}+${s.part}/${s.n}`,verdict:$('verdict').value,summary:d.summary||'',checklist:tsv()}); saveFlow(); renderEv(); $('evBox').scrollIntoView({block:'start'});};
+    const ckOf=()=>items.map((it,i)=>({n:it.n??i+1,q:it.q,found:it.found,quote:it.quote,where:it.where,critical:it.critical===true,suggest:it.suggest||'',judg:holder.querySelectorAll('.jg')[i]?.value||'',note:holder.querySelectorAll('.nt')[i]?.value||''}));
+    $('addEv').onclick=()=>{const s=score(); addRow({title:lastA?.title||'',cite:lastA?.cite||'',design:lastA?.design||'',level:lastA?.level||'',tool:d.tool,overall:d.overall||'',score:`${s.ok}+${s.part}/${s.n}`,verdict:$('verdict').value,summary:d.summary||'',checklist:tsv(),ck:ckOf()}); renderEv(); $('evBox').scrollIntoView({block:'start'}); $('addEv').textContent='已加入／已更新';};
     let lastEx=null;
     $('exGo').onclick=async()=>{
       ctl2=new AbortController(); $('stop2').hidden=false; $('exGo').disabled=true;
       $('exOut').innerHTML='<div class="stream thinking">思考中…（萃取資料，約 20–40 秒）</div>';
-      const prompt=`你是系統性回顧的資料萃取員。請從以下文章萃取標準化資料，只回覆一個 JSON 物件；文中沒有的欄位一律寫 "未報告"，嚴禁推測或補數字：
-{"study":"第一作者 年份","country_setting":"國家與場域","design":"設計","period":"收案期間",
- "population":{"n_total":"總人數","inclusion":"納入條件（一句）","exclusion":"排除條件（一句）","age":"年齡（平均±SD 或中位數）","male_pct":"男性比例"},
- "intervention":{"what":"介入內容","who":"誰執行","how_when":"如何／何時","dose":"劑量或頻率或時間門檻","n":"介入組人數"},
- "comparator":{"what":"對照內容","n":"對照組人數"},
- "outcomes":[{"name":"outcome","definition":"定義","timepoint":"時間點","primary":"主要／次要","int_result":"介入組原始數據（事件數/人數 或 平均±SD）","ctrl_result":"對照組原始數據","effect":"效果量與 95% CI（照文中）","p":"p 值"}],
- "follow_up":"追蹤時間與失訪",
- "funding_coi":"資助來源與利益衝突",
- "notes":"對合併或應用重要的備註（如提早停止、非預期分析）"}
-outcomes 至少列出主要 outcome 與所有報告了效果量的次要 outcome。
-
-文章內容：
-${$('q2').value.trim().slice(0,40000)}`;
+      const prompt=P_EXTRACT();
       try{
         const x=await sample.json(prompt,{signal:ctl2.signal,modelTier:'default'}); lastEx=x;
-        const oc=Array.isArray(x.outcomes)?x.outcomes:[];
+        const oc=outcomesOf(x); const preds=Array.isArray(x.predictors)?x.predictors.filter(p=>p&&p.factor&&p.factor!=='未報告'):[];
         $('exOut').innerHTML=`<div class="sec c2"><h4>⑦ 資料萃取：${esc2(x.study)}</h4>
           <div class="tw"><table class="ck">
             <tr><th style="width:150px">欄位</th><th>內容</th></tr>
             <tr><td class="q">場域／期間</td><td>${esc2(x.country_setting)}｜${esc2(x.period)}</td></tr>
             <tr><td class="q">族群</td><td>n=${esc2(x.population?.n_total)}；年齡 ${esc2(x.population?.age)}；男 ${esc2(x.population?.male_pct)}<br><small>納入：${esc2(x.population?.inclusion)}｜排除：${esc2(x.population?.exclusion)}</small></td></tr>
-            <tr><td class="q">介入</td><td>${esc2(x.intervention?.what)}（n=${esc2(x.intervention?.n)}）<br><small>誰：${esc2(x.intervention?.who)}｜如何／何時：${esc2(x.intervention?.how_when)}｜劑量／門檻：${esc2(x.intervention?.dose)}</small></td></tr>
+            <tr><td class="q">介入</td><td>${esc2(x.intervention?.what)}（n=${esc2(x.intervention?.n)}）<br><small>執行細節：${esc2(x.intervention?.details||[x.intervention?.who,x.intervention?.how_when,x.intervention?.dose].filter(Boolean).join('｜'))}</small></td></tr>
+            <tr><td class="q">次群組</td><td>${esc2(x.subgroups)}</td></tr>
             <tr><td class="q">對照</td><td>${esc2(x.comparator?.what)}（n=${esc2(x.comparator?.n)}）</td></tr>
             <tr><td class="q">追蹤</td><td>${esc2(x.follow_up)}</td></tr>
             <tr><td class="q">資助／COI</td><td>${esc2(x.funding_coi)}</td></tr>
             <tr><td class="q">備註</td><td>${esc2(x.notes)}</td></tr></table></div>
           <div class="tw" style="margin-top:8px"><table class="ck"><tr><th>Outcome</th><th>定義／時間點</th><th>主／次</th><th>介入組</th><th>對照組</th><th>效果量 (95% CI)</th><th>p</th></tr>
             ${oc.map(o=>`<tr><td class="q">${esc2(o.name)}</td><td class="quote">${esc2(o.definition)}｜${esc2(o.timepoint)}</td><td>${esc2(o.primary)}</td><td>${esc2(o.int_result)}</td><td>${esc2(o.ctrl_result)}</td><td><b>${esc2(o.effect)}</b></td><td>${esc2(o.p)}</td></tr>`).join('')}</table></div>
+          ${preds.length?`<div class="tw" style="margin-top:8px"><table class="ck"><tr><th>預後／預測因子</th><th>效果（aOR／HR, 95% CI）</th><th>方向</th><th>定義／切點</th></tr>${preds.map(p=>`<tr><td class="q">${esc2(p.factor)}</td><td><b>${esc2(p.effect)}</b></td><td>${esc2(p.direction)}</td><td class="quote">${esc2(p.note)}</td></tr>`).join('')}</table></div>`:''}
           <p class="note" style="margin-top:6px">每個數字請回原文核對一次；「未報告」就是文中沒有，不要補。按「加入證據表」時會一併存入，供多篇合併成萃取總表與 MA 評估使用。</p></div>`;
       }catch(e){ $('exOut').innerHTML='<div class="ph">'+(e.code==='cancelled'?'已停止。':'沒有產生結果，請再按一次。')+'</div>'; fail(e,$('n2')); }
       finally{$('exGo').disabled=false;$('stop2').hidden=true}
@@ -699,11 +746,19 @@ ${$('q2').value.trim().slice(0,40000)}`;
       <label class="note" style="display:inline-flex;align-items:center;gap:4px">全文排除原因<input id="scExcl" value="${esc(flow.screen.excl||'')}" placeholder="非 RCT 3 篇；結果不符 2 篇" style="width:220px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></label></div>`;
     const wireScreen=()=>{['scDedup','scScreen','scExcl'].forEach(id=>{const el=$(id); if(!el)return; el.oninput=()=>{flow.screen.dedup=$('scDedup').value===''?'':+$('scDedup').value; flow.screen.screen=$('scScreen').value===''?'':+$('scScreen').value; flow.screen.excl=$('scExcl').value; saveFlow();}})};
     if(!ev.length){box.innerHTML=screenBar+'<h3>證據表（0 篇）</h3><p class="note">每評讀完一篇按「加入證據表」，多篇會累積在這裡，寫指引或報告時一次帶走。</p>';wireScreen();return}
-    box.innerHTML=screenBar+`<h3>證據表（${ev.length} 篇）</h3><div class="tw"><table class="ev"><tr><th>#</th><th>文章</th><th>設計</th><th>Level</th><th>工具</th><th>符合</th><th>結論</th><th></th></tr>
-      ${ev.map((r,i)=>`<tr><td>${i+1}</td><td><b>${esc2(r.title)}</b><br><small>${esc2(r.cite)}</small></td><td>${esc2(r.design)}</td><td>${esc2(r.level)}</td><td>${esc2(r.tool)}</td><td>${esc2(r.score)}</td><td><select data-i="${i}" class="evv"><option ${!r.verdict?'selected':''} value="">—</option>${['可採用','可參考','不採用','待補資料'].map(v=>`<option ${r.verdict===v?'selected':''}>${v}</option>`).join('')}</select></td><td><button class="btn" data-del="${i}">刪</button></td></tr>`).join('')}</table></div>
+    const JG=['符合','部分符合','不符合','無法判斷'];
+    const detail=(r,i)=>{const ck=r.ck||[]; const x=r.extract; const oc=x?outcomesOf(x):[]; const preds=x&&Array.isArray(x.predictors)?x.predictors.filter(p=>p&&p.factor&&p.factor!=='未報告'):[]; const al=adjLevel(r);
+      return `<div class="sec c5" style="margin:6px 0"><h4>${esc2(r.tool)} 逐條（${ck.length} 題）　<span class="note">${esc2(r.overall?'AI 整體判定：'+r.overall:'')}　品質調整：${esc2(al.why)}</span></h4>
+        ${ck.length?`<div class="tw"><table class="ck"><tr><th>#</th><th>題目</th><th>文中</th><th>對應段落</th><th style="min-width:130px">判斷</th></tr>${ck.map((c,j)=>`<tr><td>${esc2(c.n)}${c.critical?' <span style="color:var(--warn)">★</span>':''}</td><td class="q">${esc2(c.q)}</td><td>${esc2(c.found)}</td><td class="quote">${c.quote?'「'+esc2(c.quote)+'」':''}${c.where?'<br><small>'+esc2(c.where)+'</small>':''}</td><td><select class="ckj" data-i="${i}" data-j="${j}"><option value="">□</option>${JG.map(g=>`<option ${c.judg===g?'selected':''}>${g}</option>`).join('')}</select>${c.suggest?'<br><small class="note">AI：'+esc2(c.suggest)+'</small>':''}</td></tr>`).join('')}</table></div>`:'<p class="note">尚未逐條評讀。到上方「單篇文章」模式貼全文、選工具後加入，或用批次並勾「自動逐條評讀」。</p>'}
+        ${r.summary?'<p style="margin-top:8px"><b>小結：</b>'+esc2(r.summary)+'</p>':''}
+        ${x?`<div class="tw" style="margin-top:8px"><table class="ck"><tr><th>Outcome</th><th>主／次</th><th>時間點</th><th>介入組</th><th>對照組</th><th>效果量</th></tr>${oc.map(o=>`<tr><td class="q">${esc2(o.name)}</td><td>${esc2(o.primary)}</td><td>${esc2(o.timepoint)}</td><td>${esc2(o.int_result)}</td><td>${esc2(o.ctrl_result)}</td><td><b>${esc2(o.effect)}</b></td></tr>`).join('')}</table></div>
+          ${preds.length?`<div class="tw" style="margin-top:6px"><table class="ck"><tr><th>預測因子</th><th>效果</th><th>方向</th><th>定義</th></tr>${preds.map(p=>`<tr><td class="q">${esc2(p.factor)}</td><td><b>${esc2(p.effect)}</b></td><td>${esc2(p.direction)}</td><td class="quote">${esc2(p.note)}</td></tr>`).join('')}</table></div>`:''}
+          <p class="note" style="margin-top:6px">介入細節：${esc2(x.intervention?.details||'未報告')}｜次群組：${esc2(x.subgroups||'未報告')}｜追蹤：${esc2(x.follow_up)}｜資助：${esc2(x.funding_coi)}</p>`:'<p class="note">尚未萃取資料。</p>'}</div>`};
+    box.innerHTML=screenBar+`<h3>證據表（${ev.length} 篇）</h3><div class="tw"><table class="ev"><tr><th>#</th><th>文章</th><th>設計</th><th>起始 Level</th><th>工具／整體判定</th><th>符合</th><th>品質調整後</th><th>結論</th><th></th></tr>
+      ${ev.map((r,i)=>{const al=adjLevel(r);return `<tr><td>${i+1}</td><td><b>${esc2(r.title)}</b><br><small>${esc2(r.cite)}</small></td><td>${esc2(r.design)}</td><td>${esc2(r.level)}</td><td>${esc2(r.tool)}${r.overall?'<br><small>'+esc2(r.overall)+'</small>':''}</td><td>${esc2(r.score)}</td><td title="${esc2(al.why)}">${al.adj?'<b>'+esc2(al.adj)+'</b>':'<span class="note">—</span>'}</td><td><select data-i="${i}" class="evv"><option ${!r.verdict?'selected':''} value="">—</option>${['可採用','可參考','不採用','待補資料'].map(v=>`<option ${r.verdict===v?'selected':''}>${v}</option>`).join('')}</select></td><td style="white-space:nowrap"><button class="btn" data-detail="${i}">細項</button> <button class="btn" data-del="${i}">刪</button></td></tr><tr class="drow" id="drow${i}" hidden><td colspan="9">${detail(r,i)}</td></tr>`}).join('')}</table></div>
       ${ev.some(r=>r.extract)?`<details class="box" style="margin-top:12px;border-left:4px solid var(--t1)"><summary style="cursor:pointer;font-weight:700">資料萃取總表（${ev.filter(r=>r.extract).length} 篇有萃取）</summary>
         <div class="tw" style="margin-top:8px"><table class="ck"><tr><th>研究</th><th>設計</th><th>n（介入／對照）</th><th>族群</th><th>介入</th><th>對照</th><th>主要 outcome</th><th>效果量</th><th>追蹤</th><th>資助</th></tr>
-        ${ev.filter(r=>r.extract).map(r=>{const x=r.extract,po=(x.outcomes||[]).find(o=>/主/.test(o.primary||''))||(x.outcomes||[])[0]||{};return `<tr><td class="q">${esc2(x.study||r.cite)}</td><td>${esc2(x.design||r.design)}</td><td>${esc2(x.intervention?.n)}／${esc2(x.comparator?.n)}</td><td class="quote">${esc2(x.population?.inclusion)}</td><td class="quote">${esc2(x.intervention?.what)}</td><td class="quote">${esc2(x.comparator?.what)}</td><td class="quote">${esc2(po.name)}｜${esc2(po.timepoint)}</td><td><b>${esc2(po.effect)}</b><br><small>${esc2(po.int_result)} vs ${esc2(po.ctrl_result)}</small></td><td class="quote">${esc2(x.follow_up)}</td><td class="quote">${esc2(x.funding_coi)}</td></tr>`}).join('')}</table></div>
+        ${ev.filter(r=>r.extract).map(r=>{const x=r.extract,oc=outcomesOf(x),po=oc.find(o=>/主/.test(o.primary||''))||oc[0]||{},sec=oc.filter(o=>/次/.test(o.primary||'')),preds=(x.predictors||[]).filter(p=>p&&p.factor&&p.factor!=='未報告');return `<tr><td class="q">${esc2(x.study||r.cite)}</td><td>${esc2(x.design||r.design)}</td><td>${esc2(x.intervention?.n)}／${esc2(x.comparator?.n)}</td><td class="quote">${esc2(x.population?.inclusion)}</td><td class="quote">${esc2(x.intervention?.what)}<br><small>${esc2(x.intervention?.details||'')}</small></td><td class="quote">${esc2(x.comparator?.what)}</td><td class="quote"><b>主要：</b>${esc2(po.name)}｜${esc2(po.timepoint)}${sec.length?'<br><small><b>次要：</b>'+sec.map(o=>esc2(o.name)).join('、')+'</small>':''}</td><td><b>${esc2(po.effect)}</b><br><small>${esc2(po.int_result)} vs ${esc2(po.ctrl_result)}</small>${preds.length?'<br><small><b>預測因子：</b>'+preds.slice(0,6).map(p=>esc2(p.factor)+' '+esc2(p.effect)).join('；')+(preds.length>6?'…':'')+'</small>':''}</td><td class="quote">${esc2(x.follow_up)}</td><td class="quote">${esc2(x.funding_coi)}</td></tr>`}).join('')}</table></div>
         <div class="row"><button class="btn" id="exCopy">複製萃取總表（貼 Excel）</button></div></details>`:''}
       <div class="row"><button class="btn" id="evCopy">複製證據表（貼 Excel）</button><button class="btn primary" id="evTo4">帶整張證據表去步驟 4 →</button><button class="btn" id="evClear">清空</button></div>
       ${ev.length>=2?`<details class="box" style="margin-top:12px;border-left:4px solid var(--t2)"><summary style="cursor:pointer;font-weight:700">多篇研究：評估能不能做統合分析（Meta-analysis）</summary>
@@ -712,11 +767,13 @@ ${$('q2').value.trim().slice(0,40000)}`;
         <div id="maOut"></div></details>`:''}`;
     wireScreen();
     box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{flow.evidence.splice(+b.dataset.del,1);saveFlow();renderEv()});
+    box.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>{const d=$('drow'+b.dataset.detail); d.hidden=!d.hidden; b.textContent=d.hidden?'細項':'收起'});
+    box.querySelectorAll('.ckj').forEach(s=>s.onchange=()=>{const r=flow.evidence[+s.dataset.i]; r.ck[+s.dataset.j].judg=s.value; const js=r.ck.map(c=>c.judg); r.score=`${js.filter(v=>v==='符合').length}+${js.filter(v=>/部分/.test(v)).length}/${js.length}`; saveFlow(); const open=[...box.querySelectorAll('.drow')].filter(x=>!x.hidden).map(x=>x.id); renderEv(); open.forEach(id=>{const d=$(id); if(d){d.hidden=false; const btn=box.querySelector(`[data-detail="${id.replace('drow','')}"]`); if(btn)btn.textContent='收起';}});});
     box.querySelectorAll('.evv').forEach(s=>s.onchange=()=>{flow.evidence[+s.dataset.i].verdict=s.value;saveFlow()});
     const tsv=()=>['#\t文章\t出處\t設計\tLevel\t工具\t符合/題數\t結論\t小結',...ev.map((r,i)=>[i+1,r.title,r.cite,r.design,r.level,r.tool,r.score,r.verdict,r.summary].join('\t'))].join('\n');
     $('evCopy').onclick=e=>copy(tsv(),e.target);
     if($('exCopy'))$('exCopy').onclick=e=>{const hd=['研究','設計','場域','期間','n總','納入','排除','年齡','介入','介入n','介入者','如何何時','劑量','對照','對照n','outcome','定義','時間點','主次','介入組','對照組','效果量','p','追蹤','資助','備註'];
-      const rows=[];ev.filter(r=>r.extract).forEach(r=>{const x=r.extract;(x.outcomes&&x.outcomes.length?x.outcomes:[{}]).forEach(o=>rows.push([x.study,x.design,x.country_setting,x.period,x.population?.n_total,x.population?.inclusion,x.population?.exclusion,x.population?.age,x.intervention?.what,x.intervention?.n,x.intervention?.who,x.intervention?.how_when,x.intervention?.dose,x.comparator?.what,x.comparator?.n,o.name,o.definition,o.timepoint,o.primary,o.int_result,o.ctrl_result,o.effect,o.p,x.follow_up,x.funding_coi,x.notes].map(v=>String(v??'').replace(/\t|\n/g,' ')).join('\t')))});
+      const rows=[];ev.filter(r=>r.extract).forEach(r=>{const x=r.extract;const oc=outcomesOf(x);(oc.length?oc:[{}]).forEach(o=>rows.push([x.study,x.design,x.country_setting,x.period,x.population?.n_total,x.population?.inclusion,x.population?.exclusion,x.population?.age,x.intervention?.what,x.intervention?.n,'',x.intervention?.details||x.intervention?.how_when,x.intervention?.dose||'',x.comparator?.what,x.comparator?.n,o.name,o.definition,o.timepoint,o.primary,o.int_result,o.ctrl_result,o.effect,o.p,x.follow_up,x.funding_coi,(x.notes||'')+(x.predictors&&x.predictors.length?'｜預測因子：'+x.predictors.map(p=>p.factor+' '+p.effect).join('；'):'')].map(v=>String(v??'').replace(/\t|\n/g,' ')).join('\t')))});
       copy([hd.join('\t'),...rows].join('\n'),e.target)};
     $('evClear').onclick=()=>{flow.evidence=[];saveFlow();renderEv()};
     if($('maGo')){
@@ -814,22 +871,17 @@ ${extra?'\n各篇補充資料：\n'+extra.slice(0,12000):''}`;
       try{
         const text=await pdfToText(f); if(!text.trim()){say(`（${i+1}/${files.length}）${f.name}：抓不到文字（掃描檔），略過`);continue}
         if(!guard({value:text},$('w2'))){say(`（${i+1}/${files.length}）${f.name}：偵測到疑似病人資料，略過`);$('w2').classList.remove('on');continue}
-        $('q2').value=text;
         say(`（${i+1}/${files.length}）${f.name}：辨認設計與等級…`);
-        const a=await sample.json(P_CLASSIFY(),{modelTier:'default'});
+        const a=await sample.json(P_CLASSIFY(text),{modelTier:'default'});
+        let ckRes=null, toolN='';
+        if($('batchCk').checked){ toolN=((a.candidates||[]).find(c=>c.fit==='best')||(a.candidates||[])[0]||{}).tool||''; if(toolN){ say(`（${i+1}/${files.length}）${f.name}：用 ${toolN} 逐條評讀…`); try{ ckRes=await sample.json(P_CHECK(toolN,text),{modelTier:'default'}) }catch(e){ say(`（${i+1}/${files.length}）${f.name}：逐條評讀失敗，先略過這部分`) } } }
         say(`（${i+1}/${files.length}）${f.name}：萃取資料…`);
-        const x=await sample.json(`你是系統性回顧的資料萃取員。請從以下文章萃取標準化資料，只回覆一個 JSON 物件；文中沒有的欄位一律寫 "未報告"，嚴禁推測或補數字：
-{"study":"第一作者 年份","country_setting":"國家與場域","design":"設計","period":"收案期間",
- "population":{"n_total":"總人數","inclusion":"納入條件（一句）","exclusion":"排除條件（一句）","age":"年齡","male_pct":"男性比例"},
- "intervention":{"what":"介入內容","who":"誰執行","how_when":"如何／何時","dose":"劑量或門檻","n":"介入組人數"},
- "comparator":{"what":"對照內容","n":"對照組人數"},
- "outcomes":[{"name":"outcome","definition":"定義","timepoint":"時間點","primary":"主要／次要","int_result":"介入組原始數據","ctrl_result":"對照組原始數據","effect":"效果量與 95% CI","p":"p 值"}],
- "follow_up":"追蹤時間與失訪","funding_coi":"資助來源與利益衝突","notes":"對合併或應用重要的備註"}
-
-文章內容：
-${text}`,{modelTier:'default'});
-        flow.evidence=flow.evidence||[]; flow.evidence.push({title:a.title||f.name,cite:a.cite||'',design:a.design||x.design||'',level:a.level||'',tool:'（批次：未逐條評讀）',score:'—',verdict:'',summary:(a.grade_start?'GRADE 起始：'+a.grade_start+'。':'')+((a.bias_hints||[]).join('；')),checklist:'',extract:x});
-        saveFlow(); renderEv(); say(`（${i+1}/${files.length}）${f.name}：完成，已加入證據表（${a.design||'?'}，${a.level||'?'}）`);
+        const x=await sample.json(P_EXTRACT(text),{modelTier:'default'});
+        const JGs=['符合','部分符合','不符合','無法判斷']; const items=ckRes&&Array.isArray(ckRes.items)?ckRes.items:[];
+        const ck=items.map((it,j)=>({n:it.n??j+1,q:it.q,found:it.found,quote:it.quote,where:it.where,critical:it.critical===true,suggest:it.suggest||'',judg:['部分符合','不符合','無法判斷','符合'].find(g=>String(it.suggest||'').includes(g))||'',note:''}));
+        const js=ck.map(c=>c.judg);
+        addRow({title:a.title||f.name,cite:a.cite||'',design:a.design||x.design||'',level:a.level||'',tool:ckRes?toolN:'（未逐條評讀）',overall:ckRes?.overall||'',score:ck.length?`${js.filter(v=>v==='符合').length}+${js.filter(v=>/部分/.test(v)).length}/${js.length}`:'—',verdict:'',summary:(ckRes?.summary||'')+(a.grade_start?' GRADE 起始：'+a.grade_start+'。':'')+((a.bias_hints||[]).join('；')),checklist:'',ck,extract:x});
+        renderEv(); say(`（${i+1}/${files.length}）${f.name}：完成，已加入證據表（${a.design||'?'}，${a.level||'?'}${ckRes?'，'+toolN+'：'+(ckRes.overall||''):''}）`);
       }catch(e){ say(`（${i+1}/${files.length}）${f.name}：失敗（${e.code||e.message||e}），略過`); if(e.code==='no_key'||e.code==='not_granted')break; }
     }
     $('q2').value=saveQ2; $('batchGo').disabled=false; $('batchStop').hidden=true; say('批次結束。到下方證據表展開「資料萃取總表」檢查每個數字。'); $('evBox')&&$('evBox').scrollIntoView({block:'start'});
@@ -1117,6 +1169,101 @@ ${JSON.stringify((lastReview.comments||[]).map((c,i)=>({...c,status:done[i]?.sta
     try{ const {text}=await sample(prompt,{signal:ctl5.signal,modelTier:'default',onText:({text})=>{el.classList.remove('thinking');el.textContent=text}}); renderBlocks(el,text); out.insertAdjacentHTML('beforeend','<div class="row"><button class="btn" id="rlCopy">複製回覆信</button></div>'); $('rlCopy').onclick=e=>copy(text,e.target); }
     catch(e){ el.classList.remove('thinking'); el.textContent=e.text||(e.code==='cancelled'?'已停止。':''); fail(e,$('n5')); }
     finally{$('rlGo').disabled=false;$('rvStop').hidden=true}
+  };
+
+
+  // ---- project export / import (everything lives in this browser only)
+  const FIELDS=['q1','q2','q3','unit','ctxRes','ctxVal','ctxMid','mid','jrn','msCtx','rvIn','fExcl','projName'];
+  function snapshot(){return {app:'EBM 證據助理',version:1,exported:new Date().toISOString(),name:$('projName').value.trim(),flow,lastEtd:lastEtd||null,lastReview:(typeof lastReview!=='undefined'?lastReview:null),fields:Object.fromEntries(FIELDS.map(k=>[k,$(k)?$(k).value:'']))}}
+  try{const n=localStorage.getItem('ebmProjName');if(n)$('projName').value=n}catch(e){}
+  $('projName').oninput=()=>{try{localStorage.setItem('ebmProjName',$('projName').value)}catch(e){}};
+  $('projExport').onclick=e=>{
+    const data=JSON.stringify(snapshot(),null,2); const name=($('projName').value.trim()||'EBM專案')+'_'+new Date().toISOString().slice(0,10)+'.json';
+    try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([data],{type:'application/json'})); a.download=name; document.body.appendChild(a); a.click(); a.remove(); $('projNote').textContent='已匯出 '+name+'（若沒有下載，已同時複製到剪貼簿，貼到記事本存成 .json）'; }catch(err){ $('projNote').textContent='此環境不允許下載，已複製到剪貼簿，貼到記事本存成 .json'; }
+    copy(data,e.target);
+  };
+  $('projImport').onchange=async ev=>{
+    const f=ev.target.files[0]; if(!f)return;
+    try{
+      const d=JSON.parse(await f.text()); if(!d||d.app!=='EBM 證據助理')throw new Error('不是本工具的專案檔');
+      Object.assign(flow,d.flow||{}); saveFlow(); lastEtd=d.lastEtd||null; if(typeof lastReview!=='undefined')lastReview=d.lastReview||null;
+      Object.entries(d.fields||{}).forEach(([k,v])=>{if($(k))$(k).value=v||''}); if(d.name)$('projName').value=d.name;
+      renderHandoff(); renderEv(); $('projNote').textContent='已匯入「'+(d.name||f.name)+'」（'+(flow.evidence||[]).length+' 篇證據）；步驟 1 的 PICO 卡請重新按一次「拆解」或直接到步驟 3、4 使用。';
+    }catch(err){ $('projNote').textContent='匯入失敗：'+(err.message||err); }
+    ev.target.value='';
+  };
+  $('projNew').onclick=()=>{
+    if($('projNew').dataset.arm!=='1'){$('projNew').dataset.arm='1';$('projNew').textContent='再按一次確認清空';setTimeout(()=>{$('projNew').dataset.arm='';$('projNew').textContent='新專案（清空）'},4000);return}
+    for(const k of Object.keys(flow))delete flow[k]; saveFlow(); lastEtd=null; FIELDS.forEach(k=>{if($(k))$(k).value=''}); try{localStorage.removeItem('ebmProjName')}catch(e){}
+    renderHandoff(); renderEv(); $('o1').innerHTML='<div class="ph">結果會顯示在這裡。</div>'; $('o2').innerHTML='<div class="ph">白話版會逐字顯示在這裡。</div>'; $('o3').innerHTML='<div class="ph">草稿會逐字顯示在這裡。</div>'; $('o4').innerHTML='<div class="ph">稿件骨架會逐字顯示在這裡。</div>';
+    $('projNew').dataset.arm=''; $('projNew').textContent='新專案（清空）'; $('projNote').textContent='已清空，開始新專案。';
+  };
+
+
+  // E. competition / teaching deck
+  const deckType=()=>document.querySelector('input[name=deck]:checked').value;
+  const DECK={contest:`實證競賽型（台灣實證護理競賽常見評分項目）：1 封面 2 臨床情境與問題意識 3 PICO 4 檢索策略（資料庫、關鍵字與 MeSH、檢索式、篩選流程與篇數） 5 文獻評讀（每篇設計、證據等級、工具與結果，一張證據表） 6 證據統整（主要結果、效果量、確定性；若有 EtD 則含建議強度） 7 臨床應用（本單位可行性、流程或建議） 8 評值（指標與時程） 9 結論與限制 10 參考文獻。每張 3–5 點、每點 ≤ 25 字，共 10–12 張；備忘稿每張 60–120 字，要寫評審會問的點。`,
+    teach:`教學型：1 封面 2 學習目標（3 條） 3 臨床情境 4 問題怎麼問（PICO，附一題給學員練） 5 怎麼找（資料庫差異、檢索式，附一個互動問題） 6 怎麼評（設計→工具→等級，一張表） 7 證據表解讀 8 證據到決策（確定性與效果大小） 9 怎麼用在單位 10 怎麼追蹤 11 常見錯誤 3 個 12 總結與帶走的三句話。共 12–16 張；備忘稿含提問與預期回答。`,
+    brief:`主管簡報型：1 一句話結論與建議強度 2 問題與現況數據 3 證據摘要（3 點，含確定性） 4 建議做法與資源需求 5 指標與檢討時程 6 風險與限制。共 6–8 張，每張 ≤ 4 點，數字優先；備忘稿寫可能被問的問題與答案。`};
+  let lastDeck=null, ctl6=null; $('deckStop').onclick=()=>ctl6?.abort();
+  $('deckGo').onclick=async()=>{
+    const prompt=`你是實證護理競賽的指導老師與簡報設計者。依下列專案資料做一份簡報，只回覆一個 JSON 物件：
+{"title":"簡報題目","subtitle":"副標（單位／報告者／日期）",
+ "slides":[{"n":1,"title":"投影片標題（≤ 14 字）","bullets":["要點（≤ 25 字）"],"table":{"headers":["欄位"],"rows":[["內容"]]},"notes":"備忘稿／講稿","tip":"這張評審或聽眾會問什麼、怎麼答（一句）"}]}
+規則：${DECK[deckType()]}
+只用專案資料裡有的數字與文獻，沒有的寫「【待補】」；table 只在需要表格的那幾張（證據表、檢索流程、指標）出現，其餘省略 table 欄位；繁體中文。
+題目：${$('deckTitle').value.trim()||'（依資料自擬）'}；報告者：${$('deckBy').value.trim()||'【待補】'}
+
+PICO：${flow.pico?picoText():'【待補】'}
+檢索記錄：${flow.search?flow.search.text:(flow.hits?'命中：Cochrane '+(flow.hits.c||0)+'、PubMed '+(flow.hits.pu||0)+'、Embase '+(flow.hits.em||0)+'；日期 '+(flow.hits.date||''):'【待補】')}
+篩選：${flow.screen?JSON.stringify(flow.screen):'【待補】'}
+證據表：
+${evText()||'【待補】'}
+各篇品質調整：${(flow.evidence||[]).map(r=>{const a=adjLevel(r);return r.cite+'：'+(a.adj||r.level)+'（'+a.why+'）'}).join('；')||'無'}
+資料萃取（摘要）：
+${(flow.evidence||[]).filter(r=>r.extract).map(r=>{const x=r.extract;const oc=outcomesOf(x);return (x.study||r.cite)+'｜'+oc.slice(0,3).map(o=>o.name+' '+(o.effect||'')).join('；')+((x.predictors||[]).length?'｜預測因子：'+x.predictors.slice(0,5).map(p=>p.factor+' '+p.effect).join('；'):'')}).join('\n').slice(0,5000)||'無'}
+步驟 3 判讀／步驟 4 EtD：
+${(flow.appraisal||'').slice(0,3000)||'【待補】'}
+${lastEtd?'EtD：'+JSON.stringify(lastEtd).slice(0,3000):''}
+臨床情境：${$('msCtx').value.trim()||$('unit').value.trim()||'【待補】'}`;
+    ctl6=new AbortController(); $('deckGo').disabled=true;$('deckStop').hidden=false;$('deckPptx').hidden=true;$('deckCopy').hidden=true;
+    $('deckOut').innerHTML='<div class="stream thinking">設計簡報中…（約 40–90 秒）</div>';
+    try{
+      const d=await sample.json(prompt,{signal:ctl6.signal,modelTier:'default'}); lastDeck=d; const ss=Array.isArray(d.slides)?d.slides:[];
+      $('deckOut').innerHTML=`<div class="sec c4"><h4>${esc2(d.title)}</h4>${esc2(d.subtitle)}　<span class="note">${ss.length} 張</span></div>`+ss.map((s,i)=>`<div class="sec c${(i%5)+1}"><h4>${esc2(s.n??i+1)}. ${esc2(s.title)}</h4>${(s.bullets||[]).map(b=>'• '+esc2(b)).join('\n')}${s.table&&s.table.headers?`\n<div class="tw"><table class="ck"><tr>${s.table.headers.map(x=>'<th>'+esc2(x)+'</th>').join('')}</tr>${(s.table.rows||[]).map(r=>'<tr>'+r.map(c=>'<td>'+esc2(c)+'</td>').join('')+'</tr>').join('')}</table></div>`:''}\n<small class="note">備忘稿：${esc2(s.notes)}${s.tip?'　｜　'+esc2(s.tip):''}</small></div>`).join('');
+      $('deckPptx').hidden=!window.PptxGenJS; $('deckCopy').hidden=false; if(!window.PptxGenJS)$('n6').textContent='PPTX 產生器未載入（此環境擋外部程式庫），請在學習站版下載。';
+      $('deckCopy').onclick=e=>copy([d.title,d.subtitle,...ss.map((s,i)=>`\n${s.n??i+1}. ${s.title}\n${(s.bullets||[]).map(b=>'- '+b).join('\n')}\n備忘稿：${s.notes||''}`)].join('\n'),e.target);
+    }catch(e){ $('deckOut').innerHTML='<div class="ph">'+(e.code==='cancelled'?'已停止。':'沒有產生大綱，請再按一次。')+'</div>'; fail(e,$('n6')); }
+    finally{$('deckGo').disabled=false;$('deckStop').hidden=true}
+  };
+  $('deckPptx').onclick=async()=>{
+    if(!lastDeck||!window.PptxGenJS)return; const d=lastDeck, ss=Array.isArray(d.slides)?d.slides:[];
+    const P=new PptxGenJS(); P.layout='LAYOUT_16x9'; const F='微軟正黑體';
+    const INK='1B2A6B', ACC='FF6B3D', BG='EEF2F8', FG='161B2E', MUTED='5A6480';
+    const cover=P.addSlide(); cover.background={color:INK};
+    cover.addText(d.title||'簡報',{x:0.6,y:1.5,w:8.8,h:1.4,fontFace:F,fontSize:32,bold:true,color:'FFFFFF'});
+    cover.addText(d.subtitle||'',{x:0.6,y:3.0,w:8.8,h:0.6,fontFace:F,fontSize:16,color:'E8EBFF'});
+    cover.addShape(P.ShapeType.rect,{x:0.6,y:3.8,w:1.6,h:0.08,fill:{color:ACC},line:{color:ACC}});
+    ss.forEach((s,i)=>{
+      const sl=P.addSlide(); sl.background={color:BG};
+      sl.addShape(P.ShapeType.rect,{x:0,y:0,w:10,h:0.12,fill:{color:[ '0F9D8A','2F6FE4','B23FB0','E0771A','1B2A6B'][i%5]},line:{color:BG}});
+      sl.addText(`${s.n??i+1}. ${s.title||''}`,{x:0.5,y:0.3,w:9,h:0.8,fontFace:F,fontSize:24,bold:true,color:INK});
+      const hasT=s.table&&s.table.headers&&s.table.headers.length;
+      const bl=(s.bullets||[]).map(b=>({text:String(b),options:{bullet:true,fontFace:F,fontSize:hasT?14:18,color:FG,paraSpaceAfter:6}}));
+      if(bl.length)sl.addText(bl,{x:0.5,y:1.2,w:9,h:hasT?1.6:3.9,valign:'top'});
+      if(hasT){const rows=[s.table.headers.map(x=>({text:String(x),options:{bold:true,fill:{color:'DDE8FF'},fontFace:F,fontSize:11,color:INK}})),...(s.table.rows||[]).map(r=>r.map(c=>({text:String(c??''),options:{fontFace:F,fontSize:10,color:FG}})))];
+        sl.addTable(rows,{x:0.5,y:bl.length?2.9:1.2,w:9,colW:Array(s.table.headers.length).fill(9/s.table.headers.length),border:{type:'solid',color:'D5DBEA',pt:0.5},autoPage:false});}
+      sl.addText(`${i+1} / ${ss.length}`,{x:8.6,y:5.2,w:1.2,h:0.3,fontFace:F,fontSize:10,color:MUTED,align:'right'});
+      if(s.notes||s.tip)sl.addNotes(String(s.notes||'')+(s.tip?'\n\n【可能被問】'+s.tip:''));
+    });
+    const end=P.addSlide(); end.background={color:INK}; end.addText('謝謝聆聽',{x:0.6,y:2.0,w:8.8,h:1,fontFace:F,fontSize:30,bold:true,color:'FFFFFF'}); end.addText('AI 協助整理，所有數據與引用已由作者對照原文核實。',{x:0.6,y:3.1,w:8.8,h:0.5,fontFace:F,fontSize:12,color:'E8EBFF'});
+    const name=(d.title||'簡報').replace(/[\\/:*?"<>|]/g,'')+'.pptx';
+    try{
+      const dl=await window.claude?.use?.('downloads');
+      if(dl){ const blob=await P.write({outputType:'blob'}); await dl.save({filename:name,data:blob}); }
+      else await P.writeFile({fileName:name});
+      $('n6').textContent='已下載 '+name+'（備忘稿在每張的備註欄）';
+    }catch(e){ $('n6').textContent=(e&&e.code==='declined')?'已取消下載。':'此環境不允許下載，請在學習站版或 App 中下載。'; }
   };
 
   // connect
