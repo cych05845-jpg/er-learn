@@ -248,6 +248,11 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
     </div></details>
     <div class="warn" id="w2">偵測到疑似病人可識別資料。請移除後再送出。</div>
     <label class="chk"><input type="checkbox" id="c2"><span>我確認內容不含病人可識別資料。</span></label>
+    <details class="box" style="margin-top:10px;border-left:4px solid var(--t1)"><summary style="cursor:pointer;font-weight:700">批次萃取：一次丟多篇 PDF，逐篇萃取並加入證據表</summary>
+      <p class="note" style="margin-top:6px">每篇會自動：辨認設計與等級 → 萃取標準欄位 → 加入證據表（含萃取總表）。評讀工具的逐條定位不在批次內，需要時再對單篇做。每篇約 1–2 分鐘，請勿關閉頁面。</p>
+      <div class="row" style="margin-top:6px"><input type="file" id="pdfBatch" accept="application/pdf" multiple style="max-width:100%"><button class="btn primary" id="batchGo">開始批次萃取</button><button class="btn" id="batchStop" hidden>停止</button></div>
+      <div id="batchOut" class="note" style="margin-top:6px"></div>
+    </details>
     <div class="row"><button class="btn primary" id="go2">翻成白話並標示確定性</button><button class="btn" id="stop2" hidden>停止</button><button class="btn" id="copy2" hidden>複製結果</button><button class="btn" id="to4" hidden>帶結果去步驟 4 →</button><span class="note" id="n2"></span></div>
     <details class="box" style="margin-top:14px" id="rulesGrade"><summary><h3 style="display:inline">標準 GRADE：AI 被要求遵守的規則</h3></summary><div style="margin-top:8px"><ul><li>每個 outcome 一句話：方向、大小、GRADE 代表的可信程度</li><li>信賴區間跨過 1（或 0）要寫「不確定」，不能寫「無效」</li><li>不得補充表中沒有的數字；缺的就說缺</li><li>最後給一段 60 字內的「跟部長報告版」</li></ul></div></details>
     <details class="box" style="margin-top:14px" id="rulesSingle" hidden><summary><h3 style="display:inline">單篇文章：AI 做的與不做的</h3></summary><div style="margin-top:8px"><ul><li>先判斷研究設計（RCT／世代／病例對照／橫斷／質性／SR／診斷），並說明依據</li><li>依你選的等級系統（Oxford 2011 / 2009、Melnyk、JBI）判定證據等級並給理由；不混用</li><li>依你選的工具偏好（自動 / JBI / CASP / CEBM）指定清單；該系列沒有對應設計時才換專用工具（RoB 2、NOS、AMSTAR 2、QUIPS、QUADAS-2、AGREE II…）</li><li>第一階段：辨認設計、判等級，列出 2–4 個候選工具（敘述性回顧會有 SANRA、指引會有 AGREE II），<b>由你點選要用哪一個</b>，或從「其他工具」挑</li><li>第二階段：用你選的工具逐條定位成表格，標「有／無／部分」並引句；<b>判斷欄由你填</b>，自動計分</li><li>每篇評完按「加入證據表」，多篇累積成一張表，可複製進 Excel 或整張帶去步驟 4</li></ul></div></details>
@@ -283,7 +288,8 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
 <section class="panel" id="p3">
   <div>
     <div class="box ink" style="margin-bottom:12px"><h3>A. 檢索流程記錄（PRISMA 式）</h3>
-      <p class="note">把各資料庫的命中數填進來，自動產生流程圖與文字，貼進報告的「檢索結果」段。</p>
+      <p class="note">數字會自動從步驟 1（各資料庫命中數、檢索日期）與步驟 3（去重、篩選、納入＝證據表篇數）帶過來，這裡只是最後確認並產圖。</p>
+      <div class="row"><button class="btn" id="flowPull">從步驟 1、3 帶入數字</button></div>
       <div class="pico" style="margin-top:8px">
         <label class="f">Cochrane 命中<input id="fCoch" type="number" min="0" placeholder="0" style="padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg)"></label>
         <label class="f">PubMed 命中<input id="fPub" type="number" min="0" placeholder="0" style="padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg)"></label>
@@ -375,7 +381,8 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
   });
 
   // PHI guard: Taiwan ID (A123456789), 8+ digit record numbers, dates of birth
-  const phi=/[A-Z][12]\d{8}|\b\d{8,}\b|民國\s?\d{2,3}\s?年\s?\d{1,2}\s?月\s?\d{1,2}\s?日|(19|20)\d{2}[\/\-\.年]\d{1,2}[\/\-\.月]\d{1,2}/;
+  // PHI guard: only patterns that really point at a patient. Published papers are full of DOIs, PMIDs, registration numbers and publication dates, so bare long numbers and bare dates are NOT flagged.
+  const phi=/\b[A-Z][12]\d{8}\b|(?:病歷號|病歷編號|住院號|門診號|MRN|chart\s*(?:no|number)|medical record (?:no|number))[^\n]{0,12}?\d{5,}|(?:出生日期|出生|生日|DOB|date of birth)[^\n]{0,8}?(?:(?:19|20)\d{2}[\/\-\.年]\d{1,2}[\/\-\.月]\d{1,2}|民國\s?\d{2,3}\s?年)|(?:病人|患者|個案|案主)(?:姓名|：|:)\s*[一-鿿]{2,4}(?![一-鿿])/i;
   function guard(ta,w){const bad=phi.test(ta.value);w.classList.toggle('on',bad);return !bad}
   [[1,'q1','w1'],[2,'q2','w2'],[3,'q3','w3'],[4,'msCtx','w4'],[5,'rvIn','w5']].forEach(([n,q,w])=>$(q).addEventListener('input',()=>guard($(q),$(w))));
 
@@ -450,10 +457,12 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
       <div class="links"><a href="${cl}" target="_blank" rel="noopener">只用關鍵字開 Cochrane ↗</a><a href="https://www.cochranelibrary.com/cca" target="_blank" rel="noopener">Clinical Answers ↗</a><a href="https://www.epistemonikos.org/en/search?q=${encodeURIComponent(simple)}" target="_blank" rel="noopener">Epistemonikos（其他 SR）↗</a></div>
       <div class="box"><h3>同一策略，三個資料庫的寫法</h3>
         <div class="dbs">
-          <div><b>Cochrane</b><span class="note">MeSH 瀏覽器 · <code>[mh "詞"]</code> 預設 explode all trees；<code>[mh ^"詞"]</code> 不 explode</span><div class="mono">${esc(one||'—')}</div><div class="row"><a class="btn primary" style="text-decoration:none" href="${clRun}" target="_blank" rel="noopener">在 Cochrane 執行 ↗</a></div></div>
-          <div><b>PubMed</b><span class="note">MeSH · <code>"詞"[Mesh]</code> 預設 explode；<code>[Mesh:NoExp]</code> 不 explode；有自動詞彙對應</span><div class="mono">${esc(pmq||'—')}</div><div class="row"><a class="btn primary" style="text-decoration:none" href="${pm}" target="_blank" rel="noopener">在 PubMed 執行（限 SR）↗</a>${pmq?'<button class="btn" id="cpPM">複製</button>':''}</div></div>
-          <div><b>Embase</b><span class="note">Emtree · <code>'詞'/exp</code> explode；<code>'詞'/de</code> 不 explode；藥物與歐洲文獻收錄較完整</span><div class="mono">${esc(emb||'—')}</div><div class="row">${emb?'<button class="btn primary" id="goEM">複製並開 Embase Advanced search ↗</button>':''}</div></div>
+          <div><b>Cochrane</b><span class="note">MeSH 瀏覽器 · <code>[mh "詞"]</code> 預設 explode all trees；<code>[mh ^"詞"]</code> 不 explode</span><div class="mono">${esc(one||'—')}</div><div class="row"><a class="btn primary" style="text-decoration:none" href="${clRun}" target="_blank" rel="noopener">在 Cochrane 執行 ↗</a><label class="note" style="display:inline-flex;align-items:center;gap:6px">命中數<input class="hit" data-k="c" type="number" min="0" placeholder="跑完填" style="width:90px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></label></div></div>
+          <div><b>PubMed</b><span class="note">MeSH · <code>"詞"[Mesh]</code> 預設 explode；<code>[Mesh:NoExp]</code> 不 explode；有自動詞彙對應</span><div class="mono">${esc(pmq||'—')}</div><div class="row"><a class="btn primary" style="text-decoration:none" href="${pm}" target="_blank" rel="noopener">在 PubMed 執行（限 SR）↗</a>${pmq?'<button class="btn" id="cpPM">複製</button>':''}<label class="note" style="display:inline-flex;align-items:center;gap:6px">命中數<input class="hit" data-k="pu" type="number" min="0" placeholder="跑完填" style="width:90px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></label></div></div>
+          <div><b>Embase</b><span class="note">Emtree · <code>'詞'/exp</code> explode；<code>'詞'/de</code> 不 explode；藥物與歐洲文獻收錄較完整</span><div class="mono">${esc(emb||'—')}</div><div class="row">${emb?'<button class="btn primary" id="goEM">複製並開 Embase Advanced search ↗</button>':''}<label class="note" style="display:inline-flex;align-items:center;gap:6px">命中數<input class="hit" data-k="em" type="number" min="0" placeholder="跑完填" style="width:90px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></label></div></div>
         </div>
+        <div class="row" style="margin-top:8px"><label class="note" style="display:inline-flex;align-items:center;gap:6px">其他來源（華藝／手動）命中<input class="hit" data-k="ot" type="number" min="0" style="width:90px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></label><label class="note" style="display:inline-flex;align-items:center;gap:6px">檢索日期<input id="hitDate" type="date" style="padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></label><span class="note" id="hitSum"></span></div>
+        <p class="note" style="margin-top:6px">跑完各資料庫把命中數填回來，PRISMA 流程圖就在這裡開始累積；去重與篩選數在步驟 3 證據表上方填，納入篇數自動等於證據表篇數。</p>
         <p class="note" style="margin-top:6px">三個資料庫的主題詞樹不同（MeSH 與 Emtree 的詞常不一樣），AI 轉換後仍需在各資料庫的詞彙瀏覽器確認。Embase 需院內 IP 或登入；按鈕會先把搜尋式複製好、再開 Embase 進階搜尋頁，貼上即可執行（Elsevier 未提供帶搜尋式的網址）。</p>
       </div>
       ${Array.isArray(d.tips)&&d.tips.length?'<div class="box ink"><h3>進 Cochrane 後請檢查</h3><ul>'+d.tips.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>':''}
@@ -464,6 +473,10 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
     $('toStep4').onclick=()=>{goTab(2);if(!$('q3').value.trim())$('q3').value='PICO：\n'+picoText()+'\n\n證據摘要：（請貼上 Review 結論與 GRADE，或先到步驟 3 產生）'};
     $('cpS').onclick=e=>copy($('srch').textContent,e.target);
     if($('cpO'))$('cpO').onclick=e=>copy(one,e.target);
+    flow.hits=flow.hits||{}; if(!flow.hits.date){flow.hits.date=new Date().toISOString().slice(0,10)}
+    $('hitDate').value=flow.hits.date; document.querySelectorAll('.hit').forEach(i=>{i.value=flow.hits[i.dataset.k]??''; i.oninput=()=>{flow.hits[i.dataset.k]=i.value===''?'':+i.value; saveFlow(); hitSum();}});
+    $('hitDate').oninput=()=>{flow.hits.date=$('hitDate').value; saveFlow()};
+    function hitSum(){const t=['c','pu','em','ot'].reduce((s,k)=>s+(+flow.hits[k]||0),0); $('hitSum').textContent=t?`共 ${t} 筆`:''} hitSum();
     if($('cpPM'))$('cpPM').onclick=e=>copy(pmq,e.target);
     if($('goEM'))$('goEM').onclick=e=>{copy(emb,e.target);const a=document.createElement('a');a.href='https://www.embase.com/#advancedSearch/default';a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()};
     $('cpQ').onclick=e=>copy(simple,e.target);
@@ -549,6 +562,16 @@ ${$('q2').value.trim().slice(0,12000)}`;
       const {text,truncated}=await sample(prompt,o);
       renderBlocks(el,text); if(truncated)$('n2').textContent='內容被截斷，請分段貼上。';
       $('copy2').hidden=false; $('copy2').onclick=e=>copy(text,e.target); flow.appraisal=text; saveFlow(); $('to4').hidden=false;
+      // let a SoF-based appraisal join the evidence table too
+      const fname=($('pdf2').files&&$('pdf2').files[0]?$('pdf2').files[0].name.replace(/\.pdf$/i,''):'');
+      const brief=(text.match(/跟(?:主管|部長)報告版[^\n]*\n([\s\S]{0,300})/)||[])[1]||text.slice(0,200);
+      out.insertAdjacentHTML('beforeend',`<div class="box" style="border-left:4px solid var(--t2)"><h3>加入證據表</h3>
+        <div class="pico"><label class="f">文章題名<input id="sofTitle" value="${esc(fname)}" placeholder="Review 題名" style="padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg)"></label>
+        <label class="f">出處（作者 年份 期刊／CD 編號）<input id="sofCite" placeholder="例：Cochrane CD013245，search date 2025-03" style="padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg)"></label>
+        <label class="f">證據等級<input id="sofLevel" value="Level 1（系統性回顧）" style="padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg)"></label></div>
+        <div class="row"><select id="sofVerdict" style="font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--fg)"><option value="">整體結論…</option><option>可採用</option><option>可參考</option><option>不採用</option><option>待補資料</option></select><button class="btn primary" id="sofAdd">加入證據表</button></div>
+        <p class="note">SoF 表的評讀由 Review 作者完成，工具欄會記為「SoF／GRADE」；要用 AMSTAR 2 評這篇 Review 本身的品質，請切到「單篇文章」模式。</p></div>`);
+      $('sofAdd').onclick=()=>{flow.evidence=flow.evidence||[]; flow.evidence.push({title:$('sofTitle').value.trim()||'（未填題名）',cite:$('sofCite').value.trim(),design:'系統性回顧（SoF 表）',level:$('sofLevel').value.trim(),tool:fw()==='core'?'Core GRADE 判讀':'SoF／GRADE',score:'—',verdict:$('sofVerdict').value,summary:brief.trim(),checklist:''}); saveFlow(); renderEv(); $('evBox').scrollIntoView({block:'start'}); $('sofAdd').textContent='已加入'; $('sofAdd').disabled=true;};
     }catch(e){ el.classList.remove('thinking'); el.textContent=e.text||(e.code==='cancelled'?'已停止。':''); fail(e,$('n2')); }
     finally{$('go2').disabled=false;$('stop2').hidden=true}
   }
@@ -668,8 +691,15 @@ ${$('q2').value.trim().slice(0,40000)}`;
   function renderEv(){
     const ev=flow.evidence||[]; let box=$('evBox');
     if(!box){box=document.createElement('div');box.id='evBox';box.className='box';box.style.marginTop='14px';box.style.gridColumn='1 / -1';$('p1').appendChild(box)}
-    if(!ev.length){box.innerHTML='<h3>證據表（0 篇）</h3><p class="note">每評讀完一篇按「加入證據表」，多篇會累積在這裡，寫指引或報告時一次帶走。</p>';return}
-    box.innerHTML=`<h3>證據表（${ev.length} 篇）</h3><div class="tw"><table class="ev"><tr><th>#</th><th>文章</th><th>設計</th><th>Level</th><th>工具</th><th>符合</th><th>結論</th><th></th></tr>
+    const H=flow.hits||{}; const tot=['c','pu','em','ot'].reduce((s,k)=>s+(+H[k]||0),0); flow.screen=flow.screen||{};
+    const screenBar=`<div class="row" style="margin:6px 0 10px;padding:8px 10px;border:1px dashed var(--line);border-radius:10px"><span class="note"><b>篩選計數</b>　檢索 ${tot||'？'} 筆（步驟 1 填）→</span>
+      <label class="note" style="display:inline-flex;align-items:center;gap:4px">去重後<input id="scDedup" type="number" min="0" value="${flow.screen.dedup??''}" style="width:80px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></label>
+      <label class="note" style="display:inline-flex;align-items:center;gap:4px">標題摘要篩選後<input id="scScreen" type="number" min="0" value="${flow.screen.screen??''}" style="width:80px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></label>
+      <span class="note">→ 納入 <b>${ev.length}</b> 篇（＝證據表）</span>
+      <label class="note" style="display:inline-flex;align-items:center;gap:4px">全文排除原因<input id="scExcl" value="${esc(flow.screen.excl||'')}" placeholder="非 RCT 3 篇；結果不符 2 篇" style="width:220px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)"></label></div>`;
+    const wireScreen=()=>{['scDedup','scScreen','scExcl'].forEach(id=>{const el=$(id); if(!el)return; el.oninput=()=>{flow.screen.dedup=$('scDedup').value===''?'':+$('scDedup').value; flow.screen.screen=$('scScreen').value===''?'':+$('scScreen').value; flow.screen.excl=$('scExcl').value; saveFlow();}})};
+    if(!ev.length){box.innerHTML=screenBar+'<h3>證據表（0 篇）</h3><p class="note">每評讀完一篇按「加入證據表」，多篇會累積在這裡，寫指引或報告時一次帶走。</p>';wireScreen();return}
+    box.innerHTML=screenBar+`<h3>證據表（${ev.length} 篇）</h3><div class="tw"><table class="ev"><tr><th>#</th><th>文章</th><th>設計</th><th>Level</th><th>工具</th><th>符合</th><th>結論</th><th></th></tr>
       ${ev.map((r,i)=>`<tr><td>${i+1}</td><td><b>${esc2(r.title)}</b><br><small>${esc2(r.cite)}</small></td><td>${esc2(r.design)}</td><td>${esc2(r.level)}</td><td>${esc2(r.tool)}</td><td>${esc2(r.score)}</td><td><select data-i="${i}" class="evv"><option ${!r.verdict?'selected':''} value="">—</option>${['可採用','可參考','不採用','待補資料'].map(v=>`<option ${r.verdict===v?'selected':''}>${v}</option>`).join('')}</select></td><td><button class="btn" data-del="${i}">刪</button></td></tr>`).join('')}</table></div>
       ${ev.some(r=>r.extract)?`<details class="box" style="margin-top:12px;border-left:4px solid var(--t1)"><summary style="cursor:pointer;font-weight:700">資料萃取總表（${ev.filter(r=>r.extract).length} 篇有萃取）</summary>
         <div class="tw" style="margin-top:8px"><table class="ck"><tr><th>研究</th><th>設計</th><th>n（介入／對照）</th><th>族群</th><th>介入</th><th>對照</th><th>主要 outcome</th><th>效果量</th><th>追蹤</th><th>資助</th></tr>
@@ -680,6 +710,7 @@ ${$('q2').value.trim().slice(0,40000)}`;
         <label class="f" style="margin-top:8px">各篇的 PICO 與主要結果（選填；貼上效果量、人數、結果定義，評估會更準）<textarea id="maData" style="min-height:110px" placeholder="例：Yannopoulos 2020 ARREST：n=30，ECPR vs 標準 ACLS，存活出院 43% vs 7%…&#10;Belohlavek 2022 Prague OHCA：n=256，…&#10;Suverein 2023 INCEPTION：n=160，…"></textarea></label>
         <div class="row"><button class="btn primary" id="maGo">評估是否適合做 MA</button><button class="btn" id="maStop" hidden>停止</button><span class="note" id="maNote"></span></div>
         <div id="maOut"></div></details>`:''}`;
+    wireScreen();
     box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{flow.evidence.splice(+b.dataset.del,1);saveFlow();renderEv()});
     box.querySelectorAll('.evv').forEach(s=>s.onchange=()=>{flow.evidence[+s.dataset.i].verdict=s.value;saveFlow()});
     const tsv=()=>['#\t文章\t出處\t設計\tLevel\t工具\t符合/題數\t結論\t小結',...ev.map((r,i)=>[i+1,r.title,r.cite,r.design,r.level,r.tool,r.score,r.verdict,r.summary].join('\t'))].join('\n');
@@ -761,6 +792,47 @@ ${extra?'\n各篇補充資料：\n'+extra.slice(0,12000):''}`;
     for(const p of ps.slice(0,lim.images.maxCount)){const pg=await pdfDoc.getPage(p);const vp=pg.getViewport({scale:1.6});const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;blobs.push(await new Promise(r=>c.toBlob(r,'image/png')))}
     pendingImages=blobs; $('q2').value=`（已附上 PDF 第 ${ps.join(', ')} 頁的影像，請直接從影像中的 Summary of findings 表判讀。）`; $('c2').checked=false;
     $('pdfN').textContent=`已準備 ${blobs.length} 張頁面影像，按下方按鈕送出。`;
+  };
+  // ---- batch extraction over several PDFs
+  async function pdfToText(file,maxPages=15){
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const doc=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+    const parts=[]; for(let i=1;i<=Math.min(doc.numPages,maxPages);i++){const pg=await doc.getPage(i);const t=await pg.getTextContent();parts.push(`[第 ${i} 頁]\n`+t.items.map(x=>x.str).join(' '))}
+    return parts.join('\n\n').slice(0,40000);
+  }
+  let batchAbort=false;
+  $('batchStop').onclick=()=>{batchAbort=true};
+  $('batchGo').onclick=async()=>{
+    const files=[...($('pdfBatch').files||[])]; if(!files.length){$('batchOut').textContent='請先選擇 PDF。';return}
+    if(!$('c2').checked){$('batchOut').textContent='請先勾選「不含病人資料」。';return}
+    if(!window.pdfjsLib){$('batchOut').textContent='PDF 解析器載入失敗。';return}
+    batchAbort=false; $('batchGo').disabled=true; $('batchStop').hidden=false; const log=[]; const say=m=>{log.push(m);$('batchOut').innerHTML=log.map(x=>'• '+esc(x)).join('<br>')};
+    const saveQ2=$('q2').value;
+    for(let i=0;i<files.length;i++){
+      if(batchAbort){say('已停止。');break}
+      const f=files[i]; say(`（${i+1}/${files.length}）${f.name}：讀取 PDF…`);
+      try{
+        const text=await pdfToText(f); if(!text.trim()){say(`（${i+1}/${files.length}）${f.name}：抓不到文字（掃描檔），略過`);continue}
+        if(!guard({value:text},$('w2'))){say(`（${i+1}/${files.length}）${f.name}：偵測到疑似病人資料，略過`);$('w2').classList.remove('on');continue}
+        $('q2').value=text;
+        say(`（${i+1}/${files.length}）${f.name}：辨認設計與等級…`);
+        const a=await sample.json(P_CLASSIFY(),{modelTier:'default'});
+        say(`（${i+1}/${files.length}）${f.name}：萃取資料…`);
+        const x=await sample.json(`你是系統性回顧的資料萃取員。請從以下文章萃取標準化資料，只回覆一個 JSON 物件；文中沒有的欄位一律寫 "未報告"，嚴禁推測或補數字：
+{"study":"第一作者 年份","country_setting":"國家與場域","design":"設計","period":"收案期間",
+ "population":{"n_total":"總人數","inclusion":"納入條件（一句）","exclusion":"排除條件（一句）","age":"年齡","male_pct":"男性比例"},
+ "intervention":{"what":"介入內容","who":"誰執行","how_when":"如何／何時","dose":"劑量或門檻","n":"介入組人數"},
+ "comparator":{"what":"對照內容","n":"對照組人數"},
+ "outcomes":[{"name":"outcome","definition":"定義","timepoint":"時間點","primary":"主要／次要","int_result":"介入組原始數據","ctrl_result":"對照組原始數據","effect":"效果量與 95% CI","p":"p 值"}],
+ "follow_up":"追蹤時間與失訪","funding_coi":"資助來源與利益衝突","notes":"對合併或應用重要的備註"}
+
+文章內容：
+${text}`,{modelTier:'default'});
+        flow.evidence=flow.evidence||[]; flow.evidence.push({title:a.title||f.name,cite:a.cite||'',design:a.design||x.design||'',level:a.level||'',tool:'（批次：未逐條評讀）',score:'—',verdict:'',summary:(a.grade_start?'GRADE 起始：'+a.grade_start+'。':'')+((a.bias_hints||[]).join('；')),checklist:'',extract:x});
+        saveFlow(); renderEv(); say(`（${i+1}/${files.length}）${f.name}：完成，已加入證據表（${a.design||'?'}，${a.level||'?'}）`);
+      }catch(e){ say(`（${i+1}/${files.length}）${f.name}：失敗（${e.code||e.message||e}），略過`); if(e.code==='no_key'||e.code==='not_granted')break; }
+    }
+    $('q2').value=saveQ2; $('batchGo').disabled=false; $('batchStop').hidden=true; say('批次結束。到下方證據表展開「資料萃取總表」檢查每個數字。'); $('evBox')&&$('evBox').scrollIntoView({block:'start'});
   };
   // hook images into step-2 call
   const _go2=$('go2').onclick;
@@ -844,6 +916,9 @@ ${ctx()}`;
   // ---- Step 5/6: publish
   // A. PRISMA-style flow
   const num=id=>Math.max(0,parseInt($(id).value)||0);
+  const pullFlow=()=>{const H=flow.hits||{},S=flow.screen||{}; const set=(id,v)=>{if(v!==undefined&&v!=='')$(id).value=v}; set('fCoch',H.c);set('fPub',H.pu);set('fEmb',H.em);set('fOth',H.ot);set('fDate',H.date);set('fDedup',S.dedup);set('fScreen',S.screen);set('fIncl',(flow.evidence||[]).length||''); if(S.excl)$('fExcl').value=S.excl.split(/[;；]\s*/).join('\n');};
+  $('flowPull').onclick=pullFlow;
+  document.querySelectorAll('#tabs button')[3].addEventListener('click',()=>{if(!$('fCoch').value&&!$('fPub').value)pullFlow()});
   $('flowGo').onclick=()=>{
     const c=num('fCoch'),pu=num('fPub'),em=num('fEmb'),ot=num('fOth'),total=c+pu+em+ot,dd=num('fDedup')||total,sc=num('fScreen'),inc=num('fIncl');
     const excl=$('fExcl').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
