@@ -1,5 +1,5 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>EBM 證據助理</title><style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
-
+<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: a three-step workbench (問題 → 證據 → 落地); each step is a tab with input on the left and the AI's structured output on the right. */
@@ -412,6 +412,83 @@ table{border-collapse:collapse;width:100%} th,td{border:1px solid var(--line);pa
     try{navigator.clipboard.writeText(t).then(done).catch(fb)}catch(e){fb()}
     function fb(){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}ta.remove();done()}};
   $('copyDisc').onclick=()=>copy($('disc').textContent,$('copyDisc'));
+  // file save: claude.ai viewer needs the downloads capability; elsewhere a plain anchor works
+  async function dlFile(name,blob){
+    const dl=await window.claude?.use?.('downloads');
+    if(dl){ await dl.save({filename:name,data:blob}); return; }
+    const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),2000);
+  }
+
+  // ===== Meta-analysis maths (inverse-variance fixed + DerSimonian–Laird random) =====
+  const MA={
+    Phi:z=>{const t=1/(1+0.2316419*Math.abs(z)),d=0.3989423*Math.exp(-z*z/2),p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p},
+    pz:z=>2*(1-MA.Phi(Math.abs(z))),
+    chi2p:(x,k)=>{ if(x<=0||k<1)return 1; if(k%2===0){let s=0,t=1;for(let i=0;i<k/2;i++){s+=t;t*=x/2/(i+1)}return Math.min(1,Math.exp(-x/2)*s)}
+      let s=0,t=1;for(let j=1;j<=(k-1)/2;j++){s+=t;t*=x/(2*j+1)} return Math.min(1,2*(1-MA.Phi(Math.sqrt(x)))+Math.sqrt(2*x/Math.PI)*Math.exp(-x/2)*s)},
+    isLog:m=>/^(RR|OR|HR|IRR)$/i.test(m),
+    effect:(type,m,r)=>{ // returns {y,se} or null
+      const n=v=>v===''||v==null||isNaN(+v)?null:+v;
+      if(type==='binary'){let a=n(r.e1),n1=n(r.n1),c=n(r.e2),n2=n(r.n2); if([a,n1,c,n2].some(v=>v==null))return null; let b=n1-a,d=n2-c;
+        if(m==='RD'){const p1=a/n1,p2=c/n2;return {y:p1-p2,se:Math.sqrt(p1*(1-p1)/n1+p2*(1-p2)/n2)}}
+        if(a===0||b===0||c===0||d===0){a+=.5;b+=.5;c+=.5;d+=.5;n1+=1;n2+=1}
+        if(m==='OR')return {y:Math.log(a*d/(b*c)),se:Math.sqrt(1/a+1/b+1/c+1/d)};
+        return {y:Math.log((a/n1)/(c/n2)),se:Math.sqrt(1/a-1/n1+1/c-1/n2)}}
+      if(type==='continuous'){const m1=n(r.m1),s1=n(r.sd1),n1=n(r.n1),m2=n(r.m2),s2=n(r.sd2),n2=n(r.n2); if([m1,s1,n1,m2,s2,n2].some(v=>v==null))return null;
+        if(m==='SMD'){const sp=Math.sqrt(((n1-1)*s1*s1+(n2-1)*s2*s2)/(n1+n2-2)),J=1-3/(4*(n1+n2)-9),g=J*(m1-m2)/sp;return {y:g,se:Math.sqrt((n1+n2)/(n1*n2)+g*g/(2*(n1+n2)))}}
+        return {y:m1-m2,se:Math.sqrt(s1*s1/n1+s2*s2/n2)}}
+      const est=n(r.est),lo=n(r.lo),hi=n(r.hi); if([est,lo,hi].some(v=>v==null))return null;
+      return MA.isLog(m)?{y:Math.log(est),se:(Math.log(hi)-Math.log(lo))/3.92}:{y:est,se:(hi-lo)/3.92}},
+    pool:(type,m,rows)=>{
+      const st=rows.map(r=>({...r,...(MA.effect(type,m,r)||{})})).filter(r=>r.se>0&&isFinite(r.y)); const k=st.length; if(k<2)return {k,st};
+      st.forEach(s=>s.w=1/(s.se*s.se)); const W=st.reduce((a,s)=>a+s.w,0), yF=st.reduce((a,s)=>a+s.w*s.y,0)/W, seF=Math.sqrt(1/W);
+      const Q=st.reduce((a,s)=>a+s.w*(s.y-yF)**2,0), df=k-1, C=W-st.reduce((a,s)=>a+s.w*s.w,0)/W, tau2=Math.max(0,(Q-df)/C), I2=Q>0?Math.max(0,(Q-df)/Q)*100:0;
+      st.forEach(s=>s.wr=1/(s.se*s.se+tau2)); const WR=st.reduce((a,s)=>a+s.wr,0), yR=st.reduce((a,s)=>a+s.wr*s.y,0)/WR, seR=Math.sqrt(1/WR);
+      const ci=(y,se)=>({y,se,lo:y-1.96*se,hi:y+1.96*se,z:y/se,p:MA.pz(y/se)});
+      st.forEach(s=>{s.lo=s.y-1.96*s.se;s.hi=s.y+1.96*s.se;s.pf=s.w/W*100;s.pr=s.wr/WR*100});
+      return {k,st,fixed:ci(yF,seF),random:ci(yR,seR),Q,df,pQ:MA.chi2p(Q,df),I2,tau2,log:MA.isLog(m)};},
+    fmt:(v,log)=>log?Math.exp(v).toFixed(2):v.toFixed(2),
+    forest:(res,m,label)=>{ const log=res.log, tr=v=>log?Math.exp(v):v; const all=[...res.st.map(s=>[s.lo,s.hi]),[res.random.lo,res.random.hi],[res.fixed.lo,res.fixed.hi]].flat();
+      let mn=Math.min(...all),mx=Math.max(...all); if(log){mn=Math.min(mn,-0.1);mx=Math.max(mx,0.1)}else{mn=Math.min(mn,0);mx=Math.max(mx,0)} const pad=(mx-mn)*0.08; mn-=pad; mx+=pad;
+      const L=230,Wd=330,R=250,rowH=26,top=30,H=top+(res.st.length+3)*rowH+40,X=v=>L+(v-mn)/(mx-mn)*Wd; const null0=X(0);
+      const row=(y,txt,s)=>`<text x="6" y="${y+5}" font-size="12">${esc2(txt)}</text>${s}`;
+      let g=`<svg xmlns="http://www.w3.org/2000/svg" width="${L+Wd+R}" height="${H}" font-family="Microsoft JhengHei,Segoe UI,sans-serif" style="background:#fff;max-width:100%">
+        <text x="6" y="18" font-size="13" font-weight="700">${esc2(label)}</text><text x="${L+Wd+8}" y="18" font-size="11">${esc2(m)} [95% CI]　權重(隨機)</text>
+        <line x1="${null0}" y1="${top}" x2="${null0}" y2="${H-36}" stroke="#999" stroke-dasharray="4 3"/>`;
+      res.st.forEach((s,i)=>{const y=top+i*rowH+12,sz=4+Math.sqrt(s.pr)*1.6;
+        g+=row(y,s.study||('研究 '+(i+1)),`<line x1="${X(s.lo)}" y1="${y}" x2="${X(s.hi)}" y2="${y}" stroke="#1B2A6B" stroke-width="1.5"/><rect x="${X(s.y)-sz/2}" y="${y-sz/2}" width="${sz}" height="${sz}" fill="#1B2A6B"/><text x="${L+Wd+8}" y="${y+5}" font-size="11">${tr(s.y).toFixed(2)} [${tr(s.lo).toFixed(2)}, ${tr(s.hi).toFixed(2)}]　${s.pr.toFixed(1)}%</text>`)});
+      const dia=(r,y,col,txt)=>`<polygon points="${X(r.lo)},${y} ${X(r.y)},${y-7} ${X(r.hi)},${y} ${X(r.y)},${y+7}" fill="${col}"/><text x="6" y="${y+5}" font-size="12" font-weight="700">${txt}</text><text x="${L+Wd+8}" y="${y+5}" font-size="11" font-weight="700">${tr(r.y).toFixed(2)} [${tr(r.lo).toFixed(2)}, ${tr(r.hi).toFixed(2)}]</text>`;
+      const yF=top+(res.st.length+0.5)*rowH+12, yR=yF+rowH; g+=`<line x1="${L}" y1="${yF-14}" x2="${L+Wd}" y2="${yF-14}" stroke="#ccc"/>`+dia(res.fixed,yF,'#5A6480','固定效應')+dia(res.random,yR,'#FF6B3D','隨機效應 (DL)');
+      const ticks=log?[0.1,0.2,0.5,1,2,5,10].filter(t=>Math.log(t)>mn&&Math.log(t)<mx).map(t=>[Math.log(t),t]):[mn,mn/2,0,mx/2,mx].map(v=>[v,+v.toFixed(1)]);
+      ticks.forEach(([v,t])=>{g+=`<line x1="${X(v)}" y1="${H-36}" x2="${X(v)}" y2="${H-31}" stroke="#555"/><text x="${X(v)}" y="${H-18}" font-size="10" text-anchor="middle">${t}</text>`});
+      g+=`<line x1="${L}" y1="${H-36}" x2="${L+Wd}" y2="${H-36}" stroke="#555"/><text x="${L+Wd/2}" y="${H-4}" font-size="10" text-anchor="middle">${log?'← 介入組事件較少　　介入組事件較多 →':'← 介入組較低　　介入組較高 →'}</text><text x="6" y="${H-8}" font-size="10">I² = ${res.I2.toFixed(0)}%，τ² = ${res.tau2.toFixed(3)}，Q = ${res.Q.toFixed(2)} (df ${res.df}, p = ${res.pQ.toFixed(3)})</text></svg>`;
+      return g;},
+    rcode:(oc)=>{ const t=oc.type,m=oc.measure||'RR',rows=oc.rows||[]; const q=s=>JSON.stringify(String(s||'')); const col=(k,str)=>rows.map(r=>str?q(r[k]):(r[k]===''||r[k]==null?'NA':+r[k])).join(', ');
+      let d,call;
+      if(t==='binary'){d=`d <- data.frame(study=c(${col('study',1)}),\n  e1=c(${col('e1')}), n1=c(${col('n1')}), e2=c(${col('e2')}), n2=c(${col('n2')}))`;call=`m <- metabin(e1, n1, e2, n2, data=d, studlab=study, sm="${m}", method="MH", common=TRUE, random=TRUE, method.tau="REML")`}
+      else if(t==='continuous'){d=`d <- data.frame(study=c(${col('study',1)}),\n  n1=c(${col('n1')}), m1=c(${col('m1')}), sd1=c(${col('sd1')}), n2=c(${col('n2')}), m2=c(${col('m2')}), sd2=c(${col('sd2')}))`;call=`m <- metacont(n1, m1, sd1, n2, m2, sd2, data=d, studlab=study, sm="${m}", common=TRUE, random=TRUE, method.tau="REML")`}
+      else{const lg=MA.isLog(m);d=`d <- data.frame(study=c(${col('study',1)}),\n  est=c(${col('est')}), lo=c(${col('lo')}), hi=c(${col('hi')}))\n${lg?'d$TE <- log(d$est); d$seTE <- (log(d$hi) - log(d$lo)) / (2*qnorm(0.975))':'d$TE <- d$est; d$seTE <- (d$hi - d$lo) / (2*qnorm(0.975))'}`;call=`m <- metagen(TE, seTE, data=d, studlab=study, sm="${m}", common=TRUE, random=TRUE, method.tau="REML")`}
+      return [
+        `# ${oc.name||'Outcome'}${oc.timepoint?'（'+oc.timepoint+'）':''} — 以 R meta 套件做統合分析\n# Google Colab：執行階段 → 變更執行階段類型 → R，再逐格執行\ninstall.packages("meta", quiet=TRUE)\nlibrary(meta)`,
+        d,
+        `${call}\nsummary(m)`,
+        `forest(m, leftcols=c("studlab"), label.left="有利介入", label.right="有利對照", print.tau2=TRUE, print.I2=TRUE)`,
+        `# 發表偏差（≥10 篇才有意義）\nif (m$k >= 10) { funnel(m); print(metabias(m, method.bias="linreg")) } else cat("研究數 <10，不做漏斗圖／Egger 檢定\\n")`,
+        `# 敏感度分析：逐一排除\nprint(metainf(m, pooled="random"))`
+      ];},
+    ipynb:(oc)=>JSON.stringify({nbformat:4,nbformat_minor:5,metadata:{kernelspec:{name:'ir',display_name:'R',language:'R'},language_info:{name:'R'}},
+      cells:[{cell_type:'markdown',id:'t',metadata:{},source:[`# ${oc.name||'Meta-analysis'}\n\n由 EBM 證據助理從資料萃取表產生。**請先對照原文核對每個數字**，再執行；Colab 若不是 R 執行階段，請到「執行階段 → 變更執行階段類型」改成 R。`]},
+        ...MA.rcode(oc).map((s,i)=>({cell_type:'code',id:'c'+i,metadata:{},execution_count:null,outputs:[],source:[s]}))]},null,1)
+  };
+  const P_MADATA=(items,extra)=>`你是統合分析的資料員。下面是多篇研究的萃取結果。請把「同一個 outcome」跨研究整理成可以直接算統合分析的數字表，只回覆一個 JSON 物件：
+{"outcomes":[{"name":"outcome 名稱（跨研究統一命名）","timepoint":"時間點","type":"binary｜continuous｜generic","measure":"binary→RR 或 OR；continuous→MD 或 SMD（量表不同用 SMD）；generic→文中報告的 HR／OR／RR／MD",
+  "rows":[{"study":"第一作者 年份","e1":介入組事件數,"n1":介入組人數,"e2":對照組事件數,"n2":對照組人數}
+          或 {"study":"","m1":介入組平均,"sd1":介入組SD,"n1":人數,"m2":對照組平均,"sd2":SD,"n2":人數}
+          或 {"study":"","est":效果量點估計,"lo":95%CI下限,"hi":95%CI上限}]}],
+ "skipped":["沒有可用數字、無法放進表的研究或 outcome，以及原因"]}
+規則：只能用文中明確報告的數字，沒有就不要放該列（不可估算、不可從百分比反推除非人數明確）；同一 outcome 至少 2 篇才列；type 以多數研究能提供的原始數據決定（有事件數／人數用 binary，只有 aOR／HR 與 CI 用 generic）；若 generic，measure 要與各列報告的指標一致（例如全都是 aOR）；數字一律用 number 不要字串。
+${extra?'使用者補充：\n'+extra+'\n':''}
+各篇萃取資料：
+${items}`;
 
   const errCopy={no_key:'請先在上方「AI 設定」填入你的 API 金鑰。',not_granted:'你尚未允許此頁使用 Claude，功能已停用。',sampling_disabled:'此帳號無法使用 Claude。',rate_limited:'呼叫太頻繁或額度已滿，請稍後再試。',session_expired:'請重新登入 claude.ai。',refused:'Claude 拒絕回答這個內容，請調整後再試。',invalid_json:'回覆格式不完整，請再按一次。',prompt_too_large:'內容太長，請只貼需要的段落。',empty_completion:'沒有產生內容，請簡化後再試。',upstream_error:'API 呼叫失敗，請檢查金鑰、模型名稱或額度後再試。'};
   const hideCodes=new Set(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed']);
@@ -764,7 +841,12 @@ ${(txt??$('q2').value).trim().slice(0,40000)}`;
       ${ev.length>=2?`<details class="box" style="margin-top:12px;border-left:4px solid var(--t2)"><summary style="cursor:pointer;font-weight:700">多篇研究：評估能不能做統合分析（Meta-analysis）</summary>
         <label class="f" style="margin-top:8px">各篇的 PICO 與主要結果（選填；貼上效果量、人數、結果定義，評估會更準）<textarea id="maData" style="min-height:110px" placeholder="例：Yannopoulos 2020 ARREST：n=30，ECPR vs 標準 ACLS，存活出院 43% vs 7%…&#10;Belohlavek 2022 Prague OHCA：n=256，…&#10;Suverein 2023 INCEPTION：n=160，…"></textarea></label>
         <div class="row"><button class="btn primary" id="maGo">評估是否適合做 MA</button><button class="btn" id="maStop" hidden>停止</button><span class="note" id="maNote"></span></div>
-        <div id="maOut"></div></details>`:''}`;
+        <div id="maOut"></div></details>
+      <details class="box" style="margin-top:12px;border-left:4px solid var(--t0)" ${flow.ma?'open':''}><summary style="cursor:pointer;font-weight:700">統計分析：從萃取資料直接做統合分析（瀏覽器算 ＋ R／Colab 筆記本）</summary>
+        <p class="note" style="margin:8px 0">① AI 先把各篇萃取出的數字整理成分析表（可手動修改）→ ② 瀏覽器立刻算固定／隨機效應與森林圖（快速檢視）→ ③ 下載 R 筆記本到 Google Colab 跑正式分析（meta 套件，含敏感度、漏斗圖）。</p>
+        <div class="row"><button class="btn primary" id="maDataGo">① AI 整理成分析表</button><button class="btn" id="maDataStop" hidden>停止</button><button class="btn" id="maAddOc">＋ 手動新增 outcome</button><span class="note" id="maDataNote"></span></div>
+        <div id="maTblBox" style="margin-top:8px"></div>
+        <div id="maRes" style="margin-top:8px"></div></details>`:''}`;
     wireScreen();
     box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{flow.evidence.splice(+b.dataset.del,1);saveFlow();renderEv()});
     box.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>{const d=$('drow'+b.dataset.detail); d.hidden=!d.hidden; b.textContent=d.hidden?'細項':'收起'});
@@ -808,6 +890,59 @@ ${extra?'\n各篇補充資料：\n'+extra.slice(0,12000):''}`;
         }catch(e){ $('maOut').innerHTML='<div class="ph">'+(e.code==='cancelled'?'已停止。':'沒有產生結果，請再按一次。')+'</div>'; fail(e,$('maNote')); }
         finally{$('maGo').disabled=false;$('maStop').hidden=true}
       };
+    }
+    if($('maDataGo')){
+      const COLS={binary:['e1','n1','e2','n2'],continuous:['n1','m1','sd1','n2','m2','sd2'],generic:['est','lo','hi']};
+      const LAB={e1:'介入事件',n1:'介入n',e2:'對照事件',n2:'對照n',m1:'介入平均',sd1:'介入SD',m2:'對照平均',sd2:'對照SD',est:'點估計',lo:'CI下限',hi:'CI上限'};
+      const MEAS={binary:['RR','OR','RD'],continuous:['MD','SMD'],generic:['HR','OR','RR','MD']};
+      const curOc=()=>flow.ma&&flow.ma.outcomes[flow.ma.sel||0];
+      const renderMa=()=>{ const box=$('maTblBox'); if(!flow.ma||!flow.ma.outcomes.length){box.innerHTML='';$('maRes').innerHTML='';return} const oc=curOc(); if(!COLS[oc.type])oc.type='binary'; if(!MEAS[oc.type].includes(oc.measure))oc.measure=MEAS[oc.type][0]; const cols=COLS[oc.type];
+        box.innerHTML=`<div class="row"><label class="note">Outcome <select id="maOc">${flow.ma.outcomes.map((o,i)=>`<option value="${i}" ${i===(flow.ma.sel||0)?'selected':''}>${esc2(o.name)}${o.timepoint?'（'+esc2(o.timepoint)+'）':''}</option>`).join('')}</select></label>
+          <label class="note">資料型態 <select id="maType">${[['binary','二分（事件數／人數）'],['continuous','連續（平均±SD）'],['generic','已報告效果量＋CI']].map(([v,l])=>`<option value="${v}" ${oc.type===v?'selected':''}>${l}</option>`).join('')}</select></label>
+          <label class="note">效果量 <select id="maMeas">${MEAS[oc.type].map(v=>`<option ${oc.measure===v?'selected':''}>${v}</option>`).join('')}</select></label>
+          <button class="btn" id="maDelOc">刪除此 outcome</button></div>
+          <div class="tw"><table class="ck" id="maTbl"><tr><th>研究</th>${cols.map(c=>`<th>${LAB[c]}</th>`).join('')}<th></th></tr>
+          ${(oc.rows||[]).map((r,i)=>`<tr><td><input class="mai" data-i="${i}" data-k="study" value="${esc2(r.study||'')}" style="width:150px"></td>${cols.map(c=>`<td><input class="mai" data-i="${i}" data-k="${c}" value="${esc2(r[c]??'')}" style="width:76px" inputmode="decimal"></td>`).join('')}<td><button class="btn" data-mdel="${i}">刪</button></td></tr>`).join('')}</table></div>
+          <div class="row"><button class="btn" id="maAddRow">＋ 加一列</button><button class="btn primary" id="maCalc">② 瀏覽器算統合分析</button><button class="btn" id="maR">③ 下載 R／Colab 筆記本 (.ipynb)</button><button class="btn" id="maRcopy">複製 R 程式碼</button><button class="btn" id="maSvg" hidden>下載森林圖 (SVG)</button></div>
+          ${flow.ma.skipped&&flow.ma.skipped.length?'<p class="note">AI 未納入：'+flow.ma.skipped.map(esc2).join('；')+'</p>':''}`;
+        const st=()=>{saveFlow()}; const inp=box.querySelector.bind(box);
+        inp('#maOc').onchange=e=>{flow.ma.sel=+e.target.value;st();renderMa()};
+        inp('#maType').onchange=e=>{oc.type=e.target.value;oc.measure=MEAS[oc.type][0];st();renderMa()};
+        inp('#maMeas').onchange=e=>{oc.measure=e.target.value;st()};
+        inp('#maDelOc').onclick=()=>{flow.ma.outcomes.splice(flow.ma.sel||0,1);flow.ma.sel=0;st();renderMa()};
+        inp('#maAddRow').onclick=()=>{oc.rows=oc.rows||[];oc.rows.push({study:''});st();renderMa()};
+        box.querySelectorAll('[data-mdel]').forEach(b=>b.onclick=()=>{oc.rows.splice(+b.dataset.mdel,1);st();renderMa()});
+        box.querySelectorAll('.mai').forEach(el=>el.oninput=()=>{oc.rows[+el.dataset.i][el.dataset.k]=el.dataset.k==='study'?el.value:el.value.trim();st()});
+        inp('#maCalc').onclick=()=>{ const res=MA.pool(oc.type,oc.measure,oc.rows||[]); const out=$('maRes');
+          if(res.k<2){out.innerHTML='<div class="ph">至少要 2 篇有完整數字的研究才能合併（目前 '+res.k+' 篇）。缺的格子請對照原文補上。</div>';$('maSvg').hidden=true;return}
+          const lg=res.log,f=v=>MA.fmt(v,lg),label=`${oc.name}${oc.timepoint?'（'+oc.timepoint+'）':''}`; const svg=MA.forest(res,oc.measure,label); flow.ma.lastSvg=svg;
+          const het=res.I2<30?'低':res.I2<60?'中等':'高'; const main=res.I2>=30?res.random:res.fixed;
+          out.innerHTML=`<div class="sec c1"><h4>合併結果（${res.k} 篇，${esc2(oc.measure)}）</h4>• 隨機效應 (DerSimonian–Laird)：<b>${f(res.random.y)}</b>（95% CI ${f(res.random.lo)}–${f(res.random.hi)}），z = ${res.random.z.toFixed(2)}，p = ${res.random.p<0.001?'<0.001':res.random.p.toFixed(3)}
+• 固定效應 (inverse variance)：${f(res.fixed.y)}（${f(res.fixed.lo)}–${f(res.fixed.hi)}），p = ${res.fixed.p<0.001?'<0.001':res.fixed.p.toFixed(3)}
+• 異質性：I² = ${res.I2.toFixed(0)}%（${het}），τ² = ${res.tau2.toFixed(3)}，Q = ${res.Q.toFixed(2)}，df = ${res.df}，p = ${res.pQ.toFixed(3)}
+• 建議報告：${res.I2>=30?'異質性不低，以隨機效應為主並探討來源（次群組／敏感度）':'異質性低，固定與隨機效應結果應相近'}；${res.k<10?'研究數 <10，不宜做漏斗圖／Egger 檢定':'可做漏斗圖與 Egger 檢定'}</div>
+<div class="sec c2" style="white-space:normal">${svg}</div>
+<div class="tw"><table class="ck"><tr><th>研究</th><th>效果量</th><th>95% CI</th><th>權重(固定)</th><th>權重(隨機)</th></tr>${res.st.map(s=>`<tr><td class="q">${esc2(s.study)}</td><td>${f(s.y)}</td><td>${f(s.lo)}–${f(s.hi)}</td><td>${s.pf.toFixed(1)}%</td><td>${s.pr.toFixed(1)}%</td></tr>`).join('')}</table></div>
+<p class="note">瀏覽器版用 DL 法估 τ²、二分資料用 inverse variance（零事件加 0.5）；正式投稿請用 ③ 的 R 筆記本（Mantel–Haenszel／REML、Hartung–Knapp 可自行加上），並對照原文核對每個數字。GRADE 的不精確性可直接拿這裡的 CI 去對 MID。</p>`;
+          $('maSvg').hidden=false; st(); };
+        inp('#maR').onclick=async()=>{ const name=((oc.name||'meta')+'_meta.ipynb').replace(/[\\/:*?"<>|\s]/g,'_'); try{ await dlFile(name,new Blob([MA.ipynb(oc)],{type:'application/x-ipynb+json'})); $('maDataNote').textContent='已下載 '+name+'：到 colab.research.google.com → 檔案 → 上傳筆記本，執行階段選 R。'; }catch(e){ $('maDataNote').textContent=e&&e.code==='declined'?'已取消。':'此環境不允許下載，請改按「複製 R 程式碼」貼到 Colab（R 執行階段）。'; } };
+        inp('#maRcopy').onclick=e=>copy(MA.rcode(oc).join('\n\n'),e.target);
+        inp('#maSvg').onclick=async()=>{ try{ await dlFile((oc.name||'forest')+'_forest.svg',new Blob([flow.ma.lastSvg||''],{type:'image/svg+xml'})) }catch(e){ copy(flow.ma.lastSvg||'',$('maSvg')) } };
+      };
+      let ctlD=null; $('maDataStop').onclick=()=>ctlD?.abort();
+      $('maAddOc').onclick=()=>{flow.ma=flow.ma||{outcomes:[],sel:0}; flow.ma.outcomes.push({name:'新 outcome',type:'binary',measure:'RR',rows:ev.map(r=>({study:(r.extract&&r.extract.study)||r.cite||r.title}))}); flow.ma.sel=flow.ma.outcomes.length-1; saveFlow(); renderMa();};
+      $('maDataGo').onclick=async()=>{
+        const items=ev.filter(r=>r.extract).map(r=>{const x=r.extract;return JSON.stringify({study:x.study||r.cite,design:x.design||r.design,n_int:x.intervention?.n,n_ctrl:x.comparator?.n,primary_outcomes:x.primary_outcomes,secondary_outcomes:x.secondary_outcomes,predictors:x.predictors,outcomes:x.outcomes})}).join('\n');
+        if(!items){$('maDataNote').textContent='證據表裡還沒有萃取資料：先在批次匯入勾「資料萃取」，或用「＋ 手動新增 outcome」自己填數字。';return}
+        ctlD=new AbortController(); $('maDataGo').disabled=true; $('maDataStop').hidden=false; $('maDataNote').textContent='整理中…';
+        try{ const d=await sample.json(P_MADATA(items.slice(0,30000),($('maData')?.value||'').trim()),{signal:ctlD.signal,modelTier:'default'});
+          const ocs=(d.outcomes||[]).filter(o=>o&&Array.isArray(o.rows)&&o.rows.length).map(o=>({name:o.name,timepoint:o.timepoint||'',type:['binary','continuous','generic'].includes(o.type)?o.type:'binary',measure:o.measure||'',rows:o.rows.map(r=>Object.fromEntries(Object.entries(r).map(([k,v])=>[k,v==null?'':String(v)])))}));
+          if(!ocs.length){$('maDataNote').textContent='AI 找不到可以合併的數字（'+(d.skipped||[]).join('；')+'）。可用「＋ 手動新增 outcome」自己填。';return}
+          flow.ma={outcomes:ocs,sel:0,skipped:d.skipped||[]}; saveFlow(); renderMa(); $('maDataNote').textContent='已整理 '+ocs.length+' 個 outcome，請逐格對照原文核對後再算。';
+        }catch(e){ if(e.code!=='cancelled')fail(e,$('maDataNote')); else $('maDataNote').textContent='已停止。'; }
+        finally{$('maDataGo').disabled=false;$('maDataStop').hidden=true}
+      };
+      renderMa();
     }
     $('evTo4').onclick=()=>{$('q3').value=(flow.pico?'PICO：\n'+picoText()+'\n\n':'')+'證據表（'+ev.length+' 篇）：\n'+ev.map((r,i)=>`${i+1}. ${r.title}（${r.cite}）｜${r.design}｜${r.level}｜${r.tool} 符合 ${r.score}｜結論：${r.verdict||'未填'}｜${r.summary}`).join('\n')+'\n\n（請補上各篇 DOI）'; goTab(2); renderHandoff();};
   }
@@ -1274,5 +1409,4 @@ ${lastEtd?'EtD：'+JSON.stringify(lastEtd).slice(0,3000):''}
   })();
 })();
 </script>
-
 </body></html>
